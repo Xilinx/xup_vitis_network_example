@@ -15,8 +15,8 @@ help:
 
 
 DEVICE ?= xilinx_u280_xdma_201920_3
-INTERFACE := 0
-KRNL_NAME := cmac_${INTERFACE}
+INTERFACE ?= 0
+KRNL_NAME = cmac_${INTERFACE}
 SUBMODULENAME = cmac
 
 XSA := $(strip $(patsubst %.xpfm, % , $(shell basename $(DEVICE))))
@@ -26,7 +26,7 @@ VIVADO := $(XILINX_VIVADO)/bin/vivado
 BINARY_NETLAYER_OBJS = $(TEMP_DIR)/${KRNL_NAME}.xo
 
 
-ifeq (u200,$(findstring u50, $(DEVICE)))
+ifeq (u50,$(findstring u50, $(DEVICE)))
 	SUBMODULEIPTARGET = alveou50
 endif
 
@@ -42,7 +42,7 @@ ifeq (u280,$(findstring u280, $(DEVICE)))
 	SUBMODULEIPTARGET = alveou280
 endif
 
-.PHONY: all clean cleanall 
+.PHONY: all clean distclean 
 all: check-devices check-vivado $(BINARY_NETLAYER_OBJS)  
 
 

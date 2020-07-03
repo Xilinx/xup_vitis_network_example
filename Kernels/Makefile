@@ -25,7 +25,7 @@ CLFLAGS += -t hw --platform $(DEVICE) --save-temps
 BINARY_OBJS = $(addprefix $(TEMP_DIR)/, $(addsuffix .xo, $(kernel_list)))
 
 
-.PHONY: all clean cleanall 
+.PHONY: all clean distclean 
 all: check-devices check-vitis check-xrt $(BINARY_OBJS)  
 
 

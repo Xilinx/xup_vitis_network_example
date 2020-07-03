@@ -25,7 +25,7 @@ VIVADO := $(XILINX_VIVADO)/bin/vivado
 BINARY_CMAC_OBJS = $(TEMP_DIR)/${KRNL_NAME}.xo
 
 
-ifeq (u200,$(findstring u50, $(DEVICE)))
+ifeq (u50,$(findstring u50, $(DEVICE)))
 	SUBMODULETARGET = hbm
 endif
 

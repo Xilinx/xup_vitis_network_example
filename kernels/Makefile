@@ -2,9 +2,9 @@
 
 help:
 	@echo "Makefile Usage:"
-	@echo "  make all DEVICE=<FPGA platform> INTERFACE=<CMAC Interface>"
+	@echo "  make all DEVICE=<FPGA platform> kernel_list=\"<list of kernels>"\"
 	@echo "      Command to generate the xo for specified device and Interface."
-	@echo "      By default, DEVICE=xilinx_u280_xdma_201920_3 and INTERFACE=0"
+	@echo "      By default, DEVICE=xilinx_u280_xdma_201920_3 and kernel_list=\"krnl_s2mm krnl_mm2s\""
 	@echo ""
 	@echo "  make clean "
 	@echo "      Command to remove the generated non-hardware files."
@@ -15,19 +15,14 @@ help:
 
 
 DEVICE ?= xilinx_u280_xdma_201920_3
-INTERFACE := 0
-KRNL_NAME := krnl_mm2s
+kernel_list ?= krnl_s2mm krnl_mm2s
 
 
 XSA := $(strip $(patsubst %.xpfm, % , $(shell basename $(DEVICE))))
 TEMP_DIR := _x.$(XSA)
 VPP := $(XILINX_VITIS)/bin/v++
 CLFLAGS += -t hw --platform $(DEVICE) --save-temps
-
-
-kernel_list := krnl_s2mm krnl_mm2s
 BINARY_OBJS = $(addprefix $(TEMP_DIR)/, $(addsuffix .xo, $(kernel_list)))
-
 
 
 .PHONY: all clean cleanall 

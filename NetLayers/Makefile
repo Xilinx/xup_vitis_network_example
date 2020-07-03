@@ -66,7 +66,7 @@ ifndef DEVICE
 	$(error DEVICE not set. Please set the DEVICE properly and rerun. Run "make help" for more details.)
 endif
 
-#Checks for XILINX_XRT
+#Checks for XILINX_VIVADO
 check-vivado:
 ifndef XILINX_VIVADO
 	$(error XILINX_VIVADO variable is not set, please set correctly and rerun)

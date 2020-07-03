@@ -91,7 +91,7 @@ generate_target all [get_files  ${path_to_tmp_project}/${projName}.srcs/sources_
 export_ip_user_files -of_objects [get_files ${path_to_tmp_project}/${projName}.srcs/sources_1/bd/${bd_name}/${bd_name}.bd] -no_script -sync -force -quiet
 create_ip_run [get_files -of_objects [get_fileset sources_1] ${path_to_tmp_project}/${projName}.srcs/sources_1/bd/${bd_name}/${bd_name}.bd]
 update_compile_order -fileset sources_1
-set_property top networklayer [current_fileset]
+set_property top cmac [current_fileset]
 
 # Package IP
 

@@ -23,7 +23,7 @@ XSA := $(strip $(patsubst %.xpfm, % , $(shell basename $(DEVICE))))
 TEMP_DIR := ./_x.$(XSA)
 VIVADO := $(XILINX_VIVADO)/bin/vivado
 
-BINARY_CMAC_OBJS = $(TEMP_DIR)/${KRNL_NAME}.xo
+BINARY_NETLAYER_OBJS = $(TEMP_DIR)/${KRNL_NAME}.xo
 
 
 ifeq (u200,$(findstring u50, $(DEVICE)))
@@ -43,17 +43,17 @@ ifeq (u280,$(findstring u280, $(DEVICE)))
 endif
 
 .PHONY: all clean cleanall 
-all: check-devices check-vivado $(BINARY_CMAC_OBJS)  
+all: check-devices check-vivado $(BINARY_NETLAYER_OBJS)  
 
 
 # Cleaning stuff
 clean:
-	rm -rf *v++* .Xil *.log *.jou
+	rm -rf *v++* *.log *.jou
 
 distclean: clean
 	rm -rf build_dir*
 	rm -rf _x.* kernel_*.xml
-	rm -rf ./tmp_cmac* ./packaged_kernel* 
+	rm -rf ./tmp_cmac* ./packaged_kernel* .Xil
 
 
 $(TEMP_DIR)/${KRNL_NAME}.xo: template.xml package_kernel.tcl gen_xo.tcl *.v
@@ -68,7 +68,7 @@ ifndef DEVICE
 	$(error DEVICE not set. Please set the DEVICE properly and rerun. Run "make help" for more details.)
 endif
 
-#Checks for XILINX_XRT
+#Checks for XILINX_VIVADO
 check-vivado:
 ifndef XILINX_VIVADO
 	$(error XILINX_VIVADO variable is not set, please set correctly and rerun)

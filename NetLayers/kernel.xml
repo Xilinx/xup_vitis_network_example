@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root versionMajor="1" versionMinor="6">
+  <kernel name="networklayer" language="ip" vlnv="xilinx.com:kernel:networklayer:1.0" attributes="" preferredWorkGroupSizeMultiple="0" workGroupSize="1" interrupt="false" hwControlProtocol="ap_ctrl_none">
+    <ports>
+      <port name="S_AXIL_nl"     mode="slave" range="0x10000" dataWidth="32" portType="addressable" base="0x0"/>
+      <port name="S_AXIS_sk2nl"  mode="write_only" dataWidth="512" portType="stream"/>
+      <port name="S_AXIS_eth2nl" mode="write_only" dataWidth="512" portType="stream"/>
+      <port name="M_AXIS_nl2sk"  mode="read_only" dataWidth="512" portType="stream"/>
+      <port name="M_AXIS_nl2eth" mode="read_only" dataWidth="512" portType="stream"/>
+    </ports>
+    <args>
+      <!-- Interface Settings Register Map-->
+      <arg name="mac_msb"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x80" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="mac_lsb"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x84" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="ip_address" addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x88" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="gateway"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x8C" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="ip_mask"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x90" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="constant"   addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0xFC" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <!-- Debug port Register Map-->
+      <arg name="debug_port0_packets_msb" addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x1000" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port0_packets_lsb" addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x1004" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port0_bytes_msb"   addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x1008" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port0_bytes_lsb"   addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x100C" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port0_time_msb"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x1010" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port0_time_lsb"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x1014" type="uint" hostOffset="0x00" hostSize="0x4"/>
+      <arg name="debug_port1_packets_msb" addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x1018" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port1_packets_lsb" addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x101C" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port1_bytes_msb"   addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x1020" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port1_bytes_lsb"   addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x1024" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port1_time_msb"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x1028" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port1_time_lsb"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x102C" type="uint" hostOffset="0x00" hostSize="0x4"/>       
+      <arg name="debug_port2_packets_msb" addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x1030" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port2_packets_lsb" addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x1034" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port2_bytes_msb"   addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x1038" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port2_bytes_lsb"   addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x103C" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port2_time_msb"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x1040" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port2_time_lsb"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x1044" type="uint" hostOffset="0x00" hostSize="0x4"/>
+      <arg name="debug_port3_packets_msb" addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x1048" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port3_packets_lsb" addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x104C" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port3_bytes_msb"   addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x1050" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port3_bytes_lsb"   addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x1054" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port3_time_msb"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x1058" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port3_time_lsb"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x105C" type="uint" hostOffset="0x00" hostSize="0x4"/>       
+      <arg name="debug_port4_packets_msb" addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x1060" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port4_packets_lsb" addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x1064" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port4_bytes_msb"   addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x1068" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port4_bytes_lsb"   addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x106C" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port4_time_msb"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x1070" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port4_time_lsb"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x1074" type="uint" hostOffset="0x00" hostSize="0x4"/>
+      <arg name="debug_port5_packets_msb" addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x1078" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port5_packets_lsb" addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x107C" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port5_bytes_msb"   addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x1080" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port5_bytes_lsb"   addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x1084" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port5_time_msb"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x1088" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port5_time_lsb"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x108C" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port6_packets_msb" addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x1090" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port6_packets_lsb" addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x1094" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port6_bytes_msb"   addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x1098" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port6_bytes_lsb"   addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x109C" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port6_time_msb"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x10A0" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port6_time_lsb"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x10A4" type="uint" hostOffset="0x00" hostSize="0x4"/>
+      <arg name="debug_port7_packets_msb" addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x10A8" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port7_packets_lsb" addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x10AC" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port7_bytes_msb"   addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x10B0" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port7_bytes_lsb"   addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x10B4" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port7_time_msb"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x10B8" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port7_time_lsb"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x10BC" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port8_packets_msb" addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x10C0" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port8_packets_lsb" addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x10C4" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port8_bytes_msb"   addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x10C8" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port8_bytes_lsb"   addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x10CC" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port8_time_msb"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x10D0" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port8_time_lsb"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x10D4" type="uint" hostOffset="0x00" hostSize="0x4"/>
+      <arg name="debug_port9_packets_msb" addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x10D8" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port9_packets_lsb" addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x10DC" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port9_bytes_msb"   addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x10E0" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port9_bytes_lsb"   addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x10E4" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port9_time_msb"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x10E8" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_port9_time_lsb"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x10EC" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_reset_counters"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x11F0" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_clock_freq"        addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x11F4" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_number_ports"      addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x11F8" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_settings"          addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x11FC" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <!-- UDP Tables -->
+      <arg name="udp_offset"              addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2000" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_ti0"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2010" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_ti1"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2018" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_ti2"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2020" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_ti3"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2028" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_ti4"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2030" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_ti5"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2038" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_ti6"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2040" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_ti7"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2048" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_ti8"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2050" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_ti9"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2058" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_ti10"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2060" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_ti11"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2068" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_ti12"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2070" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_ti13"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2078" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_ti14"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2080" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_ti15"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2088" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_tp0"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2090" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_tp1"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2098" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_tp2"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x20A0" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_tp3"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x20A8" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_tp4"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x20B0" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_tp5"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x20B8" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_tp6"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x20C0" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_tp7"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x20C8" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_tp8"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x20D0" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_tp9"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x20D8" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_tp10"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x20E0" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_tp11"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x20E8" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_tp12"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x20F0" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_tp13"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x20F8" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_tp14"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2100" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_tp15"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2108" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_mp0"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2110" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_mp1"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2118" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_mp2"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2120" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_mp3"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2128" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_mp4"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2130" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_mp5"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2138" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_mp6"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2140" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_mp7"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2148" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_mp8"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2150" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_mp9"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2158" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_mp10"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2160" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_mp11"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2168" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_mp12"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2170" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_mp13"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2178" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_mp14"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2180" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_mp15"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2188" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_v0"      addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2190" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_v1"      addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2198" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_v2"      addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x21A0" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_v3"      addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x21A8" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_v4"      addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x21B0" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_v5"      addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x21B8" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_v6"      addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x21C0" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_v7"      addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x21C8" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_v8"      addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x21D0" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_v9"      addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x21D8" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_v10"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x21E0" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_v11"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x21E8" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_v12"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x21F0" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_v13"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x21F8" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_v14"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2200" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_socketTable_v15"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2208" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="udp_numberSockets"       addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x2210" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+
+
+      <arg name="S_AXIS_sk2nl"  addressQualifier="4" id="1" port="S_AXIS_sk2nl"  type="stream&lt;ap_axiu&lt;512,16,1,1>>&amp;" />
+      <arg name="S_AXIS_eth2nl" addressQualifier="4" id="2" port="S_AXIS_eth2nl" type="stream&lt;ap_axiu&lt;512,0,0,0>>&amp;" />
+      <arg name="M_AXIS_nl2sk"  addressQualifier="4" id="3" port="M_AXIS_nl2sk"  type="stream&lt;ap_axiu&lt;512,16,1,1>>&amp;" />
+      <arg name="M_AXIS_nl2eth" addressQualifier="4" id="4" port="M_AXIS_nl2eth" type="stream&lt;ap_axiu&lt;512,0,0,0>>&amp;" />
+    </args>
+  </kernel>
+</root>
+

@@ -47,7 +47,7 @@
 `default_nettype wire
 `timescale 1 ns / 1 ps
 // Top level of the kernel. Do not modify module name, parameters or ports.
-module cmac #(
+module placeholder #(
   parameter integer AXIL_CTRL_ADDR_WIDTH  =  13,
   parameter integer AXIL_CTRL_DATA_WIDTH  =  32,
   parameter integer AXIS_TDATA_WIDTH      = 512
@@ -103,7 +103,7 @@ module cmac #(
 );
 
 
-  cmac_bd cmac_bd_i  (
+  cmac_bd placeholder  (
     .ap_clk               (              ap_clk),
     .ap_rst_n             (            ap_rst_n),
     .clk_gt_freerun       (      clk_gt_freerun),

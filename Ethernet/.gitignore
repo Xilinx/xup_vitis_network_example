@@ -4,3 +4,4 @@ _x.*
 packaged_kernel*/
 *.log
 *.jou
+cmac_top*.v

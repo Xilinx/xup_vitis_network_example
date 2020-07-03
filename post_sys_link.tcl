@@ -100,8 +100,9 @@ set __gt_k_list {}
 set __gt_intf_width 0
 # Make sure the kernel key in the config_info dict exists
 if {[dict exists $config_info kernels]} {
-  puts "${__TCLID} got config_info"
+  puts "${__TCLID} got config_info which is: ${config_info}"
   set __k_list [dict get $config_info kernels]
+  puts "${__TCLID} __k_list: ${__k_list}"
   # Make sure that list of kernels is populated  
   if {[llength $__k_list] > 0} {
     # Iterate over each kernel
@@ -142,7 +143,7 @@ if {[dict exists $config_info kernels]} {
     foreach __k_inst $__gt_k_list {
       set __gt_intf [get_bd_intf_pins -quiet -of_objects [get_bd_cells $__k_inst] -filter {VLNV=~*gt_rtl*}]
       if {[llength $__gt_intf] > 0} {
-        puts "${__TCLID} connecting GT"
+        puts "${__TCLID} connecting GT quad ${bd_gt_gtyquad_0} -> $__gt_intf"
         connect_bd_intf_net [get_bd_intf_ports ${bd_gt_gtyquad_0}] $__gt_intf
       }
       set __refclk0_pins [get_bd_pins -of_objects [get_bd_cells ${__k_inst}] -filter {NAME =~ "gt_refclk0*"}]

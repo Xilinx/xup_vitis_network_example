@@ -35,8 +35,9 @@ make all DEVICE=<full platform path>
 ```
 
 Limitations: 
-	- `INTERFACE` is an option in the Makefile, but only `INTERFACE=0` is supported at this moment in the xclbin generation
-	- Only `xilinx_u280_xdma_201920_3` meets timing closure
+
+- `INTERFACE` is an option in the Makefile, but only `INTERFACE=0` is supported at this moment in the xclbin generation
+- Only `xilinx_u280_xdma_201920_3` meets timing closure
 
 ## Notes
 

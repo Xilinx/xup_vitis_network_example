@@ -1,0 +1,6 @@
+_x/
+*.log
+*.jou
+v++*
+build*/
+.ipcache/

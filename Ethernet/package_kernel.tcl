@@ -93,6 +93,8 @@ create_ip_run [get_files -of_objects [get_fileset sources_1] ${path_to_tmp_proje
 update_compile_order -fileset sources_1
 set_property top cmac [current_fileset]
 
+
+set gt_name gt_serial_port${interface}
 # Package IP
 
 ipx::package_project -root_dir ${path_to_packaged} -vendor xilinx.com -library RTLKernel -taxonomy /KernelIP -import_files -set_current false
@@ -114,18 +116,18 @@ ipx::associate_bus_interfaces -busif S_AXIS -clock ap_clk [ipx::current_core]
 ipx::associate_bus_interfaces -busif M_AXIS -clock ap_clk [ipx::current_core]
 ipx::associate_bus_interfaces -busif S_AXILITE -clock ap_clk [ipx::current_core]
 
-ipx::add_bus_interface gt_serial_port [ipx::current_core]
-set_property interface_mode master [ipx::get_bus_interfaces gt_serial_port -of_objects [ipx::current_core]]
-set_property abstraction_type_vlnv xilinx.com:interface:gt_rtl:1.0 [ipx::get_bus_interfaces gt_serial_port -of_objects [ipx::current_core]]
-set_property bus_type_vlnv xilinx.com:interface:gt:1.0 [ipx::get_bus_interfaces gt_serial_port -of_objects [ipx::current_core]]
-ipx::add_port_map GRX_P [ipx::get_bus_interfaces gt_serial_port -of_objects [ipx::current_core]]
-set_property physical_name gt_rxp_in [ipx::get_port_maps GRX_P -of_objects [ipx::get_bus_interfaces gt_serial_port -of_objects [ipx::current_core]]]
-ipx::add_port_map GRX_N [ipx::get_bus_interfaces gt_serial_port -of_objects [ipx::current_core]]
-set_property physical_name gt_rxn_in [ipx::get_port_maps GRX_N -of_objects [ipx::get_bus_interfaces gt_serial_port -of_objects [ipx::current_core]]]
-ipx::add_port_map GTX_P [ipx::get_bus_interfaces gt_serial_port -of_objects [ipx::current_core]]
-set_property physical_name gt_txp_out [ipx::get_port_maps GTX_P -of_objects [ipx::get_bus_interfaces gt_serial_port -of_objects [ipx::current_core]]]
-ipx::add_port_map GTX_N [ipx::get_bus_interfaces gt_serial_port -of_objects [ipx::current_core]]
-set_property physical_name gt_txn_out [ipx::get_port_maps GTX_N -of_objects [ipx::get_bus_interfaces gt_serial_port -of_objects [ipx::current_core]]]
+ipx::add_bus_interface ${gt_name} [ipx::current_core]
+set_property interface_mode master [ipx::get_bus_interfaces ${gt_name} -of_objects [ipx::current_core]]
+set_property abstraction_type_vlnv xilinx.com:interface:gt_rtl:1.0 [ipx::get_bus_interfaces ${gt_name} -of_objects [ipx::current_core]]
+set_property bus_type_vlnv xilinx.com:interface:gt:1.0 [ipx::get_bus_interfaces ${gt_name} -of_objects [ipx::current_core]]
+ipx::add_port_map GRX_P [ipx::get_bus_interfaces ${gt_name} -of_objects [ipx::current_core]]
+set_property physical_name gt_rxp_in [ipx::get_port_maps GRX_P -of_objects [ipx::get_bus_interfaces ${gt_name} -of_objects [ipx::current_core]]]
+ipx::add_port_map GRX_N [ipx::get_bus_interfaces ${gt_name} -of_objects [ipx::current_core]]
+set_property physical_name gt_rxn_in [ipx::get_port_maps GRX_N -of_objects [ipx::get_bus_interfaces ${gt_name} -of_objects [ipx::current_core]]]
+ipx::add_port_map GTX_P [ipx::get_bus_interfaces ${gt_name} -of_objects [ipx::current_core]]
+set_property physical_name gt_txp_out [ipx::get_port_maps GTX_P -of_objects [ipx::get_bus_interfaces ${gt_name} -of_objects [ipx::current_core]]]
+ipx::add_port_map GTX_N [ipx::get_bus_interfaces ${gt_name} -of_objects [ipx::current_core]]
+set_property physical_name gt_txn_out [ipx::get_port_maps GTX_N -of_objects [ipx::get_bus_interfaces ${gt_name} -of_objects [ipx::current_core]]]
 
 
 set_property xpm_libraries {XPM_CDC XPM_MEMORY XPM_FIFO} [ipx::current_core]

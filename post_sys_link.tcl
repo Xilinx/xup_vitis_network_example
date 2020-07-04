@@ -141,11 +141,18 @@ if {[dict exists $config_info kernels]} {
 
     puts "${__TCLID} GT Kernel List $__gt_k_list"
     foreach __k_inst $__gt_k_list {
+      # Loof for a gt capable interface
       set __gt_intf [get_bd_intf_pins -quiet -of_objects [get_bd_cells $__k_inst] -filter {VLNV=~*gt_rtl*}]
-      if {[llength $__gt_intf] > 0} {
-        puts "${__TCLID} connecting GT quad ${bd_gt_gtyquad_0} -> $__gt_intf"
-        connect_bd_intf_net [get_bd_intf_ports ${bd_gt_gtyquad_0}] $__gt_intf
+      puts "${__TCLID} found GT caplable interface: ${__gt_intf}"
+      if {[string first "gt_serial_port0" ${__gt_intf}] != -1} {
+        puts "${__TCLID} connecting GT quad ${bd_gt_gtyquad_0} <-> ${__gt_intf}"
+        connect_bd_intf_net [get_bd_intf_ports ${bd_gt_gtyquad_0}] ${__gt_intf}
+      } 
+      if {[string first "gt_serial_port1" ${__gt_intf}] != -1} {
+        puts "${__TCLID} connecting GT quad ${bd_gt_gtyquad_1} <-> ${__gt_intf}"
+        connect_bd_intf_net [get_bd_intf_ports ${bd_gt_gtyquad_1}] ${__gt_intf}
       }
+      # Loof for a gt clock capable interface
       set __refclk0_pins [get_bd_pins -of_objects [get_bd_cells ${__k_inst}] -filter {NAME =~ "gt_refclk0*"}]
       if {[llength $__refclk0_pins] > 0} {
         puts "${__TCLID} connecting ${bd_gt_ref_clk_0_name_a} -> ${__k_inst}/gt_refclk0"
@@ -161,7 +168,6 @@ if {[dict exists $config_info kernels]} {
       # Get Free runninc clock pin name and connection if any
       set __kernel_freerunclk_pins [get_bd_pins -of_objects [get_bd_cells ${__k_inst}] -filter {NAME =~ "clk_gt_freerun"}]
       set __freerunclk_connection [get_bd_nets -of_objects [get_bd_pins -of_objects [get_bd_cells ${__k_inst}] -filter {NAME =~ "clk_gt_freerun"}]]
-      puts __kernel_freerunclk_pins
       puts "${__TCLID} kernel free running clock pin ${__kernel_freerunclk_pins}"
 
       if {[llength ${__kernel_freerunclk_pins}] ne 1} {
@@ -171,7 +177,7 @@ if {[dict exists $config_info kernels]} {
           puts "${__TCLID} ${__kernel_freerunclk_pins} was connected to ${__freerunclk_connection}. Connection was removed"
           disconnect_bd_net ${__freerunclk_connection} [get_bd_pins ${__kernel_freerunclk_pins}]
         }
-        puts "${__TCLID} connecting ${__kernel_freerunclk_pins} to free running clock ${__bd_free_running_clk}"
+        puts "${__TCLID} connecting ${__kernel_freerunclk_pins} -> ${__bd_free_running_clk}"
         connect_bd_net [get_bd_pins ${__bd_free_running_clk}] [get_bd_pins ${__kernel_freerunclk_pins}]
       }
     }

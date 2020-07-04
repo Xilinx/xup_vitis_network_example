@@ -23,7 +23,7 @@ TEMP_DIR := _x.$(XSA)
 VPP := $(XILINX_VITIS)/bin/v++
 CLFLAGS += -t hw --platform $(DEVICE) --save-temps
 
-BUILD_DIR := ./build_dir.$(XSA)
+BUILD_DIR := ./build_dir.intf$(INTERFACE).$(XSA)
 BINARY_CONTAINERS = $(BUILD_DIR)/${XCLBIN_NAME}.xclbin
 
 NETLAYERDIR = NetLayers/

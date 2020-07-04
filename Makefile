@@ -26,17 +26,19 @@ CLFLAGS += -t hw --platform $(DEVICE) --save-temps
 BUILD_DIR := ./build_dir.$(XSA)
 BINARY_CONTAINERS = $(BUILD_DIR)/${XCLBIN_NAME}.xclbin
 
-NETLAYERDIR = NetLayers
-CMACDIR     = Ethernet
-KERNELDIR   = Kernels
+NETLAYERDIR = NetLayers/
+CMACDIR     = Ethernet/
+KERNELDIR   = Kernels/
+
+NETLAYERHLS = 100G-fpga-network-stack-core
 
 POSTSYSLINKTCL ?= $(shell readlink -f ./post_sys_link.tcl)
 CMAC_IP_FOLDER ?= $(shell readlink -f ./$(CMACDIR)/cmac)
 
-LIST_XO := $(CMACDIR)/$(TEMP_DIR)/cmac_$(INTERFACE).xo
-LIST_XO += $(NETLAYERDIR)/$(TEMP_DIR)/networklayer.xo
-LIST_XO += $(KERNELDIR)/$(TEMP_DIR)/krnl_mm2s.xo
-LIST_XO += $(KERNELDIR)/$(TEMP_DIR)/krnl_s2mm.xo
+LIST_XO := $(CMACDIR)$(TEMP_DIR)/cmac_$(INTERFACE).xo
+LIST_XO += $(NETLAYERDIR)$(TEMP_DIR)/networklayer.xo
+LIST_XO += $(KERNELDIR)$(TEMP_DIR)/krnl_mm2s.xo
+LIST_XO += $(KERNELDIR)$(TEMP_DIR)/krnl_s2mm.xo
 
 CONFIGFLAGS := --config connectivity.ini --config advanced.ini
 
@@ -44,11 +46,11 @@ CONFIGFLAGS := --config connectivity.ini --config advanced.ini
 # Linker userPostSysLinkTcl param
 ifeq (u250,$(findstring u250, $(DEVICE)))
 	#CONFIGFLAGS += --config advanced.ini
-	HLS_IP_FOLDER  = $(shell readlink -f ./$(NETLAYERDIR)/100G-fpga-network-stack-core/synthesis_results_noHMB)
+	HLS_IP_FOLDER  = $(shell readlink -f ./$(NETLAYERDIR)$(NETLAYERHLS)/synthesis_results_noHMB)
 endif
 ifeq (u280,$(findstring u280, $(DEVICE)))
 	#CONFIGFLAGS += --config advanced.ini
-	HLS_IP_FOLDER  = $(shell readlink -f ./$(NETLAYERDIR)/100G-fpga-network-stack-core/synthesis_results_HMB)
+	HLS_IP_FOLDER  = $(shell readlink -f ./$(NETLAYERDIR)$(NETLAYERHLS)/synthesis_results_HMB)
 endif
 
 
@@ -70,13 +72,13 @@ distclean: clean
 
 
 # Building kernel
-$(BUILD_DIR)/${XCLBIN_NAME}.xclbin: $(LIST_XO)
+$(BUILD_DIR)/${XCLBIN_NAME}.xclbin:
 	mkdir -p $(BUILD_DIR)
 	make -C $(CMACDIR) all DEVICE=$(DEVICE) INTERFACE=$(INTERFACE)
 	make -C $(NETLAYERDIR) all DEVICE=$(DEVICE)
 	make -C $(KERNELDIR) all DEVICE=$(DEVICE)
 	sed -i 's|PATHTOTCLFILE|'"$(POSTSYSLINKTCL)"'|g' advanced.ini
-	$(VPP) $(CLFLAGS) $(CONFIGFLAGS) --temp_dir $(BUILD_DIR) -l -o'$@' $(+) $(LIST_REPOS) -j 8
+	$(VPP) $(CLFLAGS) $(CONFIGFLAGS) --temp_dir $(BUILD_DIR) -l -o'$@' $(LIST_XO) $(LIST_REPOS) -j 8
 #	--dk chipscope:networklayer_1:S_AXIL_nl \
 #	--dk chipscope:krnl_mm2s_1:k2n \
 #	--dk chipscope:krnl_s2mm_1:n2k

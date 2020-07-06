@@ -36,8 +36,16 @@ make all DEVICE=<full platform path>
 
 Limitations: 
 
-- `INTERFACE` is an option in the Makefile, but only `INTERFACE=0` is supported at this moment in the xclbin generation
+- `INTERFACE` is an option in the Makefile, but only `INTERFACE=0` is automatically supported at this moment in the xclbin generation. 
+To use `INTERFACE=1` manual changes in [connectiviti.ini](connectiviti.ini) are needed
 - Only `xilinx_u280_xdma_201920_3` meets timing closure
+
+
+## Block Design
+
+The following figure depicts the different kernels and their interconnection in the Vitis project.
+
+![](img/udp_network_basic.jpg)
 
 ## Notes
 

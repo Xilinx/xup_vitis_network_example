@@ -42,9 +42,9 @@ and writes to a stream interface to another kernel */
 #include "hls_stream.h"
 
 #define DWIDTH 512
-#define UWIDTH 16
+#define TDWIDTH 16
 
-typedef ap_axiu<DWIDTH, UWIDTH, 1, 1> pkt;
+typedef ap_axiu<DWIDTH, 1, 1, TDWIDTH> pkt;
 
 
 extern "C" {
@@ -80,7 +80,7 @@ data_mover:
     else 
       v.last = 0;
 
-    v.user = dest;
+    v.dest = dest;
     k2n.write(v);
   }
 }

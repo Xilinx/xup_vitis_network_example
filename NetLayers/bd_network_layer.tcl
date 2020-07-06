@@ -560,9 +560,9 @@ proc create_root_design { parentCell } {
    CONFIG.HAS_TSTRB {0} \
    CONFIG.LAYERED_METADATA {undef} \
    CONFIG.TDATA_NUM_BYTES {64} \
-   CONFIG.TDEST_WIDTH {0} \
+   CONFIG.TDEST_WIDTH {16} \
    CONFIG.TID_WIDTH {0} \
-   CONFIG.TUSER_WIDTH {16} \
+   CONFIG.TUSER_WIDTH {0} \
    ] $S_AXIS_sk2nl
 
   set S_AXIS_eth2nl [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 S_AXIS_eth2nl ]

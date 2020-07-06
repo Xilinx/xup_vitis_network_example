@@ -51,7 +51,7 @@ module networklayer #(
   parameter integer AXIL_CTRL_ADDR_WIDTH  =  16,
   parameter integer AXIL_CTRL_DATA_WIDTH  =  32,
   parameter integer AXIS_TDATA_WIDTH      = 512,
-  parameter integer STREAMING_TUSER_WIDTH =  16
+  parameter integer STREAMING_TDEST_WIDTH =  16
 )
 (
   // System clocks and resets
@@ -80,14 +80,14 @@ module networklayer #(
   input  wire       [AXIS_TDATA_WIDTH-1:0]    S_AXIS_sk2nl_tdata,
   input  wire     [AXIS_TDATA_WIDTH/8-1:0]    S_AXIS_sk2nl_tkeep,
   input  wire                                 S_AXIS_sk2nl_tlast,
-  input  wire  [STREAMING_TUSER_WIDTH-1:0]    S_AXIS_sk2nl_tuser,
+  input  wire  [STREAMING_TDEST_WIDTH-1:0]    S_AXIS_sk2nl_tdest,
   // AXI4-Stream network layer to streaming kernel 
   output wire                                 M_AXIS_nl2sk_tvalid,
   input  wire                                 M_AXIS_nl2sk_tready,
   output wire       [AXIS_TDATA_WIDTH-1:0]    M_AXIS_nl2sk_tdata,
   output wire     [AXIS_TDATA_WIDTH/8-1:0]    M_AXIS_nl2sk_tkeep,
   output wire                                 M_AXIS_nl2sk_tlast,
-  output wire  [STREAMING_TUSER_WIDTH-1:0]    M_AXIS_nl2sk_tuser,
+  output wire  [STREAMING_TDEST_WIDTH-1:0]    M_AXIS_nl2sk_tdest,
   // AXI4-Lite
   input  wire                                 S_AXIL_nl_awvalid,
   output wire                                 S_AXIL_nl_awready,
@@ -129,14 +129,14 @@ module networklayer #(
     .S_AXIS_sk2nl_tkeep   (   S_AXIS_sk2nl_tkeep),
     .S_AXIS_sk2nl_tlast   (   S_AXIS_sk2nl_tlast),
     .S_AXIS_sk2nl_tready  (  S_AXIS_sk2nl_tready),
-    .S_AXIS_sk2nl_tuser   (   S_AXIS_sk2nl_tuser),
+    .S_AXIS_sk2nl_tdest   (   S_AXIS_sk2nl_tdest),
     .S_AXIS_sk2nl_tvalid  (  S_AXIS_sk2nl_tvalid),
     // AXI4-Stream network layer to streaming kernel 
     .M_AXIS_nl2sk_tdata   (   M_AXIS_nl2sk_tdata),
     .M_AXIS_nl2sk_tkeep   (   M_AXIS_nl2sk_tkeep),
     .M_AXIS_nl2sk_tlast   (   M_AXIS_nl2sk_tlast),
     .M_AXIS_nl2sk_tready  (  M_AXIS_nl2sk_tready),
-    .M_AXIS_nl2sk_tuser   (   M_AXIS_nl2sk_tuser),
+    .M_AXIS_nl2sk_tdest   (   M_AXIS_nl2sk_tdest),
     .M_AXIS_nl2sk_tvalid  (  M_AXIS_nl2sk_tvalid),
     // AXI4-Lite
     .S_AXIL_nl_awvalid    (    S_AXIL_nl_awvalid),

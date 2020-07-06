@@ -41,9 +41,9 @@ to global memory via memory mapped interface */
 #include "hls_stream.h"
 
 #define DWIDTH 512
-#define UWIDTH 16
+#define TDWIDTH 16
 
-typedef ap_axiu<DWIDTH, UWIDTH, 1, 1> pkt;
+typedef ap_axiu<DWIDTH, 1, 1, TDWIDTH> pkt;
 
 extern "C" {
 void krnl_s2mm(ap_uint<DWIDTH> *out,     // Write only memory mapped

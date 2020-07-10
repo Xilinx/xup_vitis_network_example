@@ -156,28 +156,7 @@ module axi4lite # (
     reg [AXIL_DATA_WIDTH-1:0]    num_pkts_msb_reg;
     reg [AXIL_DATA_WIDTH-1:0]    num_beats_reg;
     reg [AXIL_DATA_WIDTH-1:0]    tbwp_reg;
-    reg [AXIL_DATA_WIDTH-1:0]    slv_reg10;
-    reg [AXIL_DATA_WIDTH-1:0]    slv_reg11;
-    reg [AXIL_DATA_WIDTH-1:0]    slv_reg12;
-    reg [AXIL_DATA_WIDTH-1:0]    slv_reg13;
-    reg [AXIL_DATA_WIDTH-1:0]    slv_reg14;
-    reg [AXIL_DATA_WIDTH-1:0]    slv_reg15;
-    reg [AXIL_DATA_WIDTH-1:0]    slv_reg16;
-    reg [AXIL_DATA_WIDTH-1:0]    slv_reg17;
-    reg [AXIL_DATA_WIDTH-1:0]    slv_reg18;
-    reg [AXIL_DATA_WIDTH-1:0]    slv_reg19;
-    reg [AXIL_DATA_WIDTH-1:0]    slv_reg20;
-    reg [AXIL_DATA_WIDTH-1:0]    slv_reg21;
-    reg [AXIL_DATA_WIDTH-1:0]    slv_reg22;
-    reg [AXIL_DATA_WIDTH-1:0]    slv_reg23;
-    reg [AXIL_DATA_WIDTH-1:0]    slv_reg24;
-    reg [AXIL_DATA_WIDTH-1:0]    slv_reg25;
-    reg [AXIL_DATA_WIDTH-1:0]    slv_reg26;
-    reg [AXIL_DATA_WIDTH-1:0]    slv_reg27;
-    reg [AXIL_DATA_WIDTH-1:0]    slv_reg28;
-    reg [AXIL_DATA_WIDTH-1:0]    slv_reg29;
-    reg [AXIL_DATA_WIDTH-1:0]    slv_reg30;
-    reg [AXIL_DATA_WIDTH-1:0]    slv_reg31;
+    reg [AXIL_DATA_WIDTH-1:0]    debug_reset_reg;
     wire     slv_reg_rden;
     wire     slv_reg_wren;
     reg [AXIL_DATA_WIDTH-1:0]     reg_data_out;
@@ -277,34 +256,13 @@ module axi4lite # (
             num_pkts_lsb_reg  <= 32'h0;
             num_pkts_msb_reg  <= 32'h0;
             num_beats_reg     <= 32'h0;
-            tbwp_reg      <= 32'h0;
-            slv_reg10     <= 32'h0;
-            slv_reg11     <= 32'h0;
-            slv_reg12     <= 32'h0;
-            slv_reg13     <= 32'h0;
-            slv_reg14     <= 32'h0;
-            slv_reg15     <= 32'h0;
-            slv_reg16     <= 32'h0;
-            slv_reg17     <= 32'h0;
-            slv_reg18     <= 32'h0;
-            slv_reg19     <= 32'h0;
-            slv_reg20     <= 32'h0;
-            slv_reg21     <= 32'h0;
-            slv_reg22     <= 32'h0;
-            slv_reg23     <= 32'h0;
-            slv_reg24     <= 32'h0;
-            slv_reg25     <= 32'h0;
-            slv_reg26     <= 32'h0;
-            slv_reg27     <= 32'h0;
-            slv_reg28     <= 32'h0;
-            slv_reg29     <= 32'h0;
-            slv_reg30     <= 32'h0;
-            slv_reg31     <= 32'h0;
+            debug_reset_reg   <= 32'h0;
         end 
         else begin
+            // Self clear
+            crtl_signals    <= 32'h0;
+            debug_reset_reg <= 32'h0;
             if (slv_reg_wren) begin
-                // Self clear
-                crtl_signals <= 32'h0;
                 case ( axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )
                     5'h00:
                         for ( byte_index = 0; byte_index <= (AXIL_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
@@ -343,10 +301,10 @@ module axi4lite # (
                             if ( S_AXIL_WSTRB[byte_index] == 1 ) begin
                                 tbwp_reg[(byte_index*8) +: 8] <= S_AXIL_WDATA[(byte_index*8) +: 8];
                             end  
-                    5'h0A:
+                    5'h1F:
                         for ( byte_index = 0; byte_index <= (AXIL_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
                             if ( S_AXIL_WSTRB[byte_index] == 1 ) begin
-                                slv_reg10[(byte_index*8) +: 8] <= S_AXIL_WDATA[(byte_index*8) +: 8];
+                                debug_reset_reg[(byte_index*8) +: 8] <= S_AXIL_WDATA[(byte_index*8) +: 8];
                             end  
                      
                     default : begin
@@ -357,28 +315,7 @@ module axi4lite # (
                         num_pkts_msb_reg  <= num_pkts_msb_reg;
                         num_beats_reg     <= num_beats_reg;
                         tbwp_reg          <= tbwp_reg;
-                        slv_reg10 <= slv_reg10;
-                        slv_reg11 <= slv_reg11;
-                        slv_reg12 <= slv_reg12;
-                        slv_reg13 <= slv_reg13;
-                        slv_reg14 <= slv_reg14;
-                        slv_reg15 <= slv_reg15;
-                        slv_reg16 <= slv_reg16;
-                        slv_reg17 <= slv_reg17;
-                        slv_reg18 <= slv_reg18;
-                        slv_reg19 <= slv_reg19;
-                        slv_reg20 <= slv_reg20;
-                        slv_reg21 <= slv_reg21;
-                        slv_reg22 <= slv_reg22;
-                        slv_reg23 <= slv_reg23;
-                        slv_reg24 <= slv_reg24;
-                        slv_reg25 <= slv_reg25;
-                        slv_reg26 <= slv_reg26;
-                        slv_reg27 <= slv_reg27;
-                        slv_reg28 <= slv_reg28;
-                        slv_reg29 <= slv_reg29;
-                        slv_reg30 <= slv_reg30;
-                        slv_reg31 <= slv_reg31;
+                        debug_reset_reg   <= debug_reset_reg;
                     end
                 endcase
             end
@@ -477,9 +414,6 @@ module axi4lite # (
             5'h07   : reg_data_out <= num_pkts_msb_reg;
             5'h08   : reg_data_out <= num_beats_reg;
             5'h09   : reg_data_out <= tbwp_reg;
-            5'h0A   : reg_data_out <= slv_reg10;
-            5'h0B   : reg_data_out <= slv_reg11;
-            5'h0C   : reg_data_out <= slv_reg12;
             5'h0D   : reg_data_out <= debug_slot_producer[160 +: 32];
             5'h0E   : reg_data_out <= debug_slot_producer[128 +: 32];
             5'h0F   : reg_data_out <= debug_slot_producer[ 96 +: 32];
@@ -498,7 +432,6 @@ module axi4lite # (
             5'h1C   : reg_data_out <=  debug_slot_summary[ 64 +: 32];
             5'h1D   : reg_data_out <=  debug_slot_summary[ 32 +: 32];
             5'h1E   : reg_data_out <=  debug_slot_summary[  0 +: 32];
-            5'h1F   : reg_data_out <= slv_reg31;
             default : reg_data_out <= {32{1'b0}};
           endcase
     end
@@ -538,5 +471,6 @@ module axi4lite # (
     assign number_packets       = {num_pkts_msb_reg[7:0],num_pkts_lsb_reg};
     assign number_beats         = num_beats_reg[15:0];
     assign time_between_packets = tbwp_reg[15:0];
+    assign debug_reset_n        = ~debug_reset_reg[0];
 
 endmodule

@@ -54,7 +54,7 @@
 // Top level of the kernel. Do not modify module name, parameters or ports.
 module segment_generator #(
   parameter integer AXIS_TDATA_WIDTH      = 512,
-  parameter integer AXIS_SUMMARY_WIDTH    = 160,
+  parameter integer AXIS_SUMMARY_WIDTH    = 128,
   parameter integer STREAMING_TDEST_WIDTH =  16
 )(
   // System clocks and resets
@@ -204,8 +204,8 @@ module segment_generator #(
         PRODUCE_PAYLOAD_HEADER : begin
           if (axis_producer_free) begin
             producer_tdata[ 39:  0]      <= packet_counter;
-            producer_tdata[ 79: 40]      <= number_packets_1d;
-            producer_tdata[119: 80]      <= free_running_counter[39:0];
+            producer_tdata[ 79: 40]      <= free_running_counter[39:0];
+            producer_tdata[119: 80]      <= number_packets_1d;
             producer_tkeep               <= {((AXIS_TDATA_WIDTH/8)){1'b1}};
             producer_tvalid              <= 1'b1;
 
@@ -254,8 +254,8 @@ module segment_generator #(
         PRODUCE_SMALL: begin
           if (axis_producer_free) begin
             producer_tdata[ 39:  0]      <= packet_counter;
-            producer_tdata[ 79: 40]      <= number_packets_1d;
-            producer_tdata[119: 80]      <= free_running_counter[39:0];
+            producer_tdata[ 79: 40]      <= free_running_counter[39:0];
+            producer_tdata[119: 80]      <= number_packets_1d;
             producer_tkeep               <= {18{1'b1}};                   // Produce minimum packet for latency
             producer_tvalid              <= 1'b1;
             producer_tlast               <= 1'b1;
@@ -352,10 +352,10 @@ module segment_generator #(
           end
           else if (axis_summary_free && S_AXIS_n2k_tvalid) begin
             timeout_counter <= 32'h0;
-            M_AXIS_summary_tdata[119:  0] <= S_AXIS_n2k_tdata[119:0];
-            M_AXIS_summary_tdata[159:120] <= free_running_counter[39:0];
+            M_AXIS_summary_tdata[ 79:  0] <= S_AXIS_n2k_tdata[79:0];
+            M_AXIS_summary_tdata[119: 80] <= free_running_counter[39:0];
             M_AXIS_summary_tvalid         <= output_summary_mask;
-            if (S_AXIS_n2k_tdata[39:0] == (S_AXIS_n2k_tdata[79:40] - 1)) begin
+            if (S_AXIS_n2k_tdata[39:0] == (S_AXIS_n2k_tdata[119:80] - 1)) begin
               end_of_stream <= 1'b1;
             end
             if (!S_AXIS_n2k_tlast) begin

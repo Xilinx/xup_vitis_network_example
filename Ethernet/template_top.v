@@ -98,8 +98,8 @@ module placeholder #(
   input  wire                        [3:0]    gt_rxn_in,
   output wire                        [3:0]    gt_txp_out,
   output wire                        [3:0]    gt_txn_out, 
-  input  wire                                 gt_refclk_p,
-  input  wire                                 gt_refclk_n
+  input  wire                                 gt_placeholder_clk_p,
+  input  wire                                 gt_placeholder_clk_n
 );
 
 
@@ -108,8 +108,8 @@ module placeholder #(
     .ap_rst_n             (            ap_rst_n),
     .clk_gt_freerun       (      clk_gt_freerun),
     
-    .gt_ref_clk_clk_n     (        gt_refclk_n),
-    .gt_ref_clk_clk_p     (        gt_refclk_p),
+    .gt_ref_clk_clk_n     (        gt_placeholder_clk_n),
+    .gt_ref_clk_clk_p     (        gt_placeholder_clk_p),
     .gt_rx_gtx_n          (           gt_rxn_in),
     .gt_rx_gtx_p          (           gt_rxp_in),
     .gt_tx_gtx_n          (          gt_txn_out),

@@ -19,8 +19,8 @@ cp template_top.v cmac_top_1.v
 
 sed -i 's/module\ placeholder/module\ cmac_0/g' cmac_top_0.v
 sed -i 's/cmac_bd\ placeholder/cmac_bd\ cmac_bd_0_i/g' cmac_top_0.v
-sed -i 's/gt_refclk/gt_refclk0/g' cmac_top_0.v
+sed -i 's/gt_placeholder_clk/gt_refclk0/g' cmac_top_0.v
 
 sed -i 's/module\ placeholder/module\ cmac_1/g' cmac_top_1.v
 sed -i 's/cmac_bd\ placeholder/cmac_bd\ cmac_bd_1_i/g' cmac_top_1.v
-sed -i 's/gt_refclk/gt_refclk1/g' cmac_top_1.v
+sed -i 's/gt_placeholder_clk/gt_refclk1/g' cmac_top_1.v

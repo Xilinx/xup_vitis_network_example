@@ -39,7 +39,7 @@ clean:
 distclean: clean
 	rm -rf build_dir*
 	rm -rf ./tmp_$(KRNL_NAME_HDL)* ./packaged_kernel* 
-	rm -rf _x.* *.str
+	rm -rf _x* *.str
 	rm -rf .Xil
 
 

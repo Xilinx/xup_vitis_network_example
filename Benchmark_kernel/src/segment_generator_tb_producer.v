@@ -5,7 +5,7 @@ module segment_generator_tb_producer ();
 
   parameter integer AXIS_TDATA_WIDTH      = 512;
   parameter integer STREAMING_TDEST_WIDTH =  16;
-  parameter integer AXIS_SUMMARY_WIDTH    = 160;
+  parameter integer AXIS_SUMMARY_WIDTH    = 128;
 
   wire                                 S_AXIS_n2k_tvalid;
   wire       [AXIS_TDATA_WIDTH-1:0]    S_AXIS_n2k_tdata;

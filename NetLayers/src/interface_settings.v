@@ -35,9 +35,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /*
  	Register 0: 
- 		bits 15:0  ->MAC[47:32]
- 	Register 0x4
  		bits 31:0 -> MAC[31:0]	
+ 	Register 0x4
+ 		bits 15:0  ->MAC[47:32]
  	Register 0x8
  		bits 31:0 -> ip_address
  	Register 0xC
@@ -293,14 +293,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
 	                // Respective byte enables are asserted as per write strobes 
 	                // Slave register 0
-	                mac_address_msb[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+	                mac_address_lsb[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
 	              end  
 	          5'h01:
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
 	                // Respective byte enables are asserted as per write strobes 
 	                // Slave register 1
-	                mac_address_lsb[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+	                mac_address_msb[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
 	              end  
 	          5'h02:
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
@@ -437,8 +437,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	begin
 	      // Address decoding for reading registers
 	      case ( axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )
-	        5'h00   : reg_data_out <= mac_address_msb;
-	        5'h01   : reg_data_out <= mac_address_lsb;
+	        5'h00   : reg_data_out <= mac_address_lsb;
+	        5'h01   : reg_data_out <= mac_address_msb;
 	        5'h02   : reg_data_out <= ip_address;
 	        5'h03   : reg_data_out <= gateway;
 	        5'h04   : reg_data_out <= ip_mask;

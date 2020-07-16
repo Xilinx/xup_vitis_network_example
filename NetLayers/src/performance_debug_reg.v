@@ -51,13 +51,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 module performance_debug_reg #(
   // Number of port to monitorize each port has 6 32-bit register bytes-packets-time
-  parameter integer C_PORTS           = 10 ,
+  parameter integer C_PORTS           = 12 ,
   // User parameters ends
   // Do not modify the parameters beyond this line
   // Width of S_AXI data bus
   parameter integer C_S_AXI_DATA_WIDTH = 32,
   // Width of S_AXI address bus
-  parameter integer C_S_AXI_ADDR_WIDTH = 9,  // up to 64 registers 10 ports plus 4 extra registers
+  parameter integer C_S_AXI_ADDR_WIDTH = 9,  // up to 64 registers 12 ports plus 4 extra registers
   parameter integer CLOCK_FREQUENCY    = 322265624
 ) (
   // Users to add ports here
@@ -71,6 +71,8 @@ module performance_debug_reg #(
   input  wire [(C_S_AXI_DATA_WIDTH*6)-1:0] PORT7       ,
   input  wire [(C_S_AXI_DATA_WIDTH*6)-1:0] PORT8       ,
   input  wire [(C_S_AXI_DATA_WIDTH*6)-1:0] PORT9       ,
+  input  wire [(C_S_AXI_DATA_WIDTH*6)-1:0] PORT10      ,
+  input  wire [(C_S_AXI_DATA_WIDTH*6)-1:0] PORT11      ,
 
   (* X_INTERFACE_INFO = "xilinx.com:signal:reset:1.0 user_rst_n RST" *)
   (* X_INTERFACE_PARAMETER = "POLARITY ACTIVE_LOW" *)   
@@ -169,14 +171,6 @@ module performance_debug_reg #(
   genvar i;
 
   localparam integer MAX_PORTS = 10;
-
-  reg  [(C_S_AXI_DATA_WIDTH*6)-1:0] slv_reg_aggregated      [0:C_PORTS-1];
-  // These register are read by the user, if the user specifies to hold them
-  // the value will be hold until the user ends the reading
-  reg  [(C_S_AXI_DATA_WIDTH*6)-1:0] slv_reg_aggregated_read [0:MAX_PORTS-1];
-
-  // Generate as much register as the user wants to debug
-  wire [(C_S_AXI_DATA_WIDTH*6)-1:0] slv_port_clk_domain_crossing[0:C_PORTS-1];
 
   reg  [C_S_AXI_DATA_WIDTH-1:0] slv_reg_reset;
   // this register is used to hold the value of the ports using one bit per port
@@ -358,28 +352,6 @@ module performance_debug_reg #(
     end
   end    
 
-  // Assign the converter register to a element
-  integer j;
-  always @( posedge S_AXI_ACLK ) begin
-    if ( S_AXI_ARESETN == 1'b0 ) begin
-      for(j=0;j<C_PORTS;j=j+1) begin
-        slv_reg_aggregated_read[j] <= 0;
-      end
-    end else begin
-      slv_reg_aggregated_read[0]   <= PORT0;
-      slv_reg_aggregated_read[1]   <= PORT1;
-      slv_reg_aggregated_read[2]   <= PORT2;
-      slv_reg_aggregated_read[3]   <= PORT3;
-      slv_reg_aggregated_read[4]   <= PORT4;
-      slv_reg_aggregated_read[5]   <= PORT5;
-      slv_reg_aggregated_read[6]   <= PORT6;
-      slv_reg_aggregated_read[7]   <= PORT7;
-      slv_reg_aggregated_read[8]   <= PORT8;
-      slv_reg_aggregated_read[9]   <= PORT9;
-    end
-  end
-
-
   // Implement axi_arready generation
   // axi_arready is asserted for one S_AXI_ACLK clock cycle when
   // S_AXI_ARVALID is asserted. axi_awready is
@@ -435,66 +407,78 @@ module performance_debug_reg #(
     begin
       // Address decoding for reading registers
       case ( axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )
-        'h00 : reg_data_out <= slv_reg_aggregated_read[0][160 +: 32];
-        'h01 : reg_data_out <= slv_reg_aggregated_read[0][128 +: 32];
-        'h02 : reg_data_out <= slv_reg_aggregated_read[0][ 96 +: 32];
-        'h03 : reg_data_out <= slv_reg_aggregated_read[0][ 64 +: 32];
-        'h04 : reg_data_out <= slv_reg_aggregated_read[0][ 32 +: 32];
-        'h05 : reg_data_out <= slv_reg_aggregated_read[0][  0 +: 32];
-        'h06 : reg_data_out <= slv_reg_aggregated_read[1][160 +: 32];
-        'h07 : reg_data_out <= slv_reg_aggregated_read[1][128 +: 32];
-        'h08 : reg_data_out <= slv_reg_aggregated_read[1][ 96 +: 32];
-        'h09 : reg_data_out <= slv_reg_aggregated_read[1][ 64 +: 32];
-        'h0A : reg_data_out <= slv_reg_aggregated_read[1][ 32 +: 32];
-        'h0B : reg_data_out <= slv_reg_aggregated_read[1][  0 +: 32];
-        'h0C : reg_data_out <= slv_reg_aggregated_read[2][160 +: 32];
-        'h0D : reg_data_out <= slv_reg_aggregated_read[2][128 +: 32];
-        'h0E : reg_data_out <= slv_reg_aggregated_read[2][ 96 +: 32];
-        'h0F : reg_data_out <= slv_reg_aggregated_read[2][ 64 +: 32];
-        'h10 : reg_data_out <= slv_reg_aggregated_read[2][ 32 +: 32];
-        'h11 : reg_data_out <= slv_reg_aggregated_read[2][  0 +: 32];
-        'h12 : reg_data_out <= slv_reg_aggregated_read[3][160 +: 32];
-        'h13 : reg_data_out <= slv_reg_aggregated_read[3][128 +: 32];
-        'h14 : reg_data_out <= slv_reg_aggregated_read[3][ 96 +: 32];
-        'h15 : reg_data_out <= slv_reg_aggregated_read[3][ 64 +: 32];
-        'h16 : reg_data_out <= slv_reg_aggregated_read[3][ 32 +: 32];
-        'h17 : reg_data_out <= slv_reg_aggregated_read[3][  0 +: 32];
-        'h18 : reg_data_out <= slv_reg_aggregated_read[4][160 +: 32];
-        'h19 : reg_data_out <= slv_reg_aggregated_read[4][128 +: 32];
-        'h1A : reg_data_out <= slv_reg_aggregated_read[4][ 96 +: 32];
-        'h1B : reg_data_out <= slv_reg_aggregated_read[4][ 64 +: 32];
-        'h1C : reg_data_out <= slv_reg_aggregated_read[4][ 32 +: 32];
-        'h1D : reg_data_out <= slv_reg_aggregated_read[4][  0 +: 32];
-        'h1E : reg_data_out <= slv_reg_aggregated_read[5][160 +: 32];
-        'h1F : reg_data_out <= slv_reg_aggregated_read[5][128 +: 32];
-        'h20 : reg_data_out <= slv_reg_aggregated_read[5][ 96 +: 32];
-        'h21 : reg_data_out <= slv_reg_aggregated_read[5][ 64 +: 32];
-        'h22 : reg_data_out <= slv_reg_aggregated_read[5][ 32 +: 32];
-        'h23 : reg_data_out <= slv_reg_aggregated_read[5][  0 +: 32];
-        'h24 : reg_data_out <= slv_reg_aggregated_read[6][160 +: 32];
-        'h25 : reg_data_out <= slv_reg_aggregated_read[6][128 +: 32];
-        'h26 : reg_data_out <= slv_reg_aggregated_read[6][ 96 +: 32];
-        'h27 : reg_data_out <= slv_reg_aggregated_read[6][ 64 +: 32];
-        'h28 : reg_data_out <= slv_reg_aggregated_read[6][ 32 +: 32];
-        'h29 : reg_data_out <= slv_reg_aggregated_read[6][  0 +: 32];
-        'h2A : reg_data_out <= slv_reg_aggregated_read[7][160 +: 32];
-        'h2B : reg_data_out <= slv_reg_aggregated_read[7][128 +: 32];
-        'h2C : reg_data_out <= slv_reg_aggregated_read[7][ 96 +: 32];
-        'h2D : reg_data_out <= slv_reg_aggregated_read[7][ 64 +: 32];
-        'h2E : reg_data_out <= slv_reg_aggregated_read[7][ 32 +: 32];
-        'h2F : reg_data_out <= slv_reg_aggregated_read[7][  0 +: 32];
-        'h30 : reg_data_out <= slv_reg_aggregated_read[8][160 +: 32];
-        'h31 : reg_data_out <= slv_reg_aggregated_read[8][128 +: 32];
-        'h32 : reg_data_out <= slv_reg_aggregated_read[8][ 96 +: 32];
-        'h33 : reg_data_out <= slv_reg_aggregated_read[8][ 64 +: 32];
-        'h34 : reg_data_out <= slv_reg_aggregated_read[8][ 32 +: 32];
-        'h35 : reg_data_out <= slv_reg_aggregated_read[8][  0 +: 32];
-        'h36 : reg_data_out <= slv_reg_aggregated_read[9][160 +: 32];
-        'h37 : reg_data_out <= slv_reg_aggregated_read[9][128 +: 32];
-        'h38 : reg_data_out <= slv_reg_aggregated_read[9][ 96 +: 32];
-        'h39 : reg_data_out <= slv_reg_aggregated_read[9][ 64 +: 32];
-        'h3A : reg_data_out <= slv_reg_aggregated_read[9][ 32 +: 32];
-        'h3B : reg_data_out <= slv_reg_aggregated_read[9][  0 +: 32];
+        'h00 : reg_data_out <= PORT0[160 +: 32];
+        'h01 : reg_data_out <= PORT0[128 +: 32];
+        'h02 : reg_data_out <= PORT0[ 96 +: 32];
+        'h03 : reg_data_out <= PORT0[ 64 +: 32];
+        'h04 : reg_data_out <= PORT0[ 32 +: 32];
+        'h05 : reg_data_out <= PORT0[  0 +: 32];
+        'h06 : reg_data_out <= PORT1[160 +: 32];
+        'h07 : reg_data_out <= PORT1[128 +: 32];
+        'h08 : reg_data_out <= PORT1[ 96 +: 32];
+        'h09 : reg_data_out <= PORT1[ 64 +: 32];
+        'h0A : reg_data_out <= PORT1[ 32 +: 32];
+        'h0B : reg_data_out <= PORT1[  0 +: 32];
+        'h0C : reg_data_out <= PORT2[160 +: 32];
+        'h0D : reg_data_out <= PORT2[128 +: 32];
+        'h0E : reg_data_out <= PORT2[ 96 +: 32];
+        'h0F : reg_data_out <= PORT2[ 64 +: 32];
+        'h10 : reg_data_out <= PORT2[ 32 +: 32];
+        'h11 : reg_data_out <= PORT2[  0 +: 32];
+        'h12 : reg_data_out <= PORT3[160 +: 32];
+        'h13 : reg_data_out <= PORT3[128 +: 32];
+        'h14 : reg_data_out <= PORT3[ 96 +: 32];
+        'h15 : reg_data_out <= PORT3[ 64 +: 32];
+        'h16 : reg_data_out <= PORT3[ 32 +: 32];
+        'h17 : reg_data_out <= PORT3[  0 +: 32];
+        'h18 : reg_data_out <= PORT4[160 +: 32];
+        'h19 : reg_data_out <= PORT4[128 +: 32];
+        'h1A : reg_data_out <= PORT4[ 96 +: 32];
+        'h1B : reg_data_out <= PORT4[ 64 +: 32];
+        'h1C : reg_data_out <= PORT4[ 32 +: 32];
+        'h1D : reg_data_out <= PORT4[  0 +: 32];
+        'h1E : reg_data_out <= PORT5[160 +: 32];
+        'h1F : reg_data_out <= PORT5[128 +: 32];
+        'h20 : reg_data_out <= PORT5[ 96 +: 32];
+        'h21 : reg_data_out <= PORT5[ 64 +: 32];
+        'h22 : reg_data_out <= PORT5[ 32 +: 32];
+        'h23 : reg_data_out <= PORT5[  0 +: 32];
+        'h24 : reg_data_out <= PORT6[160 +: 32];
+        'h25 : reg_data_out <= PORT6[128 +: 32];
+        'h26 : reg_data_out <= PORT6[ 96 +: 32];
+        'h27 : reg_data_out <= PORT6[ 64 +: 32];
+        'h28 : reg_data_out <= PORT6[ 32 +: 32];
+        'h29 : reg_data_out <= PORT6[  0 +: 32];
+        'h2A : reg_data_out <= PORT7[160 +: 32];
+        'h2B : reg_data_out <= PORT7[128 +: 32];
+        'h2C : reg_data_out <= PORT7[ 96 +: 32];
+        'h2D : reg_data_out <= PORT7[ 64 +: 32];
+        'h2E : reg_data_out <= PORT7[ 32 +: 32];
+        'h2F : reg_data_out <= PORT7[  0 +: 32];
+        'h30 : reg_data_out <= PORT8[160 +: 32];
+        'h31 : reg_data_out <= PORT8[128 +: 32];
+        'h32 : reg_data_out <= PORT8[ 96 +: 32];
+        'h33 : reg_data_out <= PORT8[ 64 +: 32];
+        'h34 : reg_data_out <= PORT8[ 32 +: 32];
+        'h35 : reg_data_out <= PORT8[  0 +: 32];
+        'h36 : reg_data_out <= PORT9[160 +: 32];
+        'h37 : reg_data_out <= PORT9[128 +: 32];
+        'h38 : reg_data_out <= PORT9[ 96 +: 32];
+        'h39 : reg_data_out <= PORT9[ 64 +: 32];
+        'h3A : reg_data_out <= PORT9[ 32 +: 32];
+        'h3B : reg_data_out <= PORT9[  0 +: 32];
+        'h3C : reg_data_out <= PORT10[160 +: 32];
+        'h3D : reg_data_out <= PORT10[128 +: 32];
+        'h3E : reg_data_out <= PORT10[ 96 +: 32];
+        'h3F : reg_data_out <= PORT10[ 64 +: 32];
+        'h40 : reg_data_out <= PORT10[ 32 +: 32];
+        'h41 : reg_data_out <= PORT10[  0 +: 32];
+        'h42 : reg_data_out <= PORT11[160 +: 32];
+        'h43 : reg_data_out <= PORT11[128 +: 32];
+        'h44 : reg_data_out <= PORT11[ 96 +: 32];
+        'h45 : reg_data_out <= PORT11[ 64 +: 32];
+        'h46 : reg_data_out <= PORT11[ 32 +: 32];
+        'h47 : reg_data_out <= PORT11[  0 +: 32];
         // TODO  
         'h7D : reg_data_out <= CLOCK_FREQUENCY;  // Assign the clock frequency
         'h7E : reg_data_out <=         C_PORTS;  // Assign the number of ports

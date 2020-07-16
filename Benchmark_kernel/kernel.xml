@@ -11,29 +11,19 @@
       <!-- Interface Settings Register Map-->
       <arg name="mode"                    addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x10" type="uint" hostOffset="0x00" hostSize="0x4"/> 
       <arg name="dest_id"                 addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x14" type="uint" hostOffset="0x00" hostSize="0x4"/> 
-      <arg name="number_packets_lsb"      addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x18" type="uint" hostOffset="0x00" hostSize="0x4"/> 
-      <arg name="number_packets_msb"      addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x1C" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="number_packets"          addressQualifier="0" id="0" port="S_AXIL" size="0x8" offset="0x18" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="number_beats"            addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x20" type="uint" hostOffset="0x00" hostSize="0x4"/> 
       <arg name="time_between_packets"    addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x24" type="uint" hostOffset="0x00" hostSize="0x4"/> 
       <!-- Debug port Register Map-->
-      <arg name="out_traffic_time_lsb"    addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x34" type="uint" hostOffset="0x00" hostSize="0x4"/> 
-      <arg name="out_traffic_time_msb"    addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x38" type="uint" hostOffset="0x00" hostSize="0x4"/>
-      <arg name="out_traffic_bytes_lsb"   addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x3C" type="uint" hostOffset="0x00" hostSize="0x4"/> 
-      <arg name="out_traffic_bytes_msb"   addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x40" type="uint" hostOffset="0x00" hostSize="0x4"/> 
-      <arg name="out_traffic_packets_lsb" addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x44" type="uint" hostOffset="0x00" hostSize="0x4"/> 
-      <arg name="out_traffic_packets_msb" addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x48" type="uint" hostOffset="0x00" hostSize="0x4"/> 
-      <arg name="in_traffic_time_lsb"     addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x4C" type="uint" hostOffset="0x00" hostSize="0x4"/> 
-      <arg name="in_traffic_time_msb"     addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x50" type="uint" hostOffset="0x00" hostSize="0x4"/>       
-      <arg name="in_traffic_bytes_lsb"    addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x54" type="uint" hostOffset="0x00" hostSize="0x4"/> 
-      <arg name="in_traffic_bytes_msb"    addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x58" type="uint" hostOffset="0x00" hostSize="0x4"/> 
-      <arg name="in_traffic_packets_lsb"  addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x5C" type="uint" hostOffset="0x00" hostSize="0x4"/> 
-      <arg name="in_traffic_packets_msb"  addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x60" type="uint" hostOffset="0x00" hostSize="0x4"/> 
-      <arg name="summary_time_lsb"        addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x64" type="uint" hostOffset="0x00" hostSize="0x4"/> 
-      <arg name="summary_time_msb"        addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x68" type="uint" hostOffset="0x00" hostSize="0x4"/> 
-      <arg name="summary_bytes_lsb"       addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x6C" type="uint" hostOffset="0x00" hostSize="0x4"/> 
-      <arg name="summary_bytes_msb"       addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x70" type="uint" hostOffset="0x00" hostSize="0x4"/> 
-      <arg name="summary_packets_lsb"     addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x74" type="uint" hostOffset="0x00" hostSize="0x4"/> 
-      <arg name="summary_packets_msb"     addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x78" type="uint" hostOffset="0x00" hostSize="0x4"/>
+      <arg name="out_traffic_time"        addressQualifier="0" id="0" port="S_AXIL" size="0x8" offset="0x34" type="uint" hostOffset="0x00" hostSize="0x8"/> 
+      <arg name="out_traffic_bytes"       addressQualifier="0" id="0" port="S_AXIL" size="0x8" offset="0x3C" type="uint" hostOffset="0x00" hostSize="0x8"/> 
+      <arg name="out_traffic_packets"     addressQualifier="0" id="0" port="S_AXIL" size="0x8" offset="0x44" type="uint" hostOffset="0x00" hostSize="0x8"/> 
+      <arg name="in_traffic_time"         addressQualifier="0" id="0" port="S_AXIL" size="0x8" offset="0x4C" type="uint" hostOffset="0x00" hostSize="0x8"/> 
+      <arg name="in_traffic_bytes"        addressQualifier="0" id="0" port="S_AXIL" size="0x8" offset="0x54" type="uint" hostOffset="0x00" hostSize="0x8"/> 
+      <arg name="in_traffic_packets"      addressQualifier="0" id="0" port="S_AXIL" size="0x8" offset="0x5C" type="uint" hostOffset="0x00" hostSize="0x8"/> 
+      <arg name="summary_time"            addressQualifier="0" id="0" port="S_AXIL" size="0x8" offset="0x64" type="uint" hostOffset="0x00" hostSize="0x8"/> 
+      <arg name="summary_bytes"           addressQualifier="0" id="0" port="S_AXIL" size="0x8" offset="0x6C" type="uint" hostOffset="0x00" hostSize="0x8"/> 
+      <arg name="summary_packets"         addressQualifier="0" id="0" port="S_AXIL" size="0x8" offset="0x74" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="debug_reset"             addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x7C" type="uint" hostOffset="0x00" hostSize="0x4"/>
       <!-- Streaming connections -->
       <arg name="S_AXIS_n2k"     addressQualifier="4" id="1" port="S_AXIS_n2k"     type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />

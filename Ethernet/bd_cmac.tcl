@@ -37,14 +37,16 @@ if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
 # To test this script, run the following commands from Vivado Tcl console:
 # source bd_cmac.tcl
 
+
+# The design that will be created by this Tcl script contains the following 
+# module references:
+# axi4lite
+
+# Please add the sources of those modules before sourcing this Tcl script.
+
 # If there is no project opened, this script will create a
 # project, but make sure you do not have an existing project
 # <./myproj/project_1.xpr> in the current working folder.
-
-set list_projs [get_projects -quiet]
-if { $list_projs eq "" } {
-   create_project project_1 myproj -part xcu250-figd2104-2L-e
-}
 
 
 # CHANGE DESIGN NAME HERE
@@ -149,6 +151,31 @@ xilinx.com:ip:xlconstant:1.1\
 
 }
 
+##################################################################
+# CHECK Modules
+##################################################################
+set bCheckModules 1
+if { $bCheckModules == 1 } {
+   set list_check_mods "\ 
+axi4lite\
+"
+
+   set list_mods_missing ""
+   common::send_gid_msg -ssname BD::TCL -id 2020 -severity "INFO" "Checking if the following modules exist in the project's sources: $list_check_mods ."
+
+   foreach mod_vlnv $list_check_mods {
+      if { [can_resolve_reference $mod_vlnv] == 0 } {
+         lappend list_mods_missing $mod_vlnv
+      }
+   }
+
+   if { $list_mods_missing ne "" } {
+      catch {common::send_gid_msg -ssname BD::TCL -id 2021 -severity "ERROR" "The following module(s) are not found in the project: $list_mods_missing" }
+      common::send_gid_msg -ssname BD::TCL -id 2022 -severity "INFO" "Please add source files for the missing module(s) above."
+      set bCheckIPsPassed 0
+   }
+}
+
 if { $bCheckIPsPassed != 1 } {
   common::send_gid_msg -ssname BD::TCL -id 2023 -severity "WARNING" "Will not continue with creation of design due to the error(s) above."
   return 3
@@ -201,7 +228,7 @@ proc create_root_design { parentCell } {
 
   set S_AXILITE [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 S_AXILITE ]
   set_property -dict [ list \
-   CONFIG.ADDR_WIDTH {13} \
+   CONFIG.ADDR_WIDTH {14} \
    CONFIG.ARUSER_WIDTH {0} \
    CONFIG.AWUSER_WIDTH {0} \
    CONFIG.BUSER_WIDTH {0} \
@@ -267,6 +294,17 @@ proc create_root_design { parentCell } {
  ] $ap_rst_n
   set clk_gt_freerun [ create_bd_port -dir I -type clk -freq_hz 100000000 clk_gt_freerun ]
 
+  # Create instance: axi4lite_0, and set properties
+  set block_name axi4lite
+  set block_cell_name axi4lite_0
+  if { [catch {set axi4lite_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $axi4lite_0 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+  
   # Create instance: cmac_0, and set properties
   set cmac_0 [ create_bd_cell -type ip -vlnv naudit:cmac:cmac_${cmac_name}:1 cmac_0 ]
 
@@ -343,7 +381,7 @@ proc create_root_design { parentCell } {
   # Create instance: smartconnect_0, and set properties
   set smartconnect_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect:1.0 smartconnect_0 ]
   set_property -dict [ list \
-   CONFIG.NUM_MI {1} \
+   CONFIG.NUM_MI {2} \
  ] $smartconnect_0
 
   # Create instance: util_vector_logic_0, and set properties
@@ -386,30 +424,35 @@ proc create_root_design { parentCell } {
   connect_bd_intf_net -intf_net gt_ref_clk_1 [get_bd_intf_ports gt_ref_clk] [get_bd_intf_pins cmac_0/gt_ref_clk]
   connect_bd_intf_net -intf_net gt_rx_0_1 [get_bd_intf_ports gt_rx] [get_bd_intf_pins cmac_0/gt_rx]
   connect_bd_intf_net -intf_net smartconnect_0_M00_AXI [get_bd_intf_pins cmac_0/AXI4_STATISTICS] [get_bd_intf_pins smartconnect_0/M00_AXI]
+  connect_bd_intf_net -intf_net smartconnect_0_M01_AXI [get_bd_intf_pins axi4lite_0/S_AXIL] [get_bd_intf_pins smartconnect_0/M01_AXI]
 
   # Create port connections
-  connect_bd_net -net ap_rst_n_1 [get_bd_ports ap_rst_n] [get_bd_pins cmac_0/s_axi_reset_n] [get_bd_pins fifo_cmac_tx_cdc/s_aresetn] [get_bd_pins smartconnect_0/aresetn] [get_bd_pins util_vector_logic_1/Op1]
+  connect_bd_net -net ap_rst_n_1 [get_bd_ports ap_rst_n] [get_bd_pins axi4lite_0/S_AXIL_ARESETN] [get_bd_pins cmac_0/s_axi_reset_n] [get_bd_pins fifo_cmac_tx_cdc/s_aresetn] [get_bd_pins smartconnect_0/aresetn] [get_bd_pins util_vector_logic_1/Op1]
   connect_bd_net -net cmac_0_CMAC_STAT_stat_rx_aligned [get_bd_pins cmac_0/CMAC_STAT_stat_rx_aligned] [get_bd_pins cmac_sync_0/cmac_stat_stat_rx_aligned]
   connect_bd_net -net cmac_0_rx_rst [get_bd_pins cmac_0/rx_rst] [get_bd_pins cmac_sync_0/usr_rx_reset] [get_bd_pins util_vector_logic_0/Op1]
   connect_bd_net -net cmac_0_tx_rst [get_bd_pins cmac_0/tx_rst] [get_bd_pins cmac_sync_0/usr_tx_reset]
   connect_bd_net -net cmac_0_usr_rx_clk [get_bd_pins cmac_0/usr_rx_clk] [get_bd_pins fifo_cmac_rx_cdc/s_aclk]
   connect_bd_net -net cmac_0_usr_tx_clk [get_bd_pins cmac_0/usr_tx_clk] [get_bd_pins fifo_cmac_tx_cdc/m_aclk]
-  connect_bd_net -net cmac_sync_0_cmac_aligned_sync [get_bd_pins cmac_sync_0/cmac_aligned_sync] [get_bd_pins vio_0/probe_in7]
-  connect_bd_net -net cmac_sync_0_rx_aligned_led [get_bd_pins cmac_sync_0/rx_aligned_led] [get_bd_pins vio_0/probe_in3]
-  connect_bd_net -net cmac_sync_0_rx_busy_led [get_bd_pins cmac_sync_0/rx_busy_led] [get_bd_pins vio_0/probe_in6]
-  connect_bd_net -net cmac_sync_0_rx_data_fail_led [get_bd_pins cmac_sync_0/rx_data_fail_led] [get_bd_pins vio_0/probe_in5]
-  connect_bd_net -net cmac_sync_0_rx_done_led [get_bd_pins cmac_sync_0/rx_done_led] [get_bd_pins vio_0/probe_in4]
-  connect_bd_net -net cmac_sync_0_rx_gt_locked_led [get_bd_pins cmac_sync_0/rx_gt_locked_led] [get_bd_pins vio_0/probe_in2]
-  connect_bd_net -net cmac_sync_0_tx_busy_led [get_bd_pins cmac_sync_0/tx_busy_led] [get_bd_pins vio_0/probe_in1]
-  connect_bd_net -net cmac_sync_0_tx_done_led [get_bd_pins cmac_sync_0/tx_done_led] [get_bd_pins vio_0/probe_in0]
-  connect_bd_net -net s_aclk_0_1 [get_bd_ports ap_clk] [get_bd_pins cmac_0/s_axi_aclk] [get_bd_pins cmac_sync_0/s_axi_aclk] [get_bd_pins fifo_cmac_rx_cdc/m_aclk] [get_bd_pins fifo_cmac_tx_cdc/s_aclk] [get_bd_pins smartconnect_0/aclk] [get_bd_pins vio_0/clk]
+  connect_bd_net -net cmac_sync_0_cmac_aligned_sync [get_bd_pins axi4lite_0/cmac_aligned_sync] [get_bd_pins cmac_sync_0/cmac_aligned_sync] [get_bd_pins vio_0/probe_in7]
+  connect_bd_net -net cmac_sync_0_rx_aligned_led [get_bd_pins axi4lite_0/rx_aligned_led] [get_bd_pins cmac_sync_0/rx_aligned_led] [get_bd_pins vio_0/probe_in3]
+  connect_bd_net -net cmac_sync_0_rx_busy_led [get_bd_pins axi4lite_0/rx_busy_led] [get_bd_pins cmac_sync_0/rx_busy_led] [get_bd_pins vio_0/probe_in6]
+  connect_bd_net -net cmac_sync_0_rx_data_fail_led [get_bd_pins axi4lite_0/rx_data_fail_led] [get_bd_pins cmac_sync_0/rx_data_fail_led] [get_bd_pins vio_0/probe_in5]
+  connect_bd_net -net cmac_sync_0_rx_done_led [get_bd_pins axi4lite_0/rx_done_led] [get_bd_pins cmac_sync_0/rx_done_led] [get_bd_pins vio_0/probe_in4]
+  connect_bd_net -net cmac_sync_0_rx_gt_locked_led [get_bd_pins axi4lite_0/rx_gt_locked_led] [get_bd_pins cmac_sync_0/rx_gt_locked_led] [get_bd_pins vio_0/probe_in2]
+  connect_bd_net -net cmac_sync_0_tx_busy_led [get_bd_pins axi4lite_0/tx_busy_led] [get_bd_pins cmac_sync_0/tx_busy_led] [get_bd_pins vio_0/probe_in1]
+  connect_bd_net -net cmac_sync_0_tx_done_led [get_bd_pins axi4lite_0/tx_done_led] [get_bd_pins cmac_sync_0/tx_done_led] [get_bd_pins vio_0/probe_in0]
+  connect_bd_net -net s_aclk_0_1 [get_bd_ports ap_clk] [get_bd_pins axi4lite_0/S_AXIL_ACLK] [get_bd_pins cmac_0/s_axi_aclk] [get_bd_pins cmac_sync_0/s_axi_aclk] [get_bd_pins fifo_cmac_rx_cdc/m_aclk] [get_bd_pins fifo_cmac_tx_cdc/s_aclk] [get_bd_pins smartconnect_0/aclk] [get_bd_pins vio_0/clk]
   connect_bd_net -net util_vector_logic_0_Res [get_bd_pins fifo_cmac_rx_cdc/s_aresetn] [get_bd_pins util_vector_logic_0/Res]
   connect_bd_net -net util_vector_logic_1_Res [get_bd_pins cmac_sync_0/s_axi_sreset] [get_bd_pins util_vector_logic_1/Res]
   connect_bd_net -net xlconstant_0_dout [get_bd_pins cmac_sync_0/lbus_tx_rx_restart_in] [get_bd_pins xlconstant_0/dout]
 
   # Create address segments
   assign_bd_address -offset 0x00001000 -range 0x00001000 -target_address_space [get_bd_addr_spaces cmac_sync_0/s_axi] [get_bd_addr_segs cmac_0/s_axi4_lite/reg0] -force
+  assign_bd_address -offset 0x00000080 -range 0x00000080 -target_address_space [get_bd_addr_spaces S_AXILITE] [get_bd_addr_segs axi4lite_0/S_AXIL/reg0] -force
   assign_bd_address -offset 0x00001000 -range 0x00001000 -target_address_space [get_bd_addr_spaces S_AXILITE] [get_bd_addr_segs cmac_0/s_axi4_lite/reg0] -force
+
+  # Exclude Address Segments
+  exclude_bd_addr_seg -offset 0x00000080 -range 0x00000080 -target_address_space [get_bd_addr_spaces cmac_sync_0/s_axi] [get_bd_addr_segs axi4lite_0/S_AXIL/reg0]
 
 
   # Restore current instance

@@ -7,15 +7,25 @@
       <port name="M_AXIS" mode="read_only"  dataWidth="512" portType="stream"/>
     </ports>
     <args>
+      <!-- Debug Signals -->
+      <arg name="led_status"             addressQualifier="0" id="0" port="S_AXILITE" size="0x4" offset="0x0080" type="uint" hostOffset="0x00" hostSize="0x4"/> 
       <!-- CMAC Register Map-->
-      <arg name="cmac_gt_reset_reg" addressQualifier="0" id="0" port="S_AXILITE" size="0x4" offset="0x1000" type="uint" hostOffset="0x00" hostSize="0x4"/> 
-      <arg name="cmac_reset_reg"    addressQualifier="0" id="0" port="S_AXILITE" size="0x4" offset="0x1004" type="uint" hostOffset="0x00" hostSize="0x4"/> 
-      <arg name="cmac_mode"         addressQualifier="0" id="0" port="S_AXILITE" size="0x4" offset="0x1008" type="uint" hostOffset="0x00" hostSize="0x4"/> 
-      <arg name="cmac_conf_tx"      addressQualifier="0" id="0" port="S_AXILITE" size="0x4" offset="0x100C" type="uint" hostOffset="0x00" hostSize="0x4"/> 
-      <arg name="cmac_conf_rx"      addressQualifier="0" id="0" port="S_AXILITE" size="0x4" offset="0x1014" type="uint" hostOffset="0x00" hostSize="0x4"/> 
-      <arg name="cmac_core_mode"    addressQualifier="0" id="0" port="S_AXILITE" size="0x4" offset="0x1020" type="uint" hostOffset="0x00" hostSize="0x4"/> 
-      <arg name="cmac_version"      addressQualifier="0" id="0" port="S_AXILITE" size="0x4" offset="0x1024" type="uint" hostOffset="0x00" hostSize="0x4"/> 
-      <arg name="cmac_gt_loopback"  addressQualifier="0" id="0" port="S_AXILITE" size="0x4" offset="0x1090" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="gt_reset_reg"           addressQualifier="0" id="0" port="S_AXILITE" size="0x4" offset="0x1000" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="reset_reg"              addressQualifier="0" id="0" port="S_AXILITE" size="0x4" offset="0x1004" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="mode"                   addressQualifier="0" id="0" port="S_AXILITE" size="0x4" offset="0x1008" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="conf_tx"                addressQualifier="0" id="0" port="S_AXILITE" size="0x4" offset="0x100C" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="conf_rx"                addressQualifier="0" id="0" port="S_AXILITE" size="0x4" offset="0x1014" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="core_mode"              addressQualifier="0" id="0" port="S_AXILITE" size="0x4" offset="0x1020" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="version"                addressQualifier="0" id="0" port="S_AXILITE" size="0x4" offset="0x1024" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="gt_loopback"            addressQualifier="0" id="0" port="S_AXILITE" size="0x4" offset="0x1090" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="stat_tx_status"         addressQualifier="0" id="0" port="S_AXILITE" size="0x4" offset="0x1200" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="stat_rx_status"         addressQualifier="0" id="0" port="S_AXILITE" size="0x4" offset="0x1204" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="stat_status"            addressQualifier="0" id="0" port="S_AXILITE" size="0x4" offset="0x1208" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="stat_rx_block_lock"     addressQualifier="0" id="0" port="S_AXILITE" size="0x4" offset="0x120C" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="stat_rx_lane_sync"      addressQualifier="0" id="0" port="S_AXILITE" size="0x4" offset="0x1210" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="stat_rx_lane_sync_err"  addressQualifier="0" id="0" port="S_AXILITE" size="0x4" offset="0x1214" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="stat_an_link_ctl"       addressQualifier="0" id="0" port="S_AXILITE" size="0x4" offset="0x1260" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="stat_lt_status"         addressQualifier="0" id="0" port="S_AXILITE" size="0x4" offset="0x1264" type="uint" hostOffset="0x00" hostSize="0x4"/> 
 
       <arg name="S_AXIS" addressQualifier="4" id="1" port="S_AXIS" type="stream&lt;ap_axiu&lt;512,0,0,0>>&amp;" />
       <arg name="M_AXIS" addressQualifier="4" id="2" port="M_AXIS" type="stream&lt;ap_axiu&lt;512,0,0,0>>&amp;" />

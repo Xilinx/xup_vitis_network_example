@@ -81,6 +81,7 @@ if {[string first "u50" ${board}] != -1} {
 create_project -force $projName $path_to_tmp_project -part $projPart
 set_property ip_repo_paths "${root_dir}/cmac/" [current_project]
 add_files -norecurse [glob $root_dir/cmac_top_${interface}.v]
+add_files -norecurse [glob $root_dir/axi4lite.v]
 update_compile_order -fileset sources_1
 
 source ${root_dir}/bd_cmac.tcl

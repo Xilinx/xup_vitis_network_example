@@ -31,14 +31,15 @@ git clone https://gitenterprise.xilinx.com/mruiznog/vitis_network_layer.git --re
 
 Run 
 ```sh
-make all DEVICE=<full platform path>
+make all DEVICE=<full platform path> INTERFACE=<interface number>
 ```
+
+* Interface can be 0, 1 or 3 (use both interfaces)
+* The basic configuration file is pulled from [config_files](config_files) and complete with `userPostSysLinkOverlayTcl` in the make process
 
 Limitations: 
 
-- `INTERFACE` is an option in the Makefile, but only `INTERFACE=0` is automatically supported at this moment in the xclbin generation. 
-To use `INTERFACE=1` manual changes in [connectivity.ini](connectivity.ini) are needed
-- Only `xilinx_u280_xdma_201920_3` meets timing closure
+- Only `xilinx_u280_xdma_201920_3` closes timing
 
 
 ## Block Design

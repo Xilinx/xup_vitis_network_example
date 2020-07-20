@@ -65,15 +65,12 @@ ifeq (u280,$(findstring u280, $(DEVICE)))
 	HLS_IP_FOLDER  = $(shell readlink -f ./$(NETLAYERDIR)$(NETLAYERHLS)/synthesis_results_HMB)
 endif
 
-
 LIST_REPOS := --user_ip_repo_paths $(CMAC_IP_FOLDER)
 LIST_REPOS += --user_ip_repo_paths $(HLS_IP_FOLDER)
 
 
-
 .PHONY: all clean distclean 
 all: check-devices check-vitis check-xrt create-conf-file $(BINARY_CONTAINERS)
-
 
 # Cleaning stuff
 clean:
@@ -86,13 +83,13 @@ distclean: clean
 # Building kernel
 $(BUILD_DIR)/${XCLBIN_NAME}.xclbin:
 	mkdir -p $(BUILD_DIR)
-	#make -C $(CMACDIR) all DEVICE=$(DEVICE) INTERFACE=$(INTERFACE)
+	make -C $(CMACDIR) all DEVICE=$(DEVICE) INTERFACE=$(INTERFACE)
 	make -C $(NETLAYERDIR) all DEVICE=$(DEVICE)
 	#make -C $(KERNELDIR) all DEVICE=$(DEVICE)
 	make -C $(BENCHMARDIR) all DEVICE=$(DEVICE) -j2
-	$(VPP) $(CLFLAGS) $(CONFIGFLAGS) --temp_dir $(BUILD_DIR) -l -o'$@' $(LIST_XO) $(LIST_REPOS) -j 8 \
-	--dk chipscope:collector_1:SUMMARY \
-	--dk chipscope:traffic_generator_1:M_AXIS_k2n
+	$(VPP) $(CLFLAGS) $(CONFIGFLAGS) --temp_dir $(BUILD_DIR) -l -o'$@' $(LIST_XO) $(LIST_REPOS) -j 8
+	#--dk chipscope:collector_1:SUMMARY \
+	#--dk chipscope:traffic_generator_1:M_AXIS_k2n
 #	--dk chipscope:krnl_s2mm_1:n2k
 #	--dk chipscope:krnl_mm2s_1:s_axi_control \
 #	--dk chipscope:krnl_s2mm_1:s_axi_control \

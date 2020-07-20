@@ -31,18 +31,20 @@ git clone https://gitenterprise.xilinx.com/mruiznog/vitis_network_layer.git --re
 
 Run 
 ```sh
-make all DEVICE=<full platform path> INTERFACE=<interface number>
+make all DEVICE=<full platform path> INTERFACE=<interface number> DESING=<design name>
 ```
 
 * Interface can be 0, 1 or 3 (use both interfaces)
 * The basic configuration file is pulled from [config_files](config_files) and complete with `userPostSysLinkOverlayTcl` in the make process
+* The `XCLBIN` will be generated in the folder <DESIGN>.intf<INTERFACE>.<(short)DEVICE>
 
-Limitations: 
+### Limitations: 
 
 - Only `xilinx_u280_xdma_201920_3` closes timing
+- `DESING` only support the following strings `basic` and `benchmark` if you use something different, `basic` will be implemented
 
 
-## Block Design
+## Basic Design Block Diagram
 
 The following figure depicts the different kernels and their interconnection in the Vitis project.
 

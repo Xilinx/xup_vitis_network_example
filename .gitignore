@@ -5,3 +5,7 @@ v++*
 build*/
 .ipcache/
 .ipynb_checkpoints/
+*.tmp.ini
+*.xclbin
+basic.*/
+benchmark.*/

@@ -2,9 +2,10 @@
 
 help:
 	@echo "Makefile Usage:"
-	@echo "  make all DEVICE=<FPGA platform> INTERFACE=<CMAC Interface> XCLBIN_NAME=<XCLBIN name>"
+	@echo "  make all DEVICE=<FPGA platform> INTERFACE=<CMAC Interface> DESIGN=<design name>"
 	@echo "      Command to generate the xo for specified device and Interface."
-	@echo "      By default, DEVICE=xilinx_u280_xdma_201920_3, INTERFACE=0 and XCLBIN_NAME=xup_vitis_networking "
+	@echo "      By default, DEVICE=xilinx_u280_xdma_201920_3, INTERFACE=0  DESIGN=benchmark"
+	@echo "      DESIGN also supports the string basic"
 	@echo ""
 	@echo "  make clean "
 	@echo "      Command to remove the generated non-hardware files."
@@ -24,7 +25,7 @@ TEMP_DIR := _x.$(XSA)
 VPP := $(XILINX_VITIS)/bin/v++
 CLFLAGS += -t hw --platform $(DEVICE) --save-temps
 
-BUILD_DIR := ./build_dir.intf$(INTERFACE).$(XSA)
+BUILD_DIR := ./$(DESIGN).intf$(INTERFACE).$(XSA)
 BINARY_CONTAINERS = $(BUILD_DIR)/${XCLBIN_NAME}.xclbin
 
 NETLAYERDIR = NetLayers/
@@ -39,13 +40,10 @@ CMAC_IP_FOLDER ?= $(shell readlink -f ./$(CMACDIR)/cmac)
 
 
 LIST_XO = $(NETLAYERDIR)$(TEMP_DIR)/networklayer.xo
-#LIST_XO += $(KERNELDIR)$(TEMP_DIR)/krnl_mm2s.xo
-#LIST_XO += $(KERNELDIR)$(TEMP_DIR)/krnl_s2mm.xo
-LIST_XO += $(BENCHMARDIR)$(TEMP_DIR)/traffic_generator.xo
-LIST_XO += $(BENCHMARDIR)$(TEMP_DIR)/collector.xo
 
-CONFIGFLAGS := --config configuration_if$(INTERFACE).ini
+CONFIGFLAGS := --config configuration_$(DESIGN)_if$(INTERFACE).tmp.ini
 
+# Include cmac kernel depending on the interface
 ifeq (3,$(INTERFACE))
 	LIST_XO += $(CMACDIR)$(TEMP_DIR)/cmac_0.xo
 	LIST_XO += $(CMACDIR)$(TEMP_DIR)/cmac_1.xo
@@ -53,15 +51,21 @@ else
 	LIST_XO += $(CMACDIR)$(TEMP_DIR)/cmac_$(INTERFACE).xo
 endif
 
+# Include application kernels depending on the design
+ifeq (benchmark,$(DESIGN))
+	LIST_XO += $(BENCHMARDIR)$(TEMP_DIR)/traffic_generator.xo
+	LIST_XO += $(BENCHMARDIR)$(TEMP_DIR)/collector.xo
+else
+	LIST_XO += $(KERNELDIR)$(TEMP_DIR)/krnl_mm2s.xo
+	LIST_XO += $(KERNELDIR)$(TEMP_DIR)/krnl_s2mm.xo
+endif
 
 # Linker params
 # Linker userPostSysLinkTcl param
 ifeq (u250,$(findstring u250, $(DEVICE)))
-	#CONFIGFLAGS += --config advanced.ini
 	HLS_IP_FOLDER  = $(shell readlink -f ./$(NETLAYERDIR)$(NETLAYERHLS)/synthesis_results_noHMB)
 endif
 ifeq (u280,$(findstring u280, $(DEVICE)))
-	#CONFIGFLAGS += --config advanced.ini
 	HLS_IP_FOLDER  = $(shell readlink -f ./$(NETLAYERDIR)$(NETLAYERHLS)/synthesis_results_HMB)
 endif
 
@@ -85,7 +89,7 @@ $(BUILD_DIR)/${XCLBIN_NAME}.xclbin:
 	mkdir -p $(BUILD_DIR)
 	make -C $(CMACDIR) all DEVICE=$(DEVICE) INTERFACE=$(INTERFACE)
 	make -C $(NETLAYERDIR) all DEVICE=$(DEVICE)
-	#make -C $(KERNELDIR) all DEVICE=$(DEVICE)
+	make -C $(KERNELDIR) all DEVICE=$(DEVICE)
 	make -C $(BENCHMARDIR) all DEVICE=$(DEVICE) -j2
 	$(VPP) $(CLFLAGS) $(CONFIGFLAGS) --temp_dir $(BUILD_DIR) -l -o'$@' $(LIST_XO) $(LIST_REPOS) -j 8
 	#--dk chipscope:collector_1:SUMMARY \
@@ -113,10 +117,10 @@ endif
 
 #Create configuration file for current design and settings
 create-conf-file:
-	cp config_files/connectivity_$(DESIGN)_if$(INTERFACE).ini configuration_if$(INTERFACE).ini
-	echo "" >> configuration_if$(INTERFACE).ini
-	echo "" >> configuration_if$(INTERFACE).ini
-	echo "[advanced]" >> configuration_if$(INTERFACE).ini
-	echo "param=compiler.userPostSysLinkOverlayTcl=$(POSTSYSLINKTCL)" >> configuration_if$(INTERFACE).ini
-	echo "#param=compiler.worstNegativeSlack=-2" >> configuration_if$(INTERFACE).ini
+	cp config_files/connectivity_$(DESIGN)_if$(INTERFACE).ini configuration_$(DESIGN)_if$(INTERFACE).tmp.ini
+	echo "" >> configuration_$(DESIGN)_if$(INTERFACE).tmp.ini
+	echo "" >> configuration_$(DESIGN)_if$(INTERFACE).tmp.ini
+	echo "[advanced]" >> configuration_$(DESIGN)_if$(INTERFACE).tmp.ini
+	echo "param=compiler.userPostSysLinkOverlayTcl=$(POSTSYSLINKTCL)" >> configuration_$(DESIGN)_if$(INTERFACE).tmp.ini
+	echo "#param=compiler.worstNegativeSlack=-2" >> configuration_$(DESIGN)_if$(INTERFACE).tmp.ini
 

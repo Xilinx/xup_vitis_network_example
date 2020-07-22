@@ -125,8 +125,8 @@ set bCheckIPsPassed 1
 set bCheckIPs 1
 if { $bCheckIPs == 1 } {
    set list_check_ips "\ 
-naudit:cmac:cmac_${cmac_name}:1\   
-naudit:cmac:cmac_sync:1\
+xilinx.com:cmac:cmac_${cmac_name}:1\   
+xilinx.com:cmac:cmac_sync:1\
 xilinx.com:ip:fifo_generator:13.2\
 xilinx.com:ip:smartconnect:1.0\
 xilinx.com:ip:util_vector_logic:2.0\
@@ -306,10 +306,10 @@ proc create_root_design { parentCell } {
    }
   
   # Create instance: cmac_0, and set properties
-  set cmac_0 [ create_bd_cell -type ip -vlnv naudit:cmac:cmac_${cmac_name}:1 cmac_0 ]
+  set cmac_0 [ create_bd_cell -type ip -vlnv xilinx.com:cmac:cmac_${cmac_name}:1 cmac_0 ]
 
   # Create instance: cmac_sync_0, and set properties
-  set cmac_sync_0 [ create_bd_cell -type ip -vlnv naudit:cmac:cmac_sync:1 cmac_sync_0 ]
+  set cmac_sync_0 [ create_bd_cell -type ip -vlnv xilinx.com:cmac:cmac_sync:1 cmac_sync_0 ]
   set_property -dict [ list \
    CONFIG.SLAVE_CMAC_BASEADDR {0x00001000} \
    CONFIG.ULTRASCALE_PLUS {true} \

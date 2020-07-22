@@ -16,40 +16,40 @@
       <arg name="ip_mask"                 addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x0090" type="uint" hostOffset="0x00" hostSize="0x4"/> 
       <arg name="constant"                addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x00FC" type="uint" hostOffset="0x00" hostSize="0x4"/> 
       <!-- Debug port Register Map-->
-      <arg name="eth_inbound_time"        addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1000" type="uint" hostOffset="0x00" hostSize="0x8"/> 
+      <arg name="eth_inbound_cycles"      addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1000" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="eth_inbound_bytes"       addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1008" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="eth_inbound_packets"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1010" type="uint" hostOffset="0x00" hostSize="0x8"/> 
-      <arg name="pkth_out_time"           addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1018" type="uint" hostOffset="0x00" hostSize="0x8"/> 
+      <arg name="pkth_out_cycles"         addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1018" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="pkth_out_bytes"          addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1020" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="pkth_out_packets"        addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1028" type="uint" hostOffset="0x00" hostSize="0x8"/> 
-      <arg name="arp_in_time"             addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1030" type="uint" hostOffset="0x00" hostSize="0x8"/> 
+      <arg name="arp_in_cycles"           addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1030" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="arp_in_bytes"            addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1038" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="arp_in_packets"          addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1040" type="uint" hostOffset="0x00" hostSize="0x8"/> 
-      <arg name="arp_out_time"            addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1048" type="uint" hostOffset="0x00" hostSize="0x8"/> 
+      <arg name="arp_out_cycles"          addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1048" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="arp_out_bytes"           addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1050" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="arp_out_packets"         addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1058" type="uint" hostOffset="0x00" hostSize="0x8"/> 
-      <arg name="icmp_in_time"            addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1060" type="uint" hostOffset="0x00" hostSize="0x8"/> 
+      <arg name="icmp_in_cycles"          addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1060" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="icmp_in_bytes"           addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1068" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="icmp_in_packets"         addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1070" type="uint" hostOffset="0x00" hostSize="0x8"/> 
-      <arg name="icmp_out_time"           addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1078" type="uint" hostOffset="0x00" hostSize="0x8"/> 
+      <arg name="icmp_out_cycles"         addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1078" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="icmp_out_bytes"          addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1080" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="icmp_out_packets"        addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1088" type="uint" hostOffset="0x00" hostSize="0x8"/> 
-      <arg name="ethhi_out_time"          addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1090" type="uint" hostOffset="0x00" hostSize="0x8"/> 
+      <arg name="ethhi_out_cycles"        addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1090" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="ethhi_out_bytes"         addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1098" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="ethhi_out_packets"       addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x10A0" type="uint" hostOffset="0x00" hostSize="0x8"/> 
-      <arg name="eth_outbound_time"       addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x10A8" type="uint" hostOffset="0x00" hostSize="0x8"/> 
+      <arg name="eth_outbound_cycles"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x10A8" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="eth_outbound_bytes"      addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x10B0" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="eth_outbound_packets"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x10B8" type="uint" hostOffset="0x00" hostSize="0x8"/> 
-      <arg name="udp_in_time"             addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x10C0" type="uint" hostOffset="0x00" hostSize="0x8"/> 
+      <arg name="udp_in_cycles"           addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x10C0" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="udp_in_bytes"            addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x10C8" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="udp_in_packets"          addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x10D0" type="uint" hostOffset="0x00" hostSize="0x8"/> 
-      <arg name="udp_out_time"            addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x10D8" type="uint" hostOffset="0x00" hostSize="0x8"/> 
+      <arg name="udp_out_cycles"          addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x10D8" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="udp_out_bytes"           addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x10E0" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="udp_out_packets"         addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x10E8" type="uint" hostOffset="0x00" hostSize="0x8"/>
-      <arg name="udp_app_in_time"         addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x10F0" type="uint" hostOffset="0x00" hostSize="0x8"/> 
+      <arg name="udp_app_in_cycles"       addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x10F0" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="udp_app_in_bytes"        addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x10F8" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="udp_app_in_packets"      addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1100" type="uint" hostOffset="0x00" hostSize="0x8"/> 
-      <arg name="udp_app_out_time"        addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1108" type="uint" hostOffset="0x00" hostSize="0x8"/> 
+      <arg name="udp_app_out_cycles"      addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1108" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="udp_app_out_bytes"       addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1110" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="udp_app_out_packets"     addressQualifier="0" id="0" port="S_AXIL_nl" size="0x8" offset="0x1118" type="uint" hostOffset="0x00" hostSize="0x8"/>  
       <arg name="debug_reset_counters"    addressQualifier="0" id="0" port="S_AXIL_nl" size="0x4" offset="0x11F0" type="uint" hostOffset="0x00" hostSize="0x4"/> 

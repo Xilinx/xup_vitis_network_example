@@ -15,13 +15,13 @@
       <arg name="number_beats"            addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x20" type="uint" hostOffset="0x00" hostSize="0x4"/> 
       <arg name="time_between_packets"    addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x24" type="uint" hostOffset="0x00" hostSize="0x4"/> 
       <!-- Debug port Register Map-->
-      <arg name="out_traffic_time"        addressQualifier="0" id="0" port="S_AXIL" size="0x8" offset="0x34" type="uint" hostOffset="0x00" hostSize="0x8"/> 
+      <arg name="out_traffic_cycles"      addressQualifier="0" id="0" port="S_AXIL" size="0x8" offset="0x34" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="out_traffic_bytes"       addressQualifier="0" id="0" port="S_AXIL" size="0x8" offset="0x3C" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="out_traffic_packets"     addressQualifier="0" id="0" port="S_AXIL" size="0x8" offset="0x44" type="uint" hostOffset="0x00" hostSize="0x8"/> 
-      <arg name="in_traffic_time"         addressQualifier="0" id="0" port="S_AXIL" size="0x8" offset="0x4C" type="uint" hostOffset="0x00" hostSize="0x8"/> 
+      <arg name="in_traffic_cycles"       addressQualifier="0" id="0" port="S_AXIL" size="0x8" offset="0x4C" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="in_traffic_bytes"        addressQualifier="0" id="0" port="S_AXIL" size="0x8" offset="0x54" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="in_traffic_packets"      addressQualifier="0" id="0" port="S_AXIL" size="0x8" offset="0x5C" type="uint" hostOffset="0x00" hostSize="0x8"/> 
-      <arg name="summary_time"            addressQualifier="0" id="0" port="S_AXIL" size="0x8" offset="0x64" type="uint" hostOffset="0x00" hostSize="0x8"/> 
+      <arg name="summary_cycles"          addressQualifier="0" id="0" port="S_AXIL" size="0x8" offset="0x64" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="summary_bytes"           addressQualifier="0" id="0" port="S_AXIL" size="0x8" offset="0x6C" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="summary_packets"         addressQualifier="0" id="0" port="S_AXIL" size="0x8" offset="0x74" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="debug_reset"             addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x7C" type="uint" hostOffset="0x00" hostSize="0x4"/>

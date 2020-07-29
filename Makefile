@@ -17,7 +17,7 @@ help:
 
 DEVICE ?= xilinx_u280_xdma_201920_3
 INTERFACE ?= 0
-XCLBIN_NAME ?= xup_vitis_networking
+XCLBIN_NAME ?= xup_vitis_networking_if$(INTERFACE)
 DESIGN ?= benchmark
 
 XSA := $(strip $(patsubst %.xpfm, % , $(shell basename $(DEVICE))))
@@ -78,10 +78,10 @@ all: check-devices check-vitis check-xrt create-conf-file $(BINARY_CONTAINERS)
 
 # Cleaning stuff
 clean:
-	rm -rf *v++* *.log *.jou
+	rm -rf *v++* *.log *.jou *.str
 
 distclean: clean
-	rm -rf _x* .Xil ./build_dir* .ipcache/
+	rm -rf _x* *.tmp.ini .Xil benchmark*/ basic*/ .ipcache/
 
 
 # Building kernel
@@ -91,12 +91,12 @@ $(BUILD_DIR)/${XCLBIN_NAME}.xclbin:
 	make -C $(NETLAYERDIR) all DEVICE=$(DEVICE)
 	make -C $(KERNELDIR) all DEVICE=$(DEVICE)
 	make -C $(BENCHMARDIR) all DEVICE=$(DEVICE) -j2
-	$(VPP) $(CLFLAGS) $(CONFIGFLAGS) --temp_dir $(BUILD_DIR) -l -o'$@' $(LIST_XO) $(LIST_REPOS) -j 8
-	#--dk chipscope:collector_1:SUMMARY \
-	#--dk chipscope:traffic_generator_1:M_AXIS_k2n
-#	--dk chipscope:krnl_s2mm_1:n2k
-#	--dk chipscope:krnl_mm2s_1:s_axi_control \
-#	--dk chipscope:krnl_s2mm_1:s_axi_control \
+	$(VPP) $(CLFLAGS) $(CONFIGFLAGS) --temp_dir $(BUILD_DIR) -l -o'$@' $(LIST_XO) $(LIST_REPOS) -j 8 
+	#--dk chipscope:traffic_generator_$(INTERFACE):S_AXIS_n2k \
+	#--dk chipscope:traffic_generator_$(INTERFACE):M_AXIS_k2n \
+	#--dk chipscope:cmac_$(INTERFACE):M_AXIS \
+	#--dk chipscope:cmac_$(INTERFACE):S_AXIS
+	#--dk chipscope:collector_$(INTERFACE):SUMMARY \
 
 check-devices:
 ifndef DEVICE

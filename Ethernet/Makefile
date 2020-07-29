@@ -61,7 +61,7 @@ clean:
 
 distclean: clean
 	rm -rf build_dir*
-	rm -rf _x.* kernel_*.xml cmac_top*.v
+	rm -rf _x.* kernel_*.xml cmac_top*.v *.str
 	rm -rf ./tmp_cmac* ./packaged_kernel* .Xil
 	rm -rf component.xml xgui/
 

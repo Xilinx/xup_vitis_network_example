@@ -28,7 +28,7 @@
 
 set board_name [get_property board_part [current_project]]
 set pfm_name [get_property PFM_NAME [get_files [current_bd_design].bd]]
-set __TCLID "(Post-linking ${board_name} QSFP0 Tcl hook): "
+set __TCLID "(Post-linking ${board_name} QSFP GT pins Tcl hook): "
 
 # *************************************************************************
 puts "${__TCLID} the name of the board is: ${board_name}"

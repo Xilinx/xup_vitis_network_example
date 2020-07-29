@@ -125,6 +125,7 @@ set bCheckIPsPassed 1
 set bCheckIPs 1
 if { $bCheckIPs == 1 } {
    set list_check_ips "\ 
+xilinx.com:ip:axis_clock_converter:1.1\
 xilinx.com:cmac:cmac_${cmac_name}:1\   
 xilinx.com:cmac:cmac_sync:1\
 xilinx.com:ip:fifo_generator:13.2\
@@ -294,6 +295,15 @@ proc create_root_design { parentCell } {
  ] $ap_rst_n
   set clk_gt_freerun [ create_bd_port -dir I -type clk -freq_hz 100000000 clk_gt_freerun ]
 
+  # Create instance: acc_kernel_tx_cdc, and set properties
+  set acc_kernel_tx_cdc [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_clock_converter:1.1 acc_kernel_tx_cdc ]
+  set_property -dict [ list \
+   CONFIG.HAS_TKEEP {1} \
+   CONFIG.HAS_TLAST {1} \
+   CONFIG.IS_ACLK_ASYNC {1} \
+   CONFIG.TDATA_NUM_BYTES {64} \
+ ] $acc_kernel_tx_cdc
+
   # Create instance: axi4lite_0, and set properties
   set block_name axi4lite
   set block_cell_name axi4lite_0
@@ -346,24 +356,24 @@ proc create_root_design { parentCell } {
    CONFIG.TUSER_WIDTH {0} \
  ] $fifo_cmac_rx_cdc
 
-  # Create instance: fifo_cmac_tx_cdc, and set properties
-  set fifo_cmac_tx_cdc [ create_bd_cell -type ip -vlnv xilinx.com:ip:fifo_generator:13.2 fifo_cmac_tx_cdc ]
+  # Create instance: fifo_cmac_tx, and set properties
+  set fifo_cmac_tx [ create_bd_cell -type ip -vlnv xilinx.com:ip:fifo_generator:13.2 fifo_cmac_tx ]
   set_property -dict [ list \
-   CONFIG.Clock_Type_AXI {Independent_Clock} \
-   CONFIG.Empty_Threshold_Assert_Value_axis {509} \
-   CONFIG.Empty_Threshold_Assert_Value_rach {13} \
-   CONFIG.Empty_Threshold_Assert_Value_rdch {1018} \
-   CONFIG.Empty_Threshold_Assert_Value_wach {13} \
-   CONFIG.Empty_Threshold_Assert_Value_wdch {1018} \
-   CONFIG.Empty_Threshold_Assert_Value_wrch {13} \
+   CONFIG.Clock_Type_AXI {Common_Clock} \
+   CONFIG.Empty_Threshold_Assert_Value_axis {510} \
+   CONFIG.Empty_Threshold_Assert_Value_rach {14} \
+   CONFIG.Empty_Threshold_Assert_Value_rdch {1022} \
+   CONFIG.Empty_Threshold_Assert_Value_wach {14} \
+   CONFIG.Empty_Threshold_Assert_Value_wdch {1022} \
+   CONFIG.Empty_Threshold_Assert_Value_wrch {14} \
    CONFIG.Enable_TLAST {true} \
    CONFIG.FIFO_Application_Type_axis {Packet_FIFO} \
-   CONFIG.FIFO_Implementation_axis {Independent_Clocks_Block_RAM} \
-   CONFIG.FIFO_Implementation_rach {Independent_Clocks_Distributed_RAM} \
-   CONFIG.FIFO_Implementation_rdch {Independent_Clocks_Builtin_FIFO} \
-   CONFIG.FIFO_Implementation_wach {Independent_Clocks_Distributed_RAM} \
-   CONFIG.FIFO_Implementation_wdch {Independent_Clocks_Builtin_FIFO} \
-   CONFIG.FIFO_Implementation_wrch {Independent_Clocks_Distributed_RAM} \
+   CONFIG.FIFO_Implementation_axis {Common_Clock_Block_RAM} \
+   CONFIG.FIFO_Implementation_rach {Common_Clock_Distributed_RAM} \
+   CONFIG.FIFO_Implementation_rdch {Common_Clock_Builtin_FIFO} \
+   CONFIG.FIFO_Implementation_wach {Common_Clock_Distributed_RAM} \
+   CONFIG.FIFO_Implementation_wdch {Common_Clock_Builtin_FIFO} \
+   CONFIG.FIFO_Implementation_wrch {Common_Clock_Distributed_RAM} \
    CONFIG.Full_Threshold_Assert_Value_axis {511} \
    CONFIG.Full_Threshold_Assert_Value_rach {15} \
    CONFIG.Full_Threshold_Assert_Value_wach {15} \
@@ -376,7 +386,7 @@ proc create_root_design { parentCell } {
    CONFIG.TKEEP_WIDTH {64} \
    CONFIG.TSTRB_WIDTH {64} \
    CONFIG.TUSER_WIDTH {0} \
- ] $fifo_cmac_tx_cdc
+ ] $fifo_cmac_tx
 
   # Create instance: smartconnect_0, and set properties
   set smartconnect_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect:1.0 smartconnect_0 ]
@@ -400,6 +410,14 @@ proc create_root_design { parentCell } {
    CONFIG.LOGO_FILE {data/sym_notgate.png} \
  ] $util_vector_logic_1
 
+  # Create instance: util_vector_logic_2, and set properties
+  set util_vector_logic_2 [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic:2.0 util_vector_logic_2 ]
+  set_property -dict [ list \
+   CONFIG.C_OPERATION {not} \
+   CONFIG.C_SIZE {1} \
+   CONFIG.LOGO_FILE {data/sym_notgate.png} \
+ ] $util_vector_logic_2
+
   # Create instance: vio_0, and set properties
   set vio_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:vio:3.0 vio_0 ]
   set_property -dict [ list \
@@ -415,24 +433,25 @@ proc create_root_design { parentCell } {
 
   # Create interface connections
   connect_bd_intf_net -intf_net S_AXILITE_1 [get_bd_intf_ports S_AXILITE] [get_bd_intf_pins smartconnect_0/S00_AXI]
-  connect_bd_intf_net -intf_net S_AXIS_1 [get_bd_intf_ports S_AXIS] [get_bd_intf_pins fifo_cmac_tx_cdc/S_AXIS]
+  connect_bd_intf_net -intf_net S_AXIS_1 [get_bd_intf_ports S_AXIS] [get_bd_intf_pins acc_kernel_tx_cdc/S_AXIS]
+  connect_bd_intf_net -intf_net acc_kernel_tx_cdc_M_AXIS [get_bd_intf_pins acc_kernel_tx_cdc/M_AXIS] [get_bd_intf_pins fifo_cmac_tx/S_AXIS]
   connect_bd_intf_net -intf_net cmac_0_LBUS2AXI [get_bd_intf_pins cmac_0/LBUS2AXI] [get_bd_intf_pins fifo_cmac_rx_cdc/S_AXIS]
   connect_bd_intf_net -intf_net cmac_0_gt_tx [get_bd_intf_ports gt_tx] [get_bd_intf_pins cmac_0/gt_tx]
   connect_bd_intf_net -intf_net cmac_s_axi [get_bd_intf_pins cmac_sync_0/s_axi] [get_bd_intf_pins smartconnect_0/S01_AXI]
   connect_bd_intf_net -intf_net fifo_cmac_rx_cdc_M_AXIS [get_bd_intf_ports M_AXIS] [get_bd_intf_pins fifo_cmac_rx_cdc/M_AXIS]
-  connect_bd_intf_net -intf_net fifo_cmac_tx_cdc_M_AXIS [get_bd_intf_pins cmac_0/AXI2LBUS] [get_bd_intf_pins fifo_cmac_tx_cdc/M_AXIS]
+  connect_bd_intf_net -intf_net fifo_cmac_tx_M_AXIS [get_bd_intf_pins cmac_0/AXI2LBUS] [get_bd_intf_pins fifo_cmac_tx/M_AXIS]
   connect_bd_intf_net -intf_net gt_ref_clk_1 [get_bd_intf_ports gt_ref_clk] [get_bd_intf_pins cmac_0/gt_ref_clk]
   connect_bd_intf_net -intf_net gt_rx_0_1 [get_bd_intf_ports gt_rx] [get_bd_intf_pins cmac_0/gt_rx]
   connect_bd_intf_net -intf_net smartconnect_0_M00_AXI [get_bd_intf_pins cmac_0/AXI4_STATISTICS] [get_bd_intf_pins smartconnect_0/M00_AXI]
   connect_bd_intf_net -intf_net smartconnect_0_M01_AXI [get_bd_intf_pins axi4lite_0/S_AXIL] [get_bd_intf_pins smartconnect_0/M01_AXI]
 
   # Create port connections
-  connect_bd_net -net ap_rst_n_1 [get_bd_ports ap_rst_n] [get_bd_pins axi4lite_0/S_AXIL_ARESETN] [get_bd_pins cmac_0/s_axi_reset_n] [get_bd_pins fifo_cmac_tx_cdc/s_aresetn] [get_bd_pins smartconnect_0/aresetn] [get_bd_pins util_vector_logic_1/Op1]
+  connect_bd_net -net ap_rst_n_1 [get_bd_ports ap_rst_n] [get_bd_pins acc_kernel_tx_cdc/s_axis_aresetn] [get_bd_pins axi4lite_0/S_AXIL_ARESETN] [get_bd_pins cmac_0/s_axi_reset_n] [get_bd_pins smartconnect_0/aresetn] [get_bd_pins util_vector_logic_1/Op1]
   connect_bd_net -net cmac_0_CMAC_STAT_stat_rx_aligned [get_bd_pins cmac_0/CMAC_STAT_stat_rx_aligned] [get_bd_pins cmac_sync_0/cmac_stat_stat_rx_aligned]
   connect_bd_net -net cmac_0_rx_rst [get_bd_pins cmac_0/rx_rst] [get_bd_pins cmac_sync_0/usr_rx_reset] [get_bd_pins util_vector_logic_0/Op1]
-  connect_bd_net -net cmac_0_tx_rst [get_bd_pins cmac_0/tx_rst] [get_bd_pins cmac_sync_0/usr_tx_reset]
+  connect_bd_net -net cmac_0_tx_rst [get_bd_pins cmac_0/tx_rst] [get_bd_pins cmac_sync_0/usr_tx_reset] [get_bd_pins util_vector_logic_2/Op1]
   connect_bd_net -net cmac_0_usr_rx_clk [get_bd_pins cmac_0/usr_rx_clk] [get_bd_pins fifo_cmac_rx_cdc/s_aclk]
-  connect_bd_net -net cmac_0_usr_tx_clk [get_bd_pins cmac_0/usr_tx_clk] [get_bd_pins fifo_cmac_tx_cdc/m_aclk]
+  connect_bd_net -net cmac_0_usr_tx_clk [get_bd_pins acc_kernel_tx_cdc/m_axis_aclk] [get_bd_pins cmac_0/usr_tx_clk] [get_bd_pins fifo_cmac_tx/s_aclk]
   connect_bd_net -net cmac_sync_0_cmac_aligned_sync [get_bd_pins axi4lite_0/cmac_aligned_sync] [get_bd_pins cmac_sync_0/cmac_aligned_sync] [get_bd_pins vio_0/probe_in7]
   connect_bd_net -net cmac_sync_0_rx_aligned_led [get_bd_pins axi4lite_0/rx_aligned_led] [get_bd_pins cmac_sync_0/rx_aligned_led] [get_bd_pins vio_0/probe_in3]
   connect_bd_net -net cmac_sync_0_rx_busy_led [get_bd_pins axi4lite_0/rx_busy_led] [get_bd_pins cmac_sync_0/rx_busy_led] [get_bd_pins vio_0/probe_in6]
@@ -441,9 +460,10 @@ proc create_root_design { parentCell } {
   connect_bd_net -net cmac_sync_0_rx_gt_locked_led [get_bd_pins axi4lite_0/rx_gt_locked_led] [get_bd_pins cmac_sync_0/rx_gt_locked_led] [get_bd_pins vio_0/probe_in2]
   connect_bd_net -net cmac_sync_0_tx_busy_led [get_bd_pins axi4lite_0/tx_busy_led] [get_bd_pins cmac_sync_0/tx_busy_led] [get_bd_pins vio_0/probe_in1]
   connect_bd_net -net cmac_sync_0_tx_done_led [get_bd_pins axi4lite_0/tx_done_led] [get_bd_pins cmac_sync_0/tx_done_led] [get_bd_pins vio_0/probe_in0]
-  connect_bd_net -net s_aclk_0_1 [get_bd_ports ap_clk] [get_bd_pins axi4lite_0/S_AXIL_ACLK] [get_bd_pins cmac_0/s_axi_aclk] [get_bd_pins cmac_sync_0/s_axi_aclk] [get_bd_pins fifo_cmac_rx_cdc/m_aclk] [get_bd_pins fifo_cmac_tx_cdc/s_aclk] [get_bd_pins smartconnect_0/aclk] [get_bd_pins vio_0/clk]
+  connect_bd_net -net s_aclk_0_1 [get_bd_ports ap_clk] [get_bd_pins acc_kernel_tx_cdc/s_axis_aclk] [get_bd_pins axi4lite_0/S_AXIL_ACLK] [get_bd_pins cmac_0/s_axi_aclk] [get_bd_pins cmac_sync_0/s_axi_aclk] [get_bd_pins fifo_cmac_rx_cdc/m_aclk] [get_bd_pins smartconnect_0/aclk] [get_bd_pins vio_0/clk]
   connect_bd_net -net util_vector_logic_0_Res [get_bd_pins fifo_cmac_rx_cdc/s_aresetn] [get_bd_pins util_vector_logic_0/Res]
   connect_bd_net -net util_vector_logic_1_Res [get_bd_pins cmac_sync_0/s_axi_sreset] [get_bd_pins util_vector_logic_1/Res]
+  connect_bd_net -net util_vector_logic_2_Res [get_bd_pins acc_kernel_tx_cdc/m_axis_aresetn] [get_bd_pins fifo_cmac_tx/s_aresetn] [get_bd_pins util_vector_logic_2/Res]
   connect_bd_net -net xlconstant_0_dout [get_bd_pins cmac_sync_0/lbus_tx_rx_restart_in] [get_bd_pins xlconstant_0/dout]
 
   # Create address segments

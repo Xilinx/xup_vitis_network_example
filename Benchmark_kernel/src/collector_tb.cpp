@@ -31,7 +31,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.// Copyright (c) 2020 Xilinx, 
 #include "ap_int.h"
 #include "hls_stream.h"
 
-#define DWIDTH 160
+#define DWIDTH 128
 #define LOCAL_MEM_DEPTH 64
 #define VECTOR_WIDTH 512
 
@@ -39,15 +39,13 @@ typedef ap_axiu<DWIDTH, 0, 0, 0> pkt;
 
 
 void collector(ap_uint<VECTOR_WIDTH>  *out,           
-               hls::stream<pkt>       &summary,       
-               ap_uint<40>            &total_packets,
-               ap_uint<40>            &total_consecutive_packets,
-               ap_uint<2>             mode);
+               hls::stream<pkt>       &summary,
+               ap_uint<40>            &received_packets);
 
 hls::stream<pkt>        summary("summary");
 
 void fillStream (void){
-  unsigned int num_pkts = 1025;
+  unsigned int num_pkts = 33;
   pkt currWord;
   for (unsigned int i = 0 ; i < num_pkts; i++){
     currWord.data( 39,  0) = (ap_uint<40>) i;
@@ -64,26 +62,21 @@ void fillStream (void){
 int main (void){
 
   ap_uint<VECTOR_WIDTH>   global_memory[2048];
-  ap_uint<40>             total_packets;
-  ap_uint<40>             total_consecutive_packets;
-  ap_uint<2>             mode=0;
+  ap_uint<40>             received_packets;
 
   std::cout << "Stating simulation " << std::endl;
   fillStream();
 
   collector(global_memory,
             summary,
-            total_packets,
-            total_consecutive_packets,
-            mode);
+            received_packets);
 
-  std::cout << "Total received packets " << total_packets << std::endl;
-  std::cout << "Total consecutive packets " << total_consecutive_packets << std::endl;
+  std::cout << "Total received packets " << received_packets << std::endl;
 
   unsigned int addr = 0;
   unsigned int m;
 
-  for (unsigned int i = 0; i < total_packets ; i++){
+  for (unsigned int i = 0; i < received_packets ; i++){
     m = i % 16;
     std::cout << "Packet ["<< std::setw(4) << i << "] Address [" << std::setw(3) << addr << "] position [";
     std::cout << std::setw(2) << m << "] value: " << global_memory[addr]((m*32) + 31,m*32) << std::endl;

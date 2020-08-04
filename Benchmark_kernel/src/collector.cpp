@@ -37,24 +37,9 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.// Copyright (c) 2020 Xilinx, 
 
 typedef ap_axiu<DWIDTH, 0, 0, 0> pkt;
 
-extern "C" {
 void collector(ap_uint<VECTOR_WIDTH>  *out,           
-               hls::stream<pkt>       &summary,       
-               ap_uint<40>            &total_packets,
-               ap_uint<40>            &total_consecutive_packets,
-               ap_uint<2>             mode
-               ) {
-
-//#pragma HLS PIPELINE II=1
-#pragma HLS INTERFACE m_axi port = out offset = slave bundle = gmem max_write_burst_length = 64
-//#pragma HLS INTERFACE axis port = summary
-#pragma HLS INTERFACE axis register depth=512 port=summary
-
-#pragma HLS INTERFACE s_axilite port = out bundle = control
-#pragma HLS INTERFACE s_axilite port = total_packets bundle = control
-#pragma HLS INTERFACE s_axilite port = total_consecutive_packets bundle = control
-#pragma HLS INTERFACE s_axilite port = mode bundle = control
-#pragma HLS INTERFACE s_axilite port = return bundle = control
+               hls::stream<pkt>       &summary,
+               ap_uint<40>            &received_packets) {
 
   ap_uint<VECTOR_WIDTH>   local_mem[LOCAL_MEM_DEPTH];
   ap_uint<VECTOR_WIDTH>   vector_word;
@@ -70,21 +55,8 @@ void collector(ap_uint<VECTOR_WIDTH>  *out,
   unsigned int            local_occupancy;
 
 #pragma HLS BIND_STORAGE variable=local_mem type=ram_2p impl=bram
-  while (1) {
-    if (end_loop) {
-      // Get the amount of rows to be moved, number of full occupied rows + a potential half-full row
-      local_occupancy = total_pkts_reg(9,4) + ((total_pkts_reg(3,0) != 0) ? 1 : 0); 
-      // Move remaining rows if any
-      data_mover_partial:
-      for(unsigned int m = 0; m < local_occupancy; m++){
-      #pragma HLS LOOP_TRIPCOUNT max=64 min=1
-      #pragma HLS PIPELINE
-        out[global_memory_offset] = local_mem[m];
-        global_memory_offset++;
-      }
-
-    }
-    else if (move_data) {
+  while (!end_loop) {
+    if (move_data) {
       move_data = false;
       // Move local memory to global memory to get ready for the next batch
       // This stall in data consumption should be buffered by the input FIFO
@@ -123,9 +95,17 @@ void collector(ap_uint<VECTOR_WIDTH>  *out,
     }
   }
 
-  total_packets = total_pkts_reg;
-  total_consecutive_packets = total_consecutive;
+  // Get the amount of rows to be moved, number of full occupied rows + a potential half-full row
+  local_occupancy = total_pkts_reg(9,4) + ((total_pkts_reg(3,0) != 0) ? 1 : 0); 
+  // Move remaining rows if any
+  data_mover_partial:
+  for(unsigned int m = 0; m < local_occupancy; m++){
+  #pragma HLS LOOP_TRIPCOUNT max=64 min=1
+  #pragma HLS PIPELINE
+    out[global_memory_offset] = local_mem[m];
+    global_memory_offset++;
+  }
 
+  received_packets    = total_pkts_reg;
 
-}
 }

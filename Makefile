@@ -127,5 +127,5 @@ create-conf-file:
 	echo "param=compiler.userPostSysLinkOverlayTcl=$(POSTSYSLINKTCL)" >> configuration_$(DESIGN)_if$(INTERFACE).tmp.ini
 	echo "#param=compiler.worstNegativeSlack=-2" >> configuration_$(DESIGN)_if$(INTERFACE).tmp.ini
 	@if [[ $(DEVICE) = *"u50"* ]]; then\
-		sed -i 's/SLR2/SLR0/g' configuration_$(DESIGN)_if$(INTERFACE).tmp.ini;\
+		sed -i 's/SLR2/SLR1/g' configuration_$(DESIGN)_if$(INTERFACE).tmp.ini;\
     fi

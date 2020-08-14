@@ -16,14 +16,14 @@ git clone https://gitenterprise.xilinx.com/mruiznog/vitis_network_layer.git --re
 
 | Vitis  | XRT       |
 |--------|-----------|
-| 2019.2 | 2.5.309   |
 | 2020.1 | 2.6.655   |
 
 ### Alveo Cards
 
 | Alveo | Shell(s) |
 |-------|----------|
-| U250  | xilinx_u250_xdma_2020_1 |
+| U50   | xilinx_u50_gen3x16_xdma_201920_3 |
+| U250  | xilinx_u250_gen3x16_xdma_1_1_202010_1 |
 | U280  | xilinx_u280_xdma_201920_3 |
 
 
@@ -40,8 +40,9 @@ make all DEVICE=<full platform path> INTERFACE=<interface number> DESING=<design
 
 ### Limitations: 
 
-- Only `xilinx_u280_xdma_201920_3` closes timing
-- `DESING` only support the following strings `basic` and `benchmark` if you use something different, `basic` will be implemented
+- Only `xilinx_u280_xdma_201920_3` and `xilinx_u50_gen3x16_xdma_201920_3` closes timing
+- `xilinx_u50_gen3x16_xdma_201920_3` is giving link against a mellanox NIC, but not against U280
+- `DESING` only support the following strings `basic` and `benchmark` if you use something different, `benchmark` will be implemented
 
 
 ## Basic Design Block Diagram

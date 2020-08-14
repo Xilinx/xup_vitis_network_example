@@ -77,7 +77,7 @@ LIST_REPOS += --user_ip_repo_paths $(HLS_IP_FOLDER)
 
 
 .PHONY: all clean distclean 
-all: check-devices check-vitis check-xrt create-conf-file $(BINARY_CONTAINERS)
+all: check-devices check-vitis check-xrt check-design create-conf-file $(BINARY_CONTAINERS)
 
 # Cleaning stuff
 clean:
@@ -118,6 +118,13 @@ ifndef XILINX_XRT
 	$(error XILINX_XRT variable is not set, please set correctly and rerun)
 endif
 
+#Check if the design name is supported
+check-design:
+	@if [[ ($(DESIGN) != "benchmark") && ($(DESIGN) != "basic") ]]; then\
+		echo "DESIGN=$(DESIGN) is not supported!";\
+		exit 1;\
+	fi
+
 #Create configuration file for current design and settings
 create-conf-file:
 	cp config_files/connectivity_$(DESIGN)_if$(INTERFACE).ini configuration_$(DESIGN)_if$(INTERFACE).tmp.ini
@@ -128,4 +135,4 @@ create-conf-file:
 	echo "#param=compiler.worstNegativeSlack=-2" >> configuration_$(DESIGN)_if$(INTERFACE).tmp.ini
 	@if [[ $(DEVICE) = *"u50"* ]]; then\
 		sed -i 's/SLR2/SLR1/g' configuration_$(DESIGN)_if$(INTERFACE).tmp.ini;\
-    fi
+	fi

@@ -23,7 +23,8 @@ git clone https://gitenterprise.xilinx.com/mruiznog/vitis_network_layer.git --re
 | Alveo | Shell(s) |
 |-------|----------|
 | U50   | xilinx_u50_gen3x16_xdma_201920_3 |
-| U250  | xilinx_u250_gen3x16_xdma_1_1_202010_1 |
+| U200  | Not supported yet |
+| U250  | Not supported yet |
 | U280  | xilinx_u280_xdma_201920_3 |
 
 
@@ -50,7 +51,3 @@ make all DEVICE=<full platform path> INTERFACE=<interface number> DESING=<design
 The following figure depicts the different kernels and their interconnection in the Vitis project.
 
 ![](img/udp_network_basic.jpg)
-
-## Notes
-
-The file [advanced.ini](advanced.ini) configures `v++` to call an script. The path of the script must be absolute, therefore, the make process automatically updates `PATHTOTCLFILE` with the full path of the file. The file will appears as modified but SHOULD NOT be staged for commit.

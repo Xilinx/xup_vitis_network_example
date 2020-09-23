@@ -159,4 +159,4 @@ Check out [basicExample_NIC_FPGA](Notebooks/basicExample_NIC_FPGA.ipynb) to see 
 * Notebooks: this folder contains companion Jupyter notebooks to show how to run the different examples
 
 ---------------------------------------
-Copyright&copy; 2020 Xilinx
+<center> Copyright&copy; 2020 Xilinx </center>

@@ -30,7 +30,7 @@ BINARY_CONTAINERS = $(BUILD_DIR)/${XCLBIN_NAME}.xclbin
 
 NETLAYERDIR = NetLayers/
 CMACDIR     = Ethernet/
-KERNELDIR   = Kernels/
+BASICDIR    = Basic_kernels/
 BENCHMARDIR = Benchmark_kernel/
 
 NETLAYERHLS = 100G-fpga-network-stack-core
@@ -56,8 +56,8 @@ ifeq (benchmark,$(DESIGN))
 	LIST_XO += $(BENCHMARDIR)$(TEMP_DIR)/traffic_generator.xo
 	LIST_XO += $(BENCHMARDIR)$(TEMP_DIR)/collector.xo
 else
-	LIST_XO += $(KERNELDIR)$(TEMP_DIR)/krnl_mm2s.xo
-	LIST_XO += $(KERNELDIR)$(TEMP_DIR)/krnl_s2mm.xo
+	LIST_XO += $(BASICDIR)$(TEMP_DIR)/krnl_mm2s.xo
+	LIST_XO += $(BASICDIR)$(TEMP_DIR)/krnl_s2mm.xo
 endif
 
 # Linker params
@@ -92,7 +92,7 @@ $(BUILD_DIR)/${XCLBIN_NAME}.xclbin:
 	mkdir -p $(BUILD_DIR)
 	make -C $(CMACDIR) all DEVICE=$(DEVICE) INTERFACE=$(INTERFACE)
 	make -C $(NETLAYERDIR) all DEVICE=$(DEVICE)
-	make -C $(KERNELDIR) all DEVICE=$(DEVICE)
+	make -C $(BASICDIR) all DEVICE=$(DEVICE)
 	make -C $(BENCHMARDIR) all DEVICE=$(DEVICE) -j2
 	$(VPP) $(CLFLAGS) $(CONFIGFLAGS) --temp_dir $(BUILD_DIR) -l -o'$@' $(LIST_XO) $(LIST_REPOS) -j 8 
 	#--dk chipscope:traffic_generator_$(INTERFACE):S_AXIS_n2k \

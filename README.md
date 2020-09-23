@@ -132,5 +132,31 @@ Check out [basicExample_NIC_FPGA](Notebooks/basicExample_NIC_FPGA.ipynb) to see 
 
 ### Benchmark
 
+
+## Repository structure
+
+~~~
+├── Basic_kernels
+│   └── src
+├── Benchmark_kernel
+│   └── src
+├── config_files
+├── Ethernet
+│   └── cmac
+├── img
+├── NetLayers
+│   ├── 100G-fpga-network-stack-core
+│   └── src
+└── Notebooks
+~~~
+
+* Basic_kernels: this folder contains the code for the basic application (*mm2s* and *s2mm*)
+* Benchmark_kernel: this folder contains the benchmark application
+* config_files: this folder contains the different configuration files for the different examples and flavors
+* Ethernet: this folder contains the logic to generate the *cmac* kernel for the different Alveo cards and interfaces
+* img: this folder contains images 
+* NetLayers: this folder contains the logic to generate the *network\_layer* kernel, using the submodule `100G-fpga-network-stack-core`
+* Notebooks: this folder contains companion Jupyter notebooks to show how to run the different examples
+
 ---------------------------------------
 Copyright&copy; 2020 Xilinx

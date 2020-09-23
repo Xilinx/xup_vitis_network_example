@@ -118,6 +118,8 @@ The following figure depicts the different kernels and their interconnection in 
 
 ![](img/udp_network_basic.png)
 
+> **_NOTE:_** the reference clock frequency can change depending on the Alveo card.
+
 *cmac* and *network layer* kernels are explained in the section above. In this example the application is split into two kernels, memory mapped to stream (mm2s) and stream to memory mapped (s2mm).
 
 * [mm2s](Kernels/src/krnl_mm2s.cpp): pulls data from global memory and converts it to a 512-bit stream. It chunks the data into 1408-Byte packets, meaning that *last* is asserted. It also asserts *last* when there is no more data to send. The *dest* is set according to the argument with the same name.
@@ -129,3 +131,6 @@ The current limitation of this *application* is that the size of the data must b
 Check out [basicExample_NIC_FPGA](Notebooks/basicExample_NIC_FPGA.ipynb) to see how to run this example using PYNQ.
 
 ### Benchmark
+
+---------------------------------------
+Copyright&copy; 2020 Xilinx

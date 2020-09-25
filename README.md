@@ -132,6 +132,13 @@ Check out [basicExample_NIC_FPGA](Notebooks/basicExample_NIC_FPGA.ipynb) to see 
 
 ### Benchmark
 
+The following figure depicts the benchmark design, which contains four *benchmark* kernels. Each benchmark kernel has two modules, traffic generator and collector
+
+![](img/udp_network_benchmark.png)
+
+> **_NOTE:_** the reference clock frequency can change depending on the Alveo card.
+
+More information about the benchmark kernel in [Benchmark_kernel/README.md](Benchmark_kernel/README.md)
 
 ## Repository structure
 

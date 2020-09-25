@@ -17,8 +17,9 @@ help:
 
 DEVICE ?= xilinx_u280_xdma_201920_3
 INTERFACE ?= 0
-XCLBIN_NAME ?= xup_vitis_networking_if$(INTERFACE)
 DESIGN ?= benchmark
+XCLBIN_NAME ?= vnx_$(DESIGN)_if$(INTERFACE)
+
 
 XSA := $(strip $(patsubst %.xpfm, % , $(shell basename $(DEVICE))))
 TEMP_DIR := _x.$(XSA)

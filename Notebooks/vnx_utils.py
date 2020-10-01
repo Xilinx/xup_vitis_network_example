@@ -107,3 +107,5 @@ def linkStatus(cmac, debug = False):
         status_dict['rx_aligned'] = bool(shiftedWord(cmac_status,3))
 
     return status_dict
+
+benchmark_mode = ['PRODUCER', 'LATENCY', 'LOOPBACK', 'CONSUMER']

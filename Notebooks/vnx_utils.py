@@ -91,8 +91,8 @@ def initSocketTable(ol, udptable, interface = 0, device = None, \
     udp_handler = MMIO(udp_phy_address, 0x1000, False, device)
     sockets = udptable.sockets
     # Get maximum number of sockets in hardware
-    numSocketsHW = udp_handler.read(0x210)
-    if (numSocketsHW is not len(sockets)):
+    numSocketsHW = int(udp_handler.read(0x210))
+    if numSocketsHW != len(sockets):
         raise Exception('Socket list length ({}) is not equal to maximum \
             number of sockets in hardware ({})'.format(len(sockets), \
             numSocketsHW))
@@ -209,7 +209,7 @@ def readARPTable(ol, interface = 0, num_entries = 256, device = None):
          # Read 4 byte
         valid_entry  = arp_table.read(valid_address_offset  + (i//4)*4, 4)
         valid_entry  = (valid_entry >> ((i%4) * 8)) & 0x1
-        if (valid_entry == 0):
+        if valid_entry == 1:
             mac_lsb=arp_table.read(mac_address_offset + (i*2 * 4), 4)
             mac_msb=arp_table.read(mac_address_offset + ((i*2+1) * 4), 4)
             ip_addr=arp_table.read(ip_address_offset  + (i * 4), 4)

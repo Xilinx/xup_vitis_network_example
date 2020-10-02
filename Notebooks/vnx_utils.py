@@ -4,6 +4,37 @@ from pynq import MMIO
 import ipaddress
 
 def initSocketTable(ol, sockets, interface = 0, device = None, debug = False):
+    """ 
+    Populate a socket table 
+    
+    Parameters 
+    ----------
+    ol: pynq.overlay.Overlay
+      Design overlay
+
+    sockets: socket object
+      object with the 16 entries
+
+    interface: int
+      Interface number, either 0 or 1
+
+      Optionals
+      ---------
+      device: pynq.Device.devices
+        Alveo device being used
+
+      debug: bool
+        If enables read the current status of the UDP Table
+    
+    Returns
+    -------
+    If debug is enable read the current status of the UDP Table
+
+    """
+
+    if (interface != 0) or (interface != 1):
+        raise ValueError("Interface can only be 0 or 1")
+
     netlayer = 'networklayer_' + str(interface)
     network_address = ol.ip_dict[netlayer]["phys_addr"]
     udp_address_offset = ol.ip_dict[netlayer]["registers"]["udp_offset"]["address_offset"]
@@ -44,8 +75,21 @@ def initSocketTable(ol, sockets, interface = 0, device = None, debug = False):
             print("HW socket table[{:3d}], ti: 0x{:08x}\ttp: {:5d}\tmp: {:5d}\tv: {:1d}".format(i,ti,tp,mp,v))
     
 def byteOrderingEndianess(num, length = 4):
-    """ Convert from little endian to big endian
-    and viceversa
+    """ 
+    Convert from little endian to big endian and viceversa
+
+    Parameters 
+    ----------
+    num: int
+      input number
+
+    length:
+      number of bytes of the input number
+
+    Returns
+    -------
+    An integer with the endianness changed with respect to input number
+
     """
     aux = 0
     for i in range(length):
@@ -53,10 +97,41 @@ def byteOrderingEndianess(num, length = 4):
         aux += (byte_index << (i*8))
     return aux
 
-def readARPTable (ol, interface = 0, num_entries = 256, device = None):
-    """ Read the ARP table from the FPGA and print it out
+def readARPTable(ol, interface = 0, num_entries = 256, device = None):
+    """ 
+    Read the ARP table from the FPGA and print it out
     in a friendly way
+    
+    Parameters 
+    ----------
+    ol: pynq.overlay.Overlay
+      Design overlay
+
+    interface: int
+      Interface number, either 0 or 1
+
+      Optionals
+      ---------
+      num_entries: int
+        number of entries in the table to be consider when printing
+
+      device: pynq.Device.devices
+        Alveo device being used
+    
+    Returns
+    -------
+    Prints the content of valid entries in the ARP in a friendly way
+
     """
+
+    if (interface != 0) or (interface != 1):
+        raise ValueError("Interface can only be 0 or 1")
+
+    if num_entries < 0:
+        raise ValueError("Number of entries cannot be negative.")
+    elif num_entries > 256:
+        raise ValueError("Number of entries cannot be bigger than 256.")
+
     kernel = 'networklayer_' + str(interface)
     network_address = ol.ip_dict[kernel]["phys_addr"]
     arp_table = MMIO(network_address, 0x10000, False, device)   
@@ -79,19 +154,104 @@ def readARPTable (ol, interface = 0, num_entries = 256, device = None):
             print ("Position {:3}\tMAC address {}\tIP address {}"\
                    .format(i,mac_str,ipaddress.IPv4Address(ip_addr_print)))
 
-def updateIPAddress(nl, ipaddrsrt):
+def getNetworkInfo(nl):
+    """ 
+    Gets the current interface information
+    
+    Parameters 
+    ----------
+    nl: pynq.overlay.DefaultIP
+      network layer object type
+    
+    Returns
+    -------
+    A dictionary with the current configuration
+
+    """
+    mac_addr = int(nl.register_map.mac_address)
+    ip_addr  = int(nl.register_map.ip_address)
+    ip_gw    = int(nl.register_map.gateway)
+    ip_mask  = int(nl.register_map.ip_mask)
+
+    mac_hex = "{:012x}".format(mac_addr)
+    mac_str = ":".join(mac_hex[i:i+2] for i in range(0, len(mac_hex), 2))
+
+    config = {
+        'HWaddr' : ":".join(mac_hex[i:i+2] for i in range(0, len(mac_hex), 2)),
+        'inet addr' : str(ipaddress.IPv4Address(ip_addr)),
+        'gateway addr' : str(ipaddress.IPv4Address(ip_gw)),
+        'Mask' : str(ipaddress.IPv4Address(ip_gw))
+    }
+
+    return config
+
+def updateIPAddress(nl, ipaddrsrt, debug = False):
+    """ 
+    Update IP address as well as least significant octet of the
+    MAC address with the least significant octet of the IP address
+
+    Parameters 
+    ----------
+    nl: pynq.overlay.DefaultIP
+      network layer object type
+    ipaddrsrt : string
+      New IP address
+
+    debug: bool
+      if enable it will return the current configuration
+    
+    Returns
+    -------
+    Current interface configuration only if debug == True
+
+    """
     ipaddr = int(ipaddress.IPv4Address(ipaddrsrt))
     nl.register_map.ip_address = ipaddr
     currentMAC = int(nl.register_map.mac_address)
-    newMAC     = (currentMAC & 0xFFFFFFFFFF0) + (ipaddr & 0xF)
+    newMAC     = (currentMAC & 0xFFFFFFFFF00) + (ipaddr & 0xFF)
     nl.register_map.mac_address = newMAC
+
+    if debug:
+        return getNetworkInfo(nl)
     
-def shiftedWord(value, position, length = 1):
-    return (value >> position) & ((2 ** length) - 1)
+def shiftedWord(value, position, width = 1):
+    """
+    Slices a width-word from an integer 
+    
+    Parameters 
+    ----------
+    value: int
+      input word
+    position : int
+      start bit position in the output word
+    width: int
+      number of bits of the output word
+    
+    Returns
+    -------
+    An integer with the sliced word
+
+    """
+    return (value >> position) & ((2 ** width) - 1)
 
 
 def linkStatus(cmac, debug = False):
-    """ return link status. debug provides more information
+    """ 
+    Current link status. 
+    
+    Parameters 
+    ----------
+    cmac: pynq.overlay.DefaultIP
+      cmac object type
+
+    debug: bool
+      if enable provides more information
+    
+    Returns
+    -------
+    A dictionary with link status, more status information
+    is returned if debug == True
+
     """
     cmac_status = int(cmac.register_map.led_status)
     status_dict = {}

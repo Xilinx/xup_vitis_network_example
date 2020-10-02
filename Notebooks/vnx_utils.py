@@ -3,7 +3,18 @@ import numpy as np
 from pynq import MMIO
 import ipaddress
 
-def initSocketTable(ol, sockets, interface = 0, device = None, debug = False):
+class UDPTable:
+    """
+    UDP table class
+    """
+
+    def __init__(self):
+        _socketType = np.dtype([('theirIP', np.uint32), ('theirPort', \
+            np.uint16), ('myPort', np.uint16), ('valid', np.bool)])
+        self.sockets = np.zeros(16, dtype=_socketType)
+
+def initSocketTable(ol, udptable, interface = 0, device = None, \
+    debug = False):
     """ 
     Populate a socket table 
     
@@ -12,7 +23,7 @@ def initSocketTable(ol, sockets, interface = 0, device = None, debug = False):
     ol: pynq.overlay.Overlay
       Design overlay
 
-    sockets: socket object
+    udptable: UDPTable object
       object with the 16 entries
 
     interface: int
@@ -32,19 +43,28 @@ def initSocketTable(ol, sockets, interface = 0, device = None, debug = False):
 
     """
 
-    if (interface != 0) or (interface != 1):
+    if not isinstance(ol, pynq.overlay.Overlay):
+        raise ValueError("ol must be an pynq.overlay.Overlay object")
+
+    if not isinstance(udptable, UDPTable):
+        raise ValueError("udptable must be an UDPTable object")
+
+    if interface not in [0, 1]:
         raise ValueError("Interface can only be 0 or 1")
 
     netlayer = 'networklayer_' + str(interface)
     network_address = ol.ip_dict[netlayer]["phys_addr"]
-    udp_address_offset = ol.ip_dict[netlayer]["registers"]["udp_offset"]["address_offset"]
+    udp_address_offset = ol.ip_dict[netlayer]["registers"]["udp_offset"]\
+     ["address_offset"]
     udp_phy_address = network_address + udp_address_offset
     udp_handler = MMIO(udp_phy_address, 0x1000, False, device)
+    sockets = udptable.sockets
     # Get maximum number of sockets in hardware
     numSocketsHW = udp_handler.read(0x210)
     if (numSocketsHW is not len(sockets)):
-        raise Exception('Socket list length ({}) is not equal to maximum number of sockets in hardware ({})'.format(len(sockets),numSocketsHW))
-    
+        raise Exception('Socket list length ({}) is not equal to maximum \
+            number of sockets in hardware ({})'.format(len(sockets), \
+            numSocketsHW))
     
     for i in range(len(sockets)):
         ti_offset = 0x10 + i*8
@@ -57,11 +77,9 @@ def initSocketTable(ol, sockets, interface = 0, device = None, debug = False):
         udp_handler.write(mp_offset, int(sockets[i]['myPort']))
         udp_handler.write(v_offset , int(sockets[i]['valid']))
         
-
     if debug:
-        print("Number of Sockets: {}" .format(udp_handler.read(0x2d0)))
+        print("Number of Sockets: {}" .format(numSocketsHW))
         for i in range(len(sockets)):
-            #print(sockets[i])
             ti_offset = 0x10 + i*8
             tp_offset = ti_offset + len(sockets) * 8
             mp_offset = ti_offset + len(sockets) * 8 * 2
@@ -72,7 +90,8 @@ def initSocketTable(ol, sockets, interface = 0, device = None, debug = False):
             mp = udp_handler.read(mp_offset)
             v  = udp_handler.read(v_offset)
             
-            print("HW socket table[{:3d}], ti: 0x{:08x}\ttp: {:5d}\tmp: {:5d}\tv: {:1d}".format(i,ti,tp,mp,v))
+            print("HW socket table[{:3d}], ti: 0x{:08x}\ttp: {:5d}\tmp: \
+                {:5d}\tv: {:1d}".format(i,ti,tp,mp,v))
     
 def byteOrderingEndianess(num, length = 4):
     """ 
@@ -91,6 +110,14 @@ def byteOrderingEndianess(num, length = 4):
     An integer with the endianness changed with respect to input number
 
     """
+    if not isinstance(num, int):
+        raise ValueError("num must be an integer")
+
+    if not isinstance(length, int):
+        raise ValueError("length must be an positive integer")
+    elif length < 0:
+        raise ValueError("length cannot be negative")
+
     aux = 0
     for i in range(length):
         byte_index = num >> ((length-1-i)*8) & 0xFF
@@ -124,10 +151,15 @@ def readARPTable(ol, interface = 0, num_entries = 256, device = None):
 
     """
 
-    if (interface != 0) or (interface != 1):
+    if not isinstance(ol, pynq.overlay.Overlay):
+        raise ValueError("ol must be an pynq.overlay.Overlay object")
+
+    if interface not in [0, 1]:
         raise ValueError("Interface can only be 0 or 1")
 
-    if num_entries < 0:
+    if not isinstance(num_entries, int):
+        raise ValueError("Number of entries must be integer.")
+    elif num_entries < 0:
         raise ValueError("Number of entries cannot be negative.")
     elif num_entries > 256:
         raise ValueError("Number of entries cannot be bigger than 256.")
@@ -135,21 +167,24 @@ def readARPTable(ol, interface = 0, num_entries = 256, device = None):
     kernel = 'networklayer_' + str(interface)
     network_address = ol.ip_dict[kernel]["phys_addr"]
     arp_table = MMIO(network_address, 0x10000, False, device)   
-    mac_address_offset   = ol.ip_dict[kernel]["registers"]["arp_mac_addr_offset"]["address_offset"]
-    ip_address_offset    = ol.ip_dict[kernel]["registers"]["arp_ip_addr_offset"]["address_offset"]
-    valid_address_offset = ol.ip_dict[kernel]["registers"]["arp_valid_offset"]["address_offset"]
+    mac_address_offset   = ol.ip_dict[kernel]["registers"]\
+     ["arp_mac_addr_offset"]["address_offset"]
+    ip_address_offset    = ol.ip_dict[kernel]["registers"]\
+     ["arp_ip_addr_offset"]["address_offset"]
+    valid_address_offset = ol.ip_dict[kernel]["registers"]\
+     ["arp_valid_offset"]["address_offset"]
     
     for i in range(num_entries):
-        valid_entry  = arp_table.read(valid_address_offset  + (i//4)*4, 4) # Read 4 byte
+         # Read 4 byte
+        valid_entry  = arp_table.read(valid_address_offset  + (i//4)*4, 4)
         valid_entry  = (valid_entry >> ((i%4) * 8)) & 0x1
-        if (valid_entry == 1):
-            mac_addr_lsb = arp_table.read(mac_address_offset + (i*2 * 4), 4) # Read 4 bytes
-            mac_addr_msb = arp_table.read(mac_address_offset + ((i*2+1) * 4), 4) # Read 4 bytes
-            ip_addr      = arp_table.read(ip_address_offset  + (i * 4), 4) # Read 4 bytes
-            mac_addr     = (2**32) * mac_addr_msb + mac_addr_lsb
-            mac_hex = "{:012x}".format(byteOrderingEndianess(mac_addr,6))
-            mac_str = ":".join(mac_hex[i:i+2] for i in range(0, len(mac_hex), 2))
-            mac_addr_print = byteOrderingEndianess(mac_addr,6)
+        if (valid_entry == 0):
+            mac_lsb=arp_table.read(mac_address_offset + (i*2 * 4), 4)
+            mac_msb=arp_table.read(mac_address_offset + ((i*2+1) * 4), 4)
+            ip_addr=arp_table.read(ip_address_offset  + (i * 4), 4)
+            mac_addr=(2**32) * mac_msb + mac_lsb
+            mac_hex="{:012x}".format(byteOrderingEndianess(mac_addr,6))
+            mac_str=":".join(mac_hex[i:i+2] for i in range(0, len(mac_hex), 2))
             ip_addr_print = byteOrderingEndianess(ip_addr)
             print ("Position {:3}\tMAC address {}\tIP address {}"\
                    .format(i,mac_str,ipaddress.IPv4Address(ip_addr_print)))
@@ -168,6 +203,10 @@ def getNetworkInfo(nl):
     A dictionary with the current configuration
 
     """
+
+    if not isinstance(nl, pynq.overlay.DefaultIP):
+        raise ValueError("ol must be an pynq.overlay.DefaultIP object")
+
     mac_addr = int(nl.register_map.mac_address)
     ip_addr  = int(nl.register_map.ip_address)
     ip_gw    = int(nl.register_map.gateway)
@@ -205,6 +244,16 @@ def updateIPAddress(nl, ipaddrsrt, debug = False):
     Current interface configuration only if debug == True
 
     """
+
+    if not isinstance(nl, pynq.overlay.DefaultIP):
+        raise ValueError("nl must be an pynq.overlay.DefaultIP object")
+
+    if not isinstance(ipaddrsrt, str):
+        raise ValueError("ipaddrsrt must be an string type")
+
+    if not isinstance(debug, bool):
+        raise ValueError("debug must be a bool type")
+
     ipaddr = int(ipaddress.IPv4Address(ipaddrsrt))
     nl.register_map.ip_address = ipaddr
     nl.register_map.gateway    = (ipaddr & 0xFFFFFF00) + 1
@@ -233,6 +282,18 @@ def shiftedWord(value, position, width = 1):
     An integer with the sliced word
 
     """
+
+    if not isinstance(value, int):
+        raise ValueError("value must be integer.")
+
+    if not isinstance(position, int):
+        raise ValueError("position must be integer.")
+
+    if not isinstance(width, int):
+        raise ValueError("width must be integer.")
+    elif width < 0:
+        raise ValueError("width cannot be negative.")
+
     return (value >> position) & ((2 ** width) - 1)
 
 
@@ -254,18 +315,25 @@ def linkStatus(cmac, debug = False):
     is returned if debug == True
 
     """
+
+    if not isinstance(cmac, pynq.overlay.DefaultIP):
+        raise ValueError("cmac must be an pynq.overlay.DefaultIP object")
+
+    if not isinstance(debug, bool):
+        raise ValueError("debug must be a bool type")
+
     cmac_status = int(cmac.register_map.led_status)
     status_dict = {}
     
-    status_dict['cmac_link'] = bool(shiftedWord(cmac_status,0))
+    status_dict['cmac_link']=bool(shiftedWord(cmac_status,0))
     if debug:
-        status_dict['rx_busy'] = bool(shiftedWord(cmac_status,27))
-        status_dict['rx_data_fail'] = bool(shiftedWord(cmac_status,23))
-        status_dict['rx_done'] = bool(shiftedWord(cmac_status,19))
-        status_dict['tx_busy'] = bool(shiftedWord(cmac_status,15))
-        status_dict['tx_done'] = bool(shiftedWord(cmac_status,11))
-        status_dict['rx_gt_locked'] = bool(shiftedWord(cmac_status,7))
-        status_dict['rx_aligned'] = bool(shiftedWord(cmac_status,3))
+        status_dict['rx_busy']=bool(shiftedWord(cmac_status,27))
+        status_dict['rx_data_fail']=bool(shiftedWord(cmac_status,23))
+        status_dict['rx_done']=bool(shiftedWord(cmac_status,19))
+        status_dict['tx_busy']=bool(shiftedWord(cmac_status,15))
+        status_dict['tx_done']=bool(shiftedWord(cmac_status,11))
+        status_dict['rx_gt_locked']=bool(shiftedWord(cmac_status,7))
+        status_dict['rx_aligned']=bool(shiftedWord(cmac_status,3))
 
     return status_dict
 

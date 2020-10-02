@@ -180,7 +180,7 @@ def getNetworkInfo(nl):
         'HWaddr' : ":".join(mac_hex[i:i+2] for i in range(0, len(mac_hex), 2)),
         'inet addr' : str(ipaddress.IPv4Address(ip_addr)),
         'gateway addr' : str(ipaddress.IPv4Address(ip_gw)),
-        'Mask' : str(ipaddress.IPv4Address(ip_gw))
+        'Mask' : str(ipaddress.IPv4Address(ip_mask))
     }
 
     return config
@@ -207,6 +207,7 @@ def updateIPAddress(nl, ipaddrsrt, debug = False):
     """
     ipaddr = int(ipaddress.IPv4Address(ipaddrsrt))
     nl.register_map.ip_address = ipaddr
+    nl.register_map.gateway    = (ipaddr & 0xFFFFFF00) + 1
     currentMAC = int(nl.register_map.mac_address)
     newMAC     = (currentMAC & 0xFFFFFFFFF00) + (ipaddr & 0xFF)
     nl.register_map.mac_address = newMAC

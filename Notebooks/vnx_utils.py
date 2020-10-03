@@ -121,8 +121,8 @@ def initSocketTable(ol, udptable, interface = 0, device = None, \
             mp = udp_handler.read(mp_offset)
             v  = udp_handler.read(v_offset)
             
-            print("HW socket table[{:3d}], ti: 0x{:08x}\ttp: {:5d}\tmp: \
-                {:5d}\tv: {:1d}".format(i,ti,tp,mp,v))
+            print("HW socket table[{:3d}], ti: {}\ttp: {:5d}\tmp: {:5d}\t\
+                v: {:1d}".format(i,str(ipaddress.IPv4Address(ti)),tp,mp,v))
     
 def byteOrderingEndianess(num, length = 4):
     """ 
@@ -220,6 +220,29 @@ def readARPTable(ol, interface = 0, num_entries = 256, device = None):
             print ("Position {:3}\tMAC address {}\tIP address {}"\
                    .format(i,mac_str,ipaddress.IPv4Address(ip_addr_print)))
 
+def arpDiscovery(nl):
+    """ 
+    Launch ARP discovery
+
+    Parameters 
+    ----------
+    nl: pynq.overlay.DefaultIP
+      network layer object type
+    
+    Returns
+    -------
+    None
+
+    """
+    
+    if not isinstance(nl, pynq.overlay.DefaultIP):
+        raise ValueError("nl must be an pynq.overlay.DefaultIP object")
+
+    # The ARP discovery is trigger with the rising edge
+    nl.register_map.arp_discovery = 0
+    nl.register_map.arp_discovery = 1
+    nl.register_map.arp_discovery = 0
+
 def getNetworkInfo(nl):
     """ 
     Gets the current interface information
@@ -295,7 +318,7 @@ def updateIPAddress(nl, ipaddrsrt, debug = False):
     if debug:
         return getNetworkInfo(nl)
     
-def shiftedWord(value, position, width = 1):
+def shiftedWord(value, index, width = 1):
     """
     Slices a width-word from an integer 
     
@@ -303,8 +326,8 @@ def shiftedWord(value, position, width = 1):
     ----------
     value: int
       input word
-    position : int
-      start bit position in the output word
+    index : int
+      start bit index in the output word
     width: int
       number of bits of the output word
     
@@ -317,15 +340,15 @@ def shiftedWord(value, position, width = 1):
     if not isinstance(value, int):
         raise ValueError("value must be integer.")
 
-    if not isinstance(position, int):
-        raise ValueError("position must be integer.")
+    if not isinstance(index, int):
+        raise ValueError("index must be integer.")
 
     if not isinstance(width, int):
         raise ValueError("width must be integer.")
     elif width < 0:
         raise ValueError("width cannot be negative.")
 
-    return (value >> position) & ((2 ** width) - 1)
+    return (value >> index) & ((2 ** width) - 1)
 
 
 def linkStatus(cmac, debug = False):
@@ -358,13 +381,13 @@ def linkStatus(cmac, debug = False):
     
     status_dict['cmac_link']=bool(shiftedWord(cmac_status,0))
     if debug:
-        status_dict['rx_busy']=bool(shiftedWord(cmac_status,27))
-        status_dict['rx_data_fail']=bool(shiftedWord(cmac_status,23))
-        status_dict['rx_done']=bool(shiftedWord(cmac_status,19))
-        status_dict['tx_busy']=bool(shiftedWord(cmac_status,15))
-        status_dict['tx_done']=bool(shiftedWord(cmac_status,11))
-        status_dict['rx_gt_locked']=bool(shiftedWord(cmac_status,7))
-        status_dict['rx_aligned']=bool(shiftedWord(cmac_status,3))
+        status_dict['rx_busy']=bool(shiftedWord(cmac_status,28))
+        status_dict['rx_data_fail']=bool(shiftedWord(cmac_status,24))
+        status_dict['rx_done']=bool(shiftedWord(cmac_status,20))
+        status_dict['tx_busy']=bool(shiftedWord(cmac_status,16))
+        status_dict['tx_done']=bool(shiftedWord(cmac_status,12))
+        status_dict['rx_gt_locked']=bool(shiftedWord(cmac_status,8))
+        status_dict['rx_aligned']=bool(shiftedWord(cmac_status,4))
 
     return status_dict
 

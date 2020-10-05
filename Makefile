@@ -78,7 +78,7 @@ LIST_REPOS += --user_ip_repo_paths $(HLS_IP_FOLDER)
 
 
 .PHONY: all clean distclean 
-all: check-devices check-vitis check-xrt check-design create-conf-file $(BINARY_CONTAINERS)
+all: check-devices check-vitis check-xrt check-design check-interface create-conf-file $(BINARY_CONTAINERS)
 
 # Cleaning stuff
 clean:
@@ -123,6 +123,16 @@ endif
 check-design:
 	@if [[ ($(DESIGN) != "benchmark") && ($(DESIGN) != "basic") ]]; then\
 		echo "DESIGN=$(DESIGN) is not supported!";\
+		exit 1;\
+	fi
+
+check-interface:
+	@if [[ ($(XSA) =~ "u50") && ($(INTERFACE) != 0) ]]; then\
+		echo "Platform $(XSA) only has INTERFACE=0!";\
+		exit 1;\
+	fi
+	@if [[ ($(INTERFACE) != 0) && ($(INTERFACE) != 1) && ($(INTERFACE) != 3) ]]; then\
+		echo "Interface $(INTERFACE) is not supported in platform $(XSA)!";\
 		exit 1;\
 	fi
 

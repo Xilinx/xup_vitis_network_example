@@ -1,6 +1,3 @@
-[submodule "Ethernet/cmac"]
-	path = Ethernet/cmac
-	url = https://gitenterprise.xilinx.com/mruiznog/cmac.git
 [submodule "NetLayers/100G-fpga-network-stack-core"]
 	path = NetLayers/100G-fpga-network-stack-core
 	url = https://gitenterprise.xilinx.com/mruiznog/100G-fpga-network-stack-core.git

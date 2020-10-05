@@ -1,98 +1,40 @@
-# Vitis Network Example (VNx)
+# XUP Vitis Network Example (VNx)
 
-VNx repository contains example designs to provide network support at 100 Gbit/s using the GT kernel capability present in most Alveo shells, [see supported shells below](#alveo-cards). GT kernel capability exposes the GT pins to the dynamic region of the shell, and, therefore GT capable kernels can be connected to such pins. To know more check out [Designing a Transceiver-based Application with Vitis](https://developer.xilinx.com/en/articles/designing-a-transceiver-based-application-with-vitus.html).
+This repository contains design examples that shows how to provide network support at 100 Gbit/s in Vitis. These examples can be used with any Alveo shell that exposes the QSFP28 Gigabit Transceiver (GT) pins to the dynamic region, [see supported platforms below](#alveo-cards). To find out more check out [Designing a Transceiver-based Application with Vitis](https://developer.xilinx.com/en/articles/designing-a-transceiver-based-application-with-vitus.html).
 
-Currently, this repository only provides UDP examples.
+This repository provides: 
+
+* Source code for the common network infrastructure with UDP support
+* Scripts to compile and link the kernels
+* Out-of-the-box applications that uses UDP as transport protocol (`basic` and `benchmark`)
+* PYNQ host code and helper functions
+* DASK integration for multiple FPGAs configuration and task scheduling
 
 ## Clone this repository
 
-The repository is based on [Limago](https://github.com/hpcn-uam/Limago), and uses its underlying infrastructure as a submodule, therefore, use `--recursive` to clone it.
+Check out the examples by cloning the repository.
 
 ```sh
 git clone https://github.com/Xilinx/xup_vitis_network_example.git --recursive
 ```
 
-## Support
-
-### Tools
-
-| Vitis  | XRT       |
-|--------|-----------|
-| 2020.1 | 2.6.655   |
-
-### Alveo Cards
-
-| Alveo | Shell(s) |
-|-------|----------|
-| U50   | xilinx_u50_gen3x16_xdma_201920_3 |
-| U200  | Not supported yet |
-| U250  | xilinx-u250-gen3x16-xdma-2.1-202010 <br/> xilinx-u250-gen3x16-qdma-2.1-202010 |
-| U280  | xilinx_u280_xdma_201920_3 |
-
-
-## Generate XCLBIN
-
-Run 
-```sh
-make all DEVICE=<full platform path> INTERFACE=<interface number> DESING=<design name>
-```
-
-* Interface can be 0, 1 or 3. If `INTERFACE=3`, both interfaces will be used.
-* `DESING` only support the following strings `basic` and `benchmark`. If you use something different, `benchmark` will be implemented
-* The basic configuration file is pulled from [config_files](config_files) folder and complete with `userPostSysLinkOverlayTcl` parameter and in the make process.
-* [post_sys_link.tcl](post_sys_link.tcl) is automatically called from `v++` after system link. It is used to connect the GT capable pins.
-* The `XCLBIN` will be generated in the folder \<DESIGN\>.intf\<INTERFACE\>.\<(short)DEVICE\>
-
-### Requirements
-
-In order to generate this design you will need a valid [UltraScale+ Integrated 100G Ethernet Subsystem](https://www.xilinx.com/products/intellectual-property/cmac_usplus.html) license set up in Vivado.
-
-### Limitations: 
-
-- `xilinx_u50_gen3x16_xdma_201920_3` is giving link against a NIC, but not against U280
-
 ## Common infrastructure
 
-This section provides a brief overview of the common infrastructure needed for the examples to work.
+This section provides a brief overview of the common infrastructure needed for the examples to work. The examples rely on the same underlying infrastructure, which is `cmac` and `network_layer` kernels.
 
-Currently, only UDP is supported. The examples rely on the same underlying infrastructure, which is `cmac` and `network_layer` kernels.
+![](img/udp_network_infrastructure.png)
 
 ### cmac kernel
 
-It contains an UltraScale+ Integrated 100G Ethernet Subsystem. This kernel is configured according to the `INTERFACE` and `DEVICE` arguments passed to make. It exposes two 512-bit AXI4-Stream interfaces (S_AXIS and M_AXIS) to the user logic, which run at the same frequency as the kernel, internally it has CDC logic to convert from kernel clock to the 100G Ethernet Subsystem clock. It also provides and AXI4-Lite interface to check *cmac* statistics.
+The `cmac_kernel` contains an UltraScale+ Integrated 100G Ethernet Subsystem. This kernel is configured according to the `INTERFACE` and `DEVICE` arguments passed to make. It exposes two 512-bit AXI4-Stream interfaces (S_AXIS and M_AXIS) to the user logic, which run at the same frequency as the kernel, internally it has CDC (clock domain crossing) logic to convert from kernel clock to the 100G Ethernet Subsystem clock. It also provides and AXI4-Lite interface to check *cmac* statistics.
 
 ### network_layer kernel
 
-It is a collection of HLS modules to provide basic network functionality. It exposes two 512-bit (with 16-bit TDEST) AXI4-Stream to the application, S_AXIS_sk2nl and M_AXIS_nl2sk.
+The network layer kernel is a collection of HLS modules to provide basic network functionality. It exposes two 512-bit (with 16-bit TDEST) AXI4-Stream to the application, S_AXIS_sk2nl and M_AXIS_nl2sk.
 
-#### ARP
-It provides a translation between IP addresses and MAC addresses. This table has 256 elements and it is accessible using AXI4-Lite. It also has ARP discovery capability to map IP addresses on its subnetwork.
+The ARP table is readable from the host side, and the UDP table is configurable from the host as well. Helper functions to read and configure the tables are available in [Notebooks/vnx_utils.py](Notebooks/vnx_utils.py).
 
-```C
-struct arpTableEntry {
-  ap_uint<48> macAddress;
-  ap_uint<32> ipAddress;
-  ap_uint<1>  valid;
-}
-```
-
-#### ICMP
-It provides ping capability. It is useful to check if the design is *up* when using standard network equipment such as, routers or NICs.
-
-#### UDP
-
-It provides UDP transport layer functionality. It has a 16-element socket table, which must be filled from the host side in order to receive and send data. 
-
-```C
-struct socket_table {
-  ap_uint<32>     theirIP;
-  ap_uint<16>     theirPort;
-  ap_uint<16>     myPort;
-  ap_uint< 1>     valid;
-}
-```
-
-The application communicates with this module using the *S_AXIS_sk2nl* and *M_AXIS_nl2sk* AXI4-Stream interfaces with the following structure:
+The application communicates with the UDP module using *S_AXIS_sk2nl* and *M_AXIS_nl2sk* AXI4-Stream interfaces with the following structure:
 
 ```C
 struct my_axis_udp {
@@ -103,11 +45,7 @@ struct my_axis_udp {
 }
 ```
 
-In the transmitting side, the application sends the payload identifying the socket using `dest`. If the socket is valid, an UDP packet containing the payload is populated to the network. If the socket is not valid, the payload is dropped.
-
-In the receiving side UDP packets are parsed and the socket information is compared against the socket table. If the socket information is valid, the UDP will populate the payload to the application setting `dest` accordingly.
-
-Currently to simplify the receiver side logic, valid incoming connections must be fully specified in the socket table. 
+To find out more about this kernel check out [NetLayers/README.md](NetLayers/README.md)
 
 
 ## Examples
@@ -140,6 +78,44 @@ The following figure depicts the benchmark design, which contains four *benchmar
 
 More information about the benchmark kernel in [Benchmark_kernel/README.md](Benchmark_kernel/README.md)
 
+
+## Support
+
+### Tools
+
+| Vitis  | XRT       |
+|--------|-----------|
+| 2020.1 | 2.6.655   |
+
+### Alveo Cards
+
+| Alveo | Development Target Platform(s) |
+|-------|----------|
+| U50   | xilinx_u50_gen3x16_xdma_201920_3 |
+| U200  | Not currently available |
+| U250  | xilinx-u250-gen3x16-xdma-2.1-202010 <br/> xilinx-u250-gen3x16-qdma-2.1-202010 |
+| U280  | xilinx_u280_xdma_201920_3 |
+
+### Requirements
+
+In order to generate this design you will need a valid [UltraScale+ Integrated 100G Ethernet Subsystem](https://www.xilinx.com/products/intellectual-property/cmac_usplus.html) license set up in Vivado.
+
+## Generate XCLBIN
+
+To implement any of the examples run:
+
+```sh
+make all DEVICE=<full platform path> INTERFACE=<interface number> DESIGN=<design name>
+```
+
+* `DEVICE` Alveo development target platform, [see supported platforms](#alveo-cards)
+* Interface can be 0, 1 or 3. If `INTERFACE=3`, both interfaces can be used. Note that Alveo U50 only has one interface available (`INTERFACE=0`)
+* `DESIGN` only support the following strings `basic` and `benchmark`. If you use something different, an error will be reported
+* The basic configuration file is pulled from [config_files](config_files) folder and complete with `userPostSysLinkOverlayTcl` parameter and in the make process.
+* [post_sys_link.tcl](post_sys_link.tcl) is automatically called from `v++` after system link. It is used to connect the GT capable pins to the cmac kernel(s)
+* The `XCLBIN` will be generated in the folder \<DESIGN\>.intf_\<INTERFACE\>.\<(short)DEVICE\>
+
+
 ## Repository structure
 
 ~~~
@@ -165,5 +141,13 @@ More information about the benchmark kernel in [Benchmark_kernel/README.md](Benc
 * NetLayers: this folder contains the logic to generate the *network\_layer* kernel, using the submodule `100G-fpga-network-stack-core`
 * Notebooks: this folder contains companion Jupyter notebooks to show how to run the different examples
 
----------------------------------------
-<center> Copyright&copy; 2020 Xilinx </center>
+## Licenses
+
+**Vitis Network Example (VNx)** License [BSD 3-Clause License](LICENSE.md)
+
+**Ethernet/cmac** License: [BSD 3-Clause License](THIRD_PARTY_LIC.md)
+
+**NetLayers/100G-fpga-network-stack-core** License: [BSD 3-Clause License](THIRD_PARTY_LIC.md)
+
+------------------------------------------------------
+<p align="center">Copyright&copy; 2020 Xilinx</p>

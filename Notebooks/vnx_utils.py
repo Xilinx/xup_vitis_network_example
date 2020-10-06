@@ -40,7 +40,7 @@ class UDPTable:
     """
 
     def __init__(self):
-        _socketType = np.dtype([('theirIP', np.uint32), ('theirPort', \
+        _socketType = np.dtype([('theirIP', np.unicode_, 16), ('theirPort', \
             np.uint16), ('myPort', np.uint16), ('valid', np.bool)])
         self.sockets = np.zeros(16, dtype=_socketType)
 
@@ -93,7 +93,11 @@ def initSocketTable(nl, udptable, debug = False):
         mp_offset = ti_offset + len(sockets) * 8 * 2
         v_offset  = ti_offset + len(sockets) * 8 * 3
         
-        nl.write(ti_offset, int(sockets[i]['theirIP']))
+        theirIP = 0
+        if sockets[i]['theirIP']:
+            theirIP = int(ipaddress.IPv4Address(sockets[i]['theirIP']))
+
+        nl.write(ti_offset, theirIP)
         nl.write(tp_offset, int(sockets[i]['theirPort']))
         nl.write(mp_offset, int(sockets[i]['myPort']))
         nl.write(v_offset , int(sockets[i]['valid']))

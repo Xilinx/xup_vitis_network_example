@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root versionMajor="1" versionMinor="0">
+  <kernel name="switch_wrapper" language="ip" vlnv="xilinx.com:kernel:switch_wrapper:1.0" attributes="" preferredWorkGroupSizeMultiple="0" workGroupSize="1" interrupt="false" hwControlProtocol="ap_ctrl_none">
+    <ports>
+      <port name="s_rx_in"     mode="read_only"  dataWidth="512" portType="stream"/>
+      <port name="s_tx_in0"    mode="read_only"  dataWidth="512" portType="stream"/>
+      <port name="s_tx_in1"    mode="read_only"  dataWidth="512" portType="stream"/>
+      <port name="s_tx_in2"    mode="read_only"  dataWidth="512" portType="stream"/>
+      <port name="s_tx_in3"    mode="read_only"  dataWidth="512" portType="stream"/>
+      <port name="m_rx_out0"   mode="write_only" dataWidth="512" portType="stream"/>
+      <port name="m_rx_out1"   mode="write_only" dataWidth="512" portType="stream"/>
+      <port name="m_rx_out2"   mode="write_only" dataWidth="512" portType="stream"/>
+      <port name="m_rx_out3"   mode="write_only" dataWidth="512" portType="stream"/>
+      <port name="m_tx_out"    mode="write_only" dataWidth="512" portType="stream"/>
+    </ports>
+    <args>
+      <!-- Streaming connections -->
+      <arg name="s_rx_in"     addressQualifier="4" id="1" port="s_rx_in"    type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
+      <arg name="s_tx_in0"    addressQualifier="4" id="1" port="s_tx_in0"   type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
+      <arg name="s_tx_in1"    addressQualifier="4" id="1" port="s_tx_in1"   type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
+      <arg name="s_tx_in2"    addressQualifier="4" id="1" port="s_tx_in2"   type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
+      <arg name="s_tx_in3"    addressQualifier="4" id="1" port="s_tx_in3"   type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
+      <arg name="m_rx_out0"   addressQualifier="4" id="1" port="m_rx_out0"  type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
+      <arg name="m_rx_out1"   addressQualifier="4" id="1" port="m_rx_out1"  type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
+      <arg name="m_rx_out2"   addressQualifier="4" id="1" port="m_rx_out2"  type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
+      <arg name="m_rx_out3"   addressQualifier="4" id="1" port="m_rx_out3"  type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
+      <arg name="m_tx_out"    addressQualifier="4" id="1" port="m_tx_out"   type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
+    </args>
+  </kernel>
+</root>

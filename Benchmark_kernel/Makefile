@@ -27,8 +27,8 @@ VPP := $(XILINX_VITIS)/bin/v++
 CLFLAGS += -t hw --platform $(DEVICE) --save-temps
 
 BINARY_HLD_OBJS = $(TEMP_DIR)/${KRNL_NAME_HDL}.xo
+BINARY_HLD_OBJS += $(TEMP_DIR)/${KRNL_SWITCH}.xo
 BINARY_HLS_OBJS = $(TEMP_DIR)/${KRNL_NAME_HLS}.xo
-BINARY_HLS_OBJS = $(TEMP_DIR)/${KRNL_SWITCH}.xo
 
 .PHONY: all clean cleanall 
 all: check-devices check-vivado check-vitis $(BINARY_HLD_OBJS) $(BINARY_HLS_OBJS)

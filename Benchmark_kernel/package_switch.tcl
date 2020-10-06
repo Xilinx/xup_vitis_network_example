@@ -58,8 +58,12 @@ add_files -norecurse ${path_to_hdl}/switch_wrapper.v
 # Create block design
 source switch_bd.tcl -notrace
 # Set top function
-set_property top switch_wrapper [current_fileset]
+
+generate_target all [get_files  ${path_to_tmp_project}/${projName}.srcs/sources_1/bd/${bd_name}/${bd_name}.bd]
+export_ip_user_files -of_objects [get_files ${path_to_tmp_project}/${projName}.srcs/sources_1/bd/${bd_name}/${bd_name}.bd] -no_script -sync -force -quiet
+create_ip_run [get_files -of_objects [get_fileset sources_1] ${path_to_tmp_project}/${projName}.srcs/sources_1/bd/${bd_name}/${bd_name}.bd]
 update_compile_order -fileset sources_1
+set_property top switch_wrapper [current_fileset]
 
 # Package IP
 ipx::package_project -root_dir ${path_to_packaged} -vendor xilinx.com -library RTLKernel -taxonomy /KernelIP -import_files -set_current false

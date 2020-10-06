@@ -298,6 +298,7 @@ proc create_root_design { parentCell } {
    CONFIG.NUM_SI {4} \
    CONFIG.TDATA_NUM_BYTES {64} \
    CONFIG.TDEST_WIDTH {16} \
+   CONFIG.M00_AXIS_HIGHTDEST {0xFFFFFFFF} \
  ] $axis_switch_4to1
 
   # Create instance: xlconstant_0, and set properties

@@ -103,9 +103,12 @@ module axi4lite # (
     output wire                        [15:0]   number_beats,
     output wire                        [31:0]   time_between_packets,
     output wire                                 debug_reset_n,
+    output wire                                 reset_fsm_n,
     input wire                        [191:0]   debug_slot_producer,
     input wire                        [191:0]   debug_slot_consumer,
-    input wire                        [191:0]   debug_slot_summary
+    input wire                        [191:0]   debug_slot_summary,
+    input wire                          [4:0]   debug_fsm_main,
+    input wire                          [1:0]   debug_fsm_summary
 
 );
 
@@ -132,14 +135,15 @@ module axi4lite # (
     //-- Signals for user logic register space example
     //------------------------------------------------
     //-- Number of Slave Registers 32
-    reg [AXIL_DATA_WIDTH-1:0]    crtl_signals;
-    reg [AXIL_DATA_WIDTH-1:0]    mode_reg;
-    reg [AXIL_DATA_WIDTH-1:0]    outbound_dest_reg;
-    reg [AXIL_DATA_WIDTH-1:0]    num_pkts_lsb_reg;
-    reg [AXIL_DATA_WIDTH-1:0]    num_pkts_msb_reg;
-    reg [AXIL_DATA_WIDTH-1:0]    num_beats_reg;
-    reg [AXIL_DATA_WIDTH-1:0]    tbwp_reg;
-    reg [AXIL_DATA_WIDTH-1:0]    debug_reset_reg;
+    reg [AXIL_DATA_WIDTH-1:0]    crtl_signals = 32'h0;
+    reg [AXIL_DATA_WIDTH-1:0]    mode_reg = 32'h0;
+    reg [AXIL_DATA_WIDTH-1:0]    outbound_dest_reg = 32'h0;
+    reg [AXIL_DATA_WIDTH-1:0]    num_pkts_lsb_reg = 32'h0;
+    reg [AXIL_DATA_WIDTH-1:0]    num_pkts_msb_reg = 32'h0;
+    reg [AXIL_DATA_WIDTH-1:0]    num_beats_reg = 32'h0;
+    reg [AXIL_DATA_WIDTH-1:0]    tbwp_reg = 32'h0;
+    reg [AXIL_DATA_WIDTH-1:0]    reset_fsm = 32'h0;
+    reg [AXIL_DATA_WIDTH-1:0]    debug_reset_reg = 32'h0;
     wire     slv_reg_rden;
     wire     slv_reg_wren;
     reg [AXIL_DATA_WIDTH-1:0]     reg_data_out;
@@ -240,11 +244,13 @@ module axi4lite # (
             num_pkts_msb_reg  <= 32'h0;
             num_beats_reg     <= 32'h0;
             debug_reset_reg   <= 32'h0;
+            reset_fsm         <= 32'h0;
         end 
         else begin
             // Self clear
             crtl_signals    <= 32'h0;
             debug_reset_reg <= 32'h0;
+            //reset_fsm       <= 32'h0;
             if (slv_reg_wren) begin
                 case ( axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )
                     5'h00:
@@ -284,6 +290,11 @@ module axi4lite # (
                             if ( S_AXIL_WSTRB[byte_index] == 1 ) begin
                                 tbwp_reg[(byte_index*8) +: 8] <= S_AXIL_WDATA[(byte_index*8) +: 8];
                             end  
+                    5'h0A:
+                        for ( byte_index = 0; byte_index <= (AXIL_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
+                            if ( S_AXIL_WSTRB[byte_index] == 1 ) begin
+                                reset_fsm[(byte_index*8) +: 8] <= S_AXIL_WDATA[(byte_index*8) +: 8];
+                            end                              
                     5'h1F:
                         for ( byte_index = 0; byte_index <= (AXIL_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
                             if ( S_AXIL_WSTRB[byte_index] == 1 ) begin
@@ -298,6 +309,7 @@ module axi4lite # (
                         num_pkts_msb_reg  <= num_pkts_msb_reg;
                         num_beats_reg     <= num_beats_reg;
                         tbwp_reg          <= tbwp_reg;
+                        reset_fsm         <= reset_fsm;
                         debug_reset_reg   <= debug_reset_reg;
                     end
                 endcase
@@ -382,7 +394,8 @@ module axi4lite # (
         end
     end    
 
-    reg ap_done_1d;
+    reg ap_done_1d  = 1'b0;
+    reg ap_start_1d = 1'b0;
     // Implement memory mapped register select and read logic generation
     // Slave register read enable is asserted when valid address is available
     // and the slave is ready to accept the read address.
@@ -390,13 +403,20 @@ module axi4lite # (
     always @(*) begin
           // Address decoding for reading registers
           case ( axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )
-            5'h00   : reg_data_out <= {{29{1'b0}},ap_idle,ap_done_1d,crtl_signals[0]};
+            /* Bit Name 
+             *   0 ap_start
+             *   1 ap_done
+             *   2 ap_idle
+            */
+            5'h00   : reg_data_out <= {{29{1'b0}},ap_idle,ap_done_1d,ap_start_1d};
             5'h04   : reg_data_out <= mode_reg;
             5'h05   : reg_data_out <= outbound_dest_reg;
             5'h06   : reg_data_out <= num_pkts_lsb_reg;
             5'h07   : reg_data_out <= num_pkts_msb_reg;
             5'h08   : reg_data_out <= num_beats_reg;
             5'h09   : reg_data_out <= tbwp_reg;
+            5'h0A   : reg_data_out <= reset_fsm;
+            5'h0B   : reg_data_out <= {{16'h0,{6'h0,debug_fsm_summary},{3'h0,debug_fsm_main}}};
             5'h0D   : reg_data_out <= debug_slot_producer[160 +: 32];
             5'h0E   : reg_data_out <= debug_slot_producer[128 +: 32];
             5'h0F   : reg_data_out <= debug_slot_producer[ 96 +: 32];
@@ -434,6 +454,19 @@ module axi4lite # (
         end
     end
 
+    // Hold high ap_start until ap_done is asserted
+    always @( posedge S_AXIL_ACLK ) begin
+        if ( S_AXIL_ARESETN == 1'b0 ) begin
+            ap_start_1d  <= 0;
+        end 
+        else begin
+            if (crtl_signals[0])
+                ap_start_1d <= 1'b1;
+            if (ap_done)
+                ap_start_1d <= 1'b0;
+        end
+    end
+
     // Hold ap_done until the address 0x0 is read
     always @( posedge S_AXIL_ACLK ) begin
         if ( S_AXIL_ARESETN == 1'b0 ) begin
@@ -454,6 +487,7 @@ module axi4lite # (
     assign number_packets       = {num_pkts_msb_reg[7:0],num_pkts_lsb_reg};
     assign number_beats         = num_beats_reg[15:0];
     assign time_between_packets = tbwp_reg[15:0];
+    assign reset_fsm_n          = ~reset_fsm[0];
     assign debug_reset_n        = ~debug_reset_reg[0];
 
 endmodule

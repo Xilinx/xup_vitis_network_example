@@ -74,9 +74,12 @@ module segment_generator #(
   input wire                        [31:0]    time_between_packets,
   input wire   [STREAMING_TDEST_WIDTH-1:0]    dest_id,
   input wire                         [1:0]    mode,
+  input wire                                  reset_fsm_n,
   input wire                                  ap_start,
   output reg                                  ap_idle,
-  output reg                                  ap_done
+  output reg                                  ap_done,
+  output wire                        [4:0]    debug_fsm_main,
+  output wire                        [1:0]    debug_fsm_summary
 );
 
 
@@ -137,7 +140,7 @@ module segment_generator #(
   reg [3:0]      fsm_state = GET_CONFIGURATION;
 
   always @(posedge ap_clk) begin
-    if (~ap_rst_n) begin
+    if (~ap_rst_n || ~reset_fsm_n) begin
       ap_done            <= 1'b0;
       ap_idle            <= 1'b1;
       producer_tdata     <= {(AXIS_TDATA_WIDTH/8){1'b1}};
@@ -301,7 +304,7 @@ module segment_generator #(
 
 
   always @(posedge ap_clk) begin
-    if (~ap_rst_n) begin
+    if (~ap_rst_n || ~reset_fsm_n) begin
       M_AXIS_summary_tdata  <= {AXIS_SUMMARY_WIDTH{1'b0}};
       M_AXIS_summary_tvalid <= 1'b0;
       M_AXIS_summary_tlast  <= 1'b0;
@@ -366,6 +369,7 @@ module segment_generator #(
     end
   end
 
-
+  assign debug_fsm_main    = fsm_state;
+  assign debug_fsm_summary = fsm_summary_state;
 
 endmodule

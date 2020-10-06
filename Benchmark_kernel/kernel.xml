@@ -14,6 +14,8 @@
       <arg name="number_packets"          addressQualifier="0" id="0" port="S_AXIL" size="0x8" offset="0x18" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="number_beats"            addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x20" type="uint" hostOffset="0x00" hostSize="0x4"/> 
       <arg name="time_between_packets"    addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x24" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="reset_fsm"               addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x28" type="uint" hostOffset="0x00" hostSize="0x4"/> 
+      <arg name="debug_fsms"              addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x2C" type="uint" hostOffset="0x00" hostSize="0x4"/> 
       <!-- Debug port Register Map-->
       <arg name="out_traffic_cycles"      addressQualifier="0" id="0" port="S_AXIL" size="0x8" offset="0x34" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="out_traffic_bytes"       addressQualifier="0" id="0" port="S_AXIL" size="0x8" offset="0x3C" type="uint" hostOffset="0x00" hostSize="0x8"/> 

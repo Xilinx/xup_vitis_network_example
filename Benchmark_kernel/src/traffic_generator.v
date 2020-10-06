@@ -96,6 +96,7 @@ module traffic_generator #(
     wire                                 ap_idle_w;
     wire                                 ap_start_w;
     wire                         [1:0]   mode_w;
+    wire                                 reset_fsm_n_w;
     wire   [STREAMING_TDEST_WIDTH-1:0]   dest_id_w;
     wire                        [39:0]   number_packets_w;
     wire                        [15:0]   number_beats_w;
@@ -104,6 +105,8 @@ module traffic_generator #(
     wire                       [191:0]   debug_slot_consumer;
     wire                       [191:0]   debug_slot_summary;
     wire                                 debug_reset_n;
+    wire                         [4:0]    debug_fsm_main_w;
+    wire                         [1:0]    debug_fsm_summary_w;
 
     segment_generator #(
         .AXIS_TDATA_WIDTH      (       AXIS_TDATA_WIDTH),
@@ -137,9 +140,12 @@ module traffic_generator #(
         .time_between_packets  ( time_between_packets_w),
         .dest_id               (              dest_id_w),
         .mode                  (                 mode_w),
+        .reset_fsm_n           (          reset_fsm_n_w),
         .ap_start              (             ap_start_w),
         .ap_idle               (              ap_idle_w),
-        .ap_done               (              ap_done_w)
+        .ap_done               (              ap_done_w),
+        .debug_fsm_main        (       debug_fsm_main_w),
+        .debug_fsm_summary     (    debug_fsm_summary_w)
     );
 
     axi4lite #(
@@ -174,10 +180,13 @@ module traffic_generator #(
         .number_packets       (      number_packets_w),
         .number_beats         (        number_beats_w),
         .time_between_packets (time_between_packets_w),
+        .reset_fsm_n          (         reset_fsm_n_w),
         .debug_reset_n        (         debug_reset_n),
         .debug_slot_producer  (   debug_slot_producer),
         .debug_slot_consumer  (   debug_slot_consumer),
-        .debug_slot_summary   (    debug_slot_summary)
+        .debug_slot_summary   (    debug_slot_summary),
+        .debug_fsm_main       (      debug_fsm_main_w),
+        .debug_fsm_summary    (   debug_fsm_summary_w)
     );
 
     bandwith_reg #(

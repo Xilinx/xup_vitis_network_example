@@ -38,6 +38,7 @@ NETLAYERHLS = 100G-fpga-network-stack-core
 
 POSTSYSLINKTCL ?= $(shell readlink -f ./post_sys_link.tcl)
 CMAC_IP_FOLDER ?= $(shell readlink -f ./$(CMACDIR)/cmac)
+SWITCH_IP_FOLDER ?= $(shell readlink -f ./$(BENCHMARDIR)/packaged_kernel_switch_wrapper_$(XSA))
 
 
 LIST_XO = $(NETLAYERDIR)$(TEMP_DIR)/networklayer.xo
@@ -56,6 +57,7 @@ endif
 ifeq (benchmark,$(DESIGN))
 	LIST_XO += $(BENCHMARDIR)$(TEMP_DIR)/traffic_generator.xo
 	LIST_XO += $(BENCHMARDIR)$(TEMP_DIR)/collector.xo
+	LIST_XO += $(BENCHMARDIR)$(TEMP_DIR)/switch_wrapper.xo
 else
 	LIST_XO += $(BASICDIR)$(TEMP_DIR)/krnl_mm2s.xo
 	LIST_XO += $(BASICDIR)$(TEMP_DIR)/krnl_s2mm.xo
@@ -75,6 +77,7 @@ endif
 
 LIST_REPOS := --user_ip_repo_paths $(CMAC_IP_FOLDER)
 LIST_REPOS += --user_ip_repo_paths $(HLS_IP_FOLDER)
+LIST_REPOS += --user_ip_repo_paths $(SWITCH_IP_FOLDER)
 
 
 .PHONY: all clean distclean 

@@ -28,7 +28,6 @@
 
 
 set projName kernel_pack
-set bd_name network_layer_bd
 set root_dir "[file normalize "."]"
 set path_to_hdl "${root_dir}/src"
 set path_to_hdl_debug "${root_dir}/../NetLayers/src"

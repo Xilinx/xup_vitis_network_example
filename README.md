@@ -82,9 +82,9 @@ More information about the benchmark kernel in [Benchmark_kernel/README.md](Benc
 The following notebooks demonstrate how to use the benchmark design to measure throughput and latency either point to point or with a switch connection between two Alveo cards.
 
 * [vnx-benchmark-throughput](Notebooks/vnx-benchmark-throughput.ipynb) 
-* [vnx-benchmark-throughput-switch.ipynb](Notebooks/vnx-benchmark-throughput-switch.ipynb)
-* [vnx-benchmark-rtt.ipynb](Notebooks/vnx-benchmark-rtt.ipynb)
-* [vnx-benchmark-rtt-switch.ipynb](Notebooks/vnx-benchmark-rtt-switch.ipynb)
+* [vnx-benchmark-throughput-switch](Notebooks/vnx-benchmark-throughput-switch.ipynb)
+* [vnx-benchmark-rtt](Notebooks/vnx-benchmark-rtt.ipynb)
+* [vnx-benchmark-rtt-switch](Notebooks/vnx-benchmark-rtt-switch.ipynb)
 
 ## Support
 

@@ -12,7 +12,7 @@ This repository provides:
 
 ## Clone this repository
 
-Check out the examples by cloning the repository.
+Build the examples by cloning the repository.
 
 ```sh
 git clone https://github.com/Xilinx/xup_vitis_network_example.git --recursive
@@ -23,6 +23,8 @@ git clone https://github.com/Xilinx/xup_vitis_network_example.git --recursive
 This section provides a brief overview of the common infrastructure needed for the examples to work. The examples rely on the same underlying infrastructure, which is `cmac` and `network_layer` kernels.
 
 ![](img/udp_network_infrastructure.png)
+
+> **_NOTE:_** the reference clock frequency can change depending on the Alveo card.
 
 ### CMAC kernel
 
@@ -40,13 +42,12 @@ The application communicates with the UDP module using *S_AXIS_sk2nl* and *M_AXI
 struct my_axis_udp {
   ap_uint<512>    data;
   ap_uint< 64>    keep;
-  ap_uint<16>     dest;
-  ap_uint< 1>     last;
+  ap_uint< 16>    dest;
+  ap_uint<  1>    last;
 }
 ```
 
 To find out more about this kernel check out [NetLayers/README.md](NetLayers/README.md)
-
 
 ## Examples
 
@@ -66,7 +67,7 @@ The following figure depicts the different kernels and their interconnection in 
 
 The current limitation of this *application* is that the size of the data must be multiple of 64-Byte to work properly.
 
-Check out [basicExample_NIC_FPGA](Notebooks/basicExample_NIC_FPGA.ipynb) to see how to run this example using PYNQ.
+Check out [vnx-basic](Notebooks/vnx-basic.ipynb) notebook to see how to run this example using PYNQ.
 
 ### Benchmark
 
@@ -78,6 +79,12 @@ The following figure depicts the benchmark design, which contains four *benchmar
 
 More information about the benchmark kernel in [Benchmark_kernel/README.md](Benchmark_kernel/README.md)
 
+The following notebooks demonstrate how to use the benchmark design to measure throughput and latency either point to point or with a switch connection between two Alveo cards.
+
+* [vnx-benchmark-throughput](Notebooks/vnx-benchmark-throughput.ipynb) 
+* [vnx-benchmark-throughput-switch.ipynb](Notebooks/vnx-benchmark-throughput-switch.ipynb)
+* [vnx-benchmark-rtt.ipynb](Notebooks/vnx-benchmark-rtt.ipynb)
+* [vnx-benchmark-rtt-switch.ipynb](Notebooks/vnx-benchmark-rtt-switch.ipynb)
 
 ## Support
 
@@ -89,12 +96,11 @@ More information about the benchmark kernel in [Benchmark_kernel/README.md](Benc
 
 ### Alveo Cards
 
-| Alveo | Development Target Platform(s) |
-|-------|----------|
-| U50   | xilinx_u50_gen3x16_xdma_201920_3 |
-| U200  | Not currently available |
-| U250  | xilinx-u250-gen3x16-xdma-2.1-202010 <br/> xilinx-u250-gen3x16-qdma-2.1-202010 |
-| U280  | xilinx_u280_xdma_201920_3 |
+| Alveo | Development Target Platform(s) | Notes |
+|-------|----------|------|
+| U50   | xilinx_u50_gen3x16_xdma_201920_3 | |
+| U250  | xilinx-u250-gen3x16-xdma-2.1-202010 <br/> xilinx-u250-gen3x16-qdma-2.1-202010 | Early access platforms | 
+| U280  | xilinx_u280_xdma_201920_3 | |
 
 ### Requirements
 

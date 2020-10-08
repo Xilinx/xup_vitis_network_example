@@ -115,9 +115,9 @@ make all DEVICE=<full platform path> INTERFACE=<interface number> DESIGN=<design
 ```
 
 * `DEVICE` Alveo development target platform, [see supported platforms](#alveo-cards)
-* Interface can be 0, 1 or 3. If `INTERFACE=3`, both interfaces can be used. Note that Alveo U50 only has one interface available (`INTERFACE=0`)
+* `INTERFACE` defines which physical interface is going to be use. 0, 1 or 3 are supported. When `INTERFACE=3` the design will be replicated for each interface. Note that Alveo U50 only has one interface available (`INTERFACE=0`)
 * `DESIGN` only support the following strings `basic` and `benchmark`. If you use something different, an error will be reported
-* The basic configuration file is pulled from [config_files](config_files) folder and complete with `userPostSysLinkOverlayTcl` parameter and in the make process.
+* The basic configuration file is pulled from [config_files](config_files) folder and complete with `userPostSysLinkOverlayTcl` parameter before calling `v++`.
 * [post_sys_link.tcl](post_sys_link.tcl) is automatically called from `v++` after system link. It is used to connect the GT capable pins to the cmac kernel(s)
 * The `XCLBIN` will be generated in the folder \<DESIGN\>.intf_\<INTERFACE\>.\<(short)DEVICE\>
 
@@ -140,7 +140,7 @@ make all DEVICE=<full platform path> INTERFACE=<interface number> DESIGN=<design
 ~~~
 
 * Basic_kernels: this folder contains the code for the basic application (*mm2s* and *s2mm*)
-* Benchmark_kernel: this folder contains the benchmark application
+* Benchmark_kernel: this folder contains the benchmark application, which includes the collector, traffic generator and switch kernels
 * config_files: this folder contains the different configuration files for the different examples and flavors
 * Ethernet: this folder contains the logic to generate the *cmac* kernel for the different Alveo cards and interfaces
 * img: this folder contains images 

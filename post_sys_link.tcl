@@ -107,7 +107,7 @@ if {[dict exists $config_info kernels]} {
   puts "${__TCLID} list of gt kernels ${__gt_k_list}"
 
   if {[llength ${__gt_k_list}] > 2} {
-    puts "${__TCLID} More than 1 GT interface is not supported. A single GT interface of max width 4 must be provided."
+    puts "${__TCLID} More than 2 GT interfaces are not supported."
     exit
   }
 
@@ -115,7 +115,7 @@ if {[dict exists $config_info kernels]} {
     puts "${__TCLID} Iterating over kernels"
     if {[info exist bd_gt_gtyquad_0] eq 0} {
       puts "${__TCLID} ERROR this shell does not have gt support or the gt port names are unknown"
-      # The line below will always give an error and it is indeded to stop vpl process
+      # The line below will always give an error and it is indeed to stop vpl process
       connect_bd_intf_net error error
     }
 
@@ -163,3 +163,5 @@ if {[dict exists $config_info kernels]} {
     }
   }
 }
+
+puts "${__TCLID} QSFP GT pins Tcl hook DONE!"

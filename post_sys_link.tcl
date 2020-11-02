@@ -104,7 +104,7 @@ if {[dict exists $config_info kernels]} {
 
     puts "${__TCLID} GT Kernel List $__gt_k_list"
     foreach __k_inst $__gt_k_list {
-      # Loof for a gt capable interface
+      # Look for a gt capable interface
       set __gt_intf [get_bd_intf_pins -quiet -of_objects [get_bd_cells $__k_inst] -filter {VLNV=~*gt_rtl*}]
       puts "${__TCLID} found GT caplable interface: ${__gt_intf}"
       if {[string first "gt_serial_port0" ${__gt_intf}] != -1} {
@@ -115,7 +115,7 @@ if {[dict exists $config_info kernels]} {
         puts "${__TCLID} connecting GT quad ${bd_gt_gtyquad_1} <-> ${__gt_intf}"
         connect_bd_intf_net [get_bd_intf_ports ${bd_gt_gtyquad_1}] ${__gt_intf}
       }
-      # Loof for a gt clock capable interface
+      # Look for a gt clock capable interface
       set __refclk0_pins [get_bd_pins -of_objects [get_bd_cells ${__k_inst}] -filter {NAME =~ "gt_refclk0*"}]
       if {[llength $__refclk0_pins] > 0} {
         puts "${__TCLID} connecting ${bd_gt_ref_clk_0_name_a} -> ${__k_inst}/gt_refclk0"

@@ -293,7 +293,6 @@ proc create_root_design { parentCell } {
   set_property -dict [ list \
    CONFIG.POLARITY {ACTIVE_LOW} \
  ] $ap_rst_n
-  set clk_gt_freerun [ create_bd_port -dir I -type clk -freq_hz 100000000 clk_gt_freerun ]
 
   # Create instance: acc_kernel_tx_cdc, and set properties
   set acc_kernel_tx_cdc [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_clock_converter:1.1 acc_kernel_tx_cdc ]

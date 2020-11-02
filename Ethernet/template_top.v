@@ -43,8 +43,6 @@ module placeholder #(
   (* X_INTERFACE_INFO = "xilinx.com:signal:reset:1.0 ap_rst_n RST" *)
   (* X_INTERFACE_PARAMETER = "POLARITY ACTIVE_LOW" *)
   input  wire                                 ap_rst_n,
-  (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 clk_gt_freerun CLK" *)
-  input  wire                                 clk_gt_freerun,
 
   input  wire                                 S_AXIS_tvalid,
   output wire                                 S_AXIS_tready,
@@ -89,7 +87,6 @@ module placeholder #(
   cmac_bd placeholder  (
     .ap_clk               (              ap_clk),
     .ap_rst_n             (            ap_rst_n),
-    .clk_gt_freerun       (      clk_gt_freerun),
     
     .gt_ref_clk_clk_n     (        gt_placeholder_clk_n),
     .gt_ref_clk_clk_p     (        gt_placeholder_clk_p),

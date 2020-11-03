@@ -257,7 +257,7 @@ def getNetworkInfo(nl):
 
     return config
 
-def updateIPAddress(nl, ipaddrsrt, debug = False):
+def updateIPAddress(nl, ipaddrsrt, gwaddr='None', debug = False):
     """ 
     Update IP address as well as least significant octet of the
     MAC address with the least significant octet of the IP address
@@ -269,6 +269,8 @@ def updateIPAddress(nl, ipaddrsrt, debug = False):
     ipaddrsrt : string
       New IP address
 
+    gwaddr : string
+        New IP gateway address, if not defined a default gateway is used
     debug: bool
       if enable it will return the current configuration
     
@@ -284,15 +286,57 @@ def updateIPAddress(nl, ipaddrsrt, debug = False):
     if not isinstance(ipaddrsrt, str):
         raise ValueError("ipaddrsrt must be an string type")
 
+    if not isinstance(gwaddr, str):
+        raise ValueError("gwaddr must be an string type")
+
     if not isinstance(debug, bool):
         raise ValueError("debug must be a bool type")
 
     ipaddr = int(ipaddress.IPv4Address(ipaddrsrt))
     nl.register_map.ip_address = ipaddr
-    nl.register_map.gateway    = (ipaddr & 0xFFFFFF00) + 1
+    if gwaddr is 'None':
+        nl.register_map.gateway = (ipaddr & 0xFFFFFF00) + 1
+    else:
+        nl.register_map.gateway = int(ipaddress.IPv4Address(gwaddr))
+
     currentMAC = int(nl.register_map.mac_address)
     newMAC     = (currentMAC & 0xFFFFFFFFF00) + (ipaddr & 0xFF)
     nl.register_map.mac_address = newMAC
+
+    if debug:
+        return getNetworkInfo(nl)
+
+def updateGateway(nl, gwaddr, debug = False):
+    """ 
+    Update IP address as well as least significant octet of the
+    MAC address with the least significant octet of the IP address
+
+    Parameters 
+    ----------
+    nl: pynq.overlay.DefaultIP
+      network layer object type
+    gwaddr : string
+      New IP gateway address
+
+    debug: bool
+      if enable it will return the current configuration
+    
+    Returns
+    -------
+    Current interface configuration only if debug == True
+
+    """
+
+    if not isinstance(nl, pynq.overlay.DefaultIP):
+        raise ValueError("nl must be a pynq.overlay.DefaultIP object")
+
+    if not isinstance(gwaddr, str):
+        raise ValueError("gwaddr must be an string type")
+
+    if not isinstance(debug, bool):
+        raise ValueError("debug must be a bool type")
+
+    nl.register_map.gateway = int(ipaddress.IPv4Address(gwaddr))
 
     if debug:
         return getNetworkInfo(nl)

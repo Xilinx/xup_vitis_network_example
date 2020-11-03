@@ -68,6 +68,9 @@ endif
 ifeq (u50,$(findstring u50, $(DEVICE)))
 	HLS_IP_FOLDER  = $(shell readlink -f ./$(NETLAYERDIR)$(NETLAYERHLS)/synthesis_results_HMB)
 endif
+ifeq (u200,$(findstring u200, $(DEVICE)))
+	HLS_IP_FOLDER  = $(shell readlink -f ./$(NETLAYERDIR)$(NETLAYERHLS)/synthesis_results_noHMB)
+endif
 ifeq (u250,$(findstring u250, $(DEVICE)))
 	HLS_IP_FOLDER  = $(shell readlink -f ./$(NETLAYERDIR)$(NETLAYERHLS)/synthesis_results_noHMB)
 endif

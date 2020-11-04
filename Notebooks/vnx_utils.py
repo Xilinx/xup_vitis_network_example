@@ -199,6 +199,30 @@ def readARPTable(nl, num_entries = 256):
             print ("Position {:3}\tMAC address {}\tIP address {}"\
                    .format(i,mac_str,ipaddress.IPv4Address(ip_addr_print)))
 
+
+def invalidateARPTable(nl):
+    """ 
+    Clear the ARP table
+    
+    Parameters 
+    ----------
+    nl: pynq.overlay.DefaultIP
+      network layer object type
+
+    Returns
+    -------
+    None
+
+    """
+
+    if not isinstance(nl, pynq.overlay.DefaultIP):
+        raise ValueError("nl must be a pynq.overlay.DefaultIP object")
+
+    valid_addr_offset = nl.register_map.arp_valid_offset.address
+
+    for i in range(256):
+        nl.write(valid_addr_offset  + (i//4)*4 , 0)
+
 def arpDiscovery(nl):
     """ 
     Launch ARP discovery

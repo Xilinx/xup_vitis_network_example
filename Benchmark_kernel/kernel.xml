@@ -28,9 +28,9 @@
       <arg name="summary_packets"         addressQualifier="0" id="0" port="S_AXIL" size="0x8" offset="0x74" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="debug_reset"             addressQualifier="0" id="0" port="S_AXIL" size="0x4" offset="0x7C" type="uint" hostOffset="0x00" hostSize="0x4"/>
       <!-- Streaming connections -->
-      <arg name="S_AXIS_n2k"     addressQualifier="4" id="1" port="S_AXIS_n2k"     type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
-      <arg name="M_AXIS_k2n"     addressQualifier="4" id="2" port="M_AXIS_k2n"     type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
-      <arg name="M_AXIS_summary" addressQualifier="4" id="3" port="M_AXIS_summary" type="stream&lt;ap_axiu&lt;128,0,0,0>>&amp;" />
+      <arg name="S_AXIS_n2k"     addressQualifier="4" id="1" port="S_AXIS_n2k"     size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
+      <arg name="M_AXIS_k2n"     addressQualifier="4" id="2" port="M_AXIS_k2n"     size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
+      <arg name="M_AXIS_summary" addressQualifier="4" id="3" port="M_AXIS_summary" size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;128,0,0,0>>&amp;" />
     </args>
   </kernel>
 </root>

@@ -81,8 +81,8 @@
       <arg name="stat_rx_pause"                     addressQualifier="0" id="0" port="S_AXILITE" size="0x8" offset="0x16F8" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="stat_rx_user_pause"                addressQualifier="0" id="0" port="S_AXILITE" size="0x8" offset="0x1700" type="uint" hostOffset="0x00" hostSize="0x8"/> 
 
-      <arg name="S_AXIS" addressQualifier="4" id="1" port="S_AXIS" size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,0>>&amp;" />
-      <arg name="M_AXIS" addressQualifier="4" id="2" port="M_AXIS" size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,0>>&amp;" />
+      <arg name="S_AXIS" addressQualifier="4" id="0" port="S_AXIS" size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,0>>&amp;" />
+      <arg name="M_AXIS" addressQualifier="4" id="0" port="M_AXIS" size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,0>>&amp;" />
     </args>
   </kernel>
 </root>

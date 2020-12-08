@@ -103,7 +103,7 @@ The following notebooks demonstrate how to use the benchmark design to measure t
 | Alveo | Development Target Platform(s) | Notes |
 |-------|----------|------|
 | U50   | xilinx_u50_gen3x16_xdma_201920_3 | |
-| U250  | xilinx-u250-gen3x16-xdma-2.1-202010 <br/> xilinx-u250-gen3x16-qdma-2.1-202010 | Early access platforms | 
+| U250  | xilinx-u250-gen3x16-xdma-3.1-202020-1  |  | 
 | U280  | xilinx_u280_xdma_201920_3 | |
 
 ### Requirements

@@ -40,5 +40,7 @@ ol_w0 = pynq.Overlay(xclbin, device=pynq.Device.devices[0])
 ol_w1 = pynq.Overlay(xclbin, device=pynq.Device.devices[2])
 ```
 
+You can reuse the rest of the Notebook after this point.
+
 ------------------------------------------------------
 <p align="center">Copyright&copy; 2021 Xilinx</p>

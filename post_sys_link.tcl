@@ -1,4 +1,4 @@
-# Copyright (c) 2020, Xilinx, Inc.
+# Copyright (c) 2020-2021, Xilinx, Inc.
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without modification, 
@@ -48,16 +48,16 @@ if {[llength [get_bd_intf_ports ${io_clk_gt0}]] eq 1} {
   set bd_gt_gtyquad_1        "io_gt_qsfp_01"
 } elseif {[llength [get_bd_intf_ports ${io_clk_gt1}]] eq 1} {
   set bd_gt_ref_clk_0_name_a "io_clk_gtyquad_refclk0_00"
-  set bd_gt_ref_clk_0_name_b "io_clk_gtyquad_refclk0_01"
-  set bd_gt_ref_clk_1_name_a "io_clk_gtyquad_refclk1_00"
-  set bd_gt_ref_clk_1_name_b "io_clk_gtyquad_refclk1_00"
+  set bd_gt_ref_clk_0_name_b "io_clk_gtyquad_refclk1_00"
+  set bd_gt_ref_clk_1_name_a "io_clk_gtyquad_refclk0_01"
+  set bd_gt_ref_clk_1_name_b "io_clk_gtyquad_refclk1_01"
   set bd_gt_gtyquad_0        "io_gt_gtyquad_00"
   set bd_gt_gtyquad_1        "io_gt_gtyquad_01"
 } else {
   puts "${__TCLID} WARNING no GT ports were found"
 }
 
-puts "${__TCLID} bd gt quad is ${bd_gt_gtyquad_0} and gt clock ref is ${bd_gt_ref_clk_0_name_b}"
+puts "${__TCLID} bd gt quad is ${bd_gt_gtyquad_0} and gt clock ref is ${bd_gt_ref_clk_0_name_a}"
 
 set __gt_k_list {}
 set __gt_intf_width 0

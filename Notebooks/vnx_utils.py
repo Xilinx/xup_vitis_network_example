@@ -426,7 +426,6 @@ class DataMover(DefaultIP):
 
     def __init__(self, description):
         super().__init__(description=description)
-        self.__start = self.start
     
     def start(self, *args, **kwargs):
         """Start the accelerator
@@ -447,7 +446,7 @@ class DataMover(DefaultIP):
             if i[0] == 'size'and args[idx] < 64:
                 raise ValueError("size must be at least 64-Byte")
             elif i[0] == 'dest' and args[idx] > 16:
-                raise ValueError("Dest cannot be bigger than 16")
+                raise ValueError("dest cannot be bigger than 16")
             idx += 1
         
         return self._start(*args, **kwargs)

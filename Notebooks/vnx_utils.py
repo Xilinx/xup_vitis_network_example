@@ -414,3 +414,40 @@ class TrafficGenerator(DefaultIP):
         Reset embedded probes
         """
         self.register_map.debug_reset = 1 
+
+class DataMover(DefaultIP):
+    """This class is an enhancement to the DefaultIP class to verify that the
+    underlaying hardware can work properly based on the provided arguments
+    This driver is bind to:
+        xilinx.com:hls:krnl_mm2s:1.0
+        xilinx.com:hls:krnl_s2mm:1.0
+    """
+    bindto = ['xilinx.com:hls:krnl_mm2s:1.0', 'xilinx.com:hls:krnl_s2mm:1.0']
+
+    def __init__(self, description):
+        super().__init__(description=description)
+        self.__start = self.start
+    
+    def start(self, *args, **kwargs):
+        """Start the accelerator
+        This function will configure the accelerator with the provided
+        arguments and start the accelerator. Use the `wait` function to
+        determine when execution has finished. Note that buffers should be
+        flushed prior to starting the accelerator and any result buffers
+        will need to be invalidated afterwards.
+        For details on the function's signature use the `signature` property.
+        The type annotations provide the C types that the accelerator
+        operates on. Any pointer types should be passed as `ContiguousArray`
+        objects created from the `pynq.allocate` class. Scalars should be passed
+        as a compatible python type as used by the `struct` library.
+        """
+
+        idx = 0
+        for i in self.signature.parameters.items():
+            if i[0] == 'size'and args[idx] < 64:
+                raise ValueError("size must be at least 64-Byte")
+            elif i[0] == 'dest' and args[idx] > 16:
+                raise ValueError("Dest cannot be bigger than 16")
+            idx += 1
+        
+        return self._start(*args, **kwargs)

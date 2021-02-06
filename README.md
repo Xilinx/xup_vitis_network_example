@@ -11,7 +11,7 @@ This repository provides:
 * Source code for the common network infrastructure with UDP support
 * Scripts to compile and link the kernels
 * Out-of-the-box applications that uses UDP as transport protocol (`basic` and `benchmark`)
-* PYNQ host code and helper functions
+* `pynq` host code and helper functions
 * DASK integration for multiple FPGAs configuration and task scheduling
 
 ## Clone this repository
@@ -71,7 +71,7 @@ The following figure depicts the different kernels and their interconnection in 
 
 The current limitation of this *application* is that the size of the data must be multiple of 64-Byte to work properly.
 
-Check out [vnx-basic](Notebooks/vnx-basic.ipynb) notebook to see how to run this example using PYNQ.
+Check out [vnx-basic](Notebooks/vnx-basic.ipynb) notebook to see how to run this example using `pynq`.
 
 ### Benchmark
 

@@ -36,10 +36,11 @@ clean:
 distclean: clean
 	rm -rf _x* .Xil
 
-# Remove $(TEMP_DIR)/ and .xo from the target name and store the result in current_kernel
-$(TEMP_DIR)/%.xo: current_kernel=$(subst $(TEMP_DIR)/,,$(subst .xo,,$@))
-$(TEMP_DIR)/%.xo: 
-	$(VPP) $(CLFLAGS) -k $(current_kernel) -c -o $@ src/$(current_kernel).cpp
+$(TEMP_DIR)/krnl_mm2s.xo: src/krnl_mm2s.cpp
+	$(VPP) $(CLFLAGS) -k $(subst $(TEMP_DIR)/,,$(subst .xo,,$@)) -c -o $@ $^
+
+$(TEMP_DIR)/krnl_s2mm.xo: src/krnl_s2mm.cpp
+	$(VPP) $(CLFLAGS) -k $(subst $(TEMP_DIR)/,,$(subst .xo,,$@)) -c -o $@ $^
 
 
 check-devices:

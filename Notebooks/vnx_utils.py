@@ -127,7 +127,7 @@ class cmac(DefaultIP):
 
 def _byteOrderingEndianess(num, length=4):
     """
-    Convert from little endian to big endian and viceversa
+    Convert from little endian to big endian and vice versa
 
     Parameters
     ----------
@@ -159,7 +159,7 @@ def _byteOrderingEndianess(num, length=4):
 
 class NetworkLayer(DefaultIP):
     """
-    This class wrapps the common function of the Network Layer IP
+    This class wraps the common function of the Network Layer IP
     """
 
     bindto = ["xilinx.com:kernel:networklayer:1.0"]
@@ -388,8 +388,7 @@ class NetworkLayer(DefaultIP):
 benchmark_mode = ["PRODUCER", "LATENCY", "LOOPBACK", "CONSUMER"]
 
 class TrafficGenerator(DefaultIP):
-    """
-    This class wrapps the common function of the Traffic Generator IP
+    """ This class wraps the common function of the Traffic Generator IP
     """
 
     bindto = ["xilinx.com:kernel:traffic_generator:1.0"]
@@ -471,6 +470,6 @@ class DataMover(DefaultIP):
                 raise ValueError("size must be at least 64-Byte")
             elif i[0] == 'dest' and args[idx] > 15:
                 raise ValueError("dest cannot be bigger than 15")
-            idx += 1
-        
-        return self._start(*args, **kwargs)
+
+        return self.start_sw(*args, **kwargs)
+

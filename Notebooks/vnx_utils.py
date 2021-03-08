@@ -439,6 +439,7 @@ class TrafficGenerator(DefaultIP):
         """
         self.register_map.debug_reset = 1 
 
+
 class DataMover(DefaultIP):
     """This class is an enhancement to the DefaultIP class to verify that the
     underlaying hardware can work properly based on the provided arguments
@@ -471,5 +472,48 @@ class DataMover(DefaultIP):
             elif i[0] == 'dest' and args[idx] > 15:
                 raise ValueError("dest cannot be bigger than 15")
 
-        return self.start_sw(*args, **kwargs)
+        return self._start(*args, **kwargs)
 
+
+class CounterIP(DefaultIP):
+    """ This class wraps the common function of counter IP
+
+    """
+
+    bindto = ["xilinx.com:hls:krnl_counters:1.0"]
+
+    def __init__(self, description):
+        super().__init__(description=description)
+        self._fullpath = description['fullpath']
+        self.start = self.start_sw = self.start_none = \
+            self.start_ert = self.call
+
+    def _setup_packet_prototype(self):
+        pass
+    
+    def call(self, *args, **kwargs):
+        raise RuntimeError("{} is a free running kernel and cannot be " 
+            "starter or called".format(self._fullpath))
+
+    @property
+    def counters(self):
+        """ Return counters
+
+        """
+
+        counters = {
+            'packets' : int(self.register_map.packets),
+            'beats' : int(self.register_map.beats),
+            'bytes' : int(self.register_map.bytes),
+        }
+
+        return counters
+
+    def reset_counters(self):
+        """ Reset internal counters
+        
+        """
+
+        self.register_map.reset = 0
+        self.register_map.reset = 1
+        self.register_map.reset = 0

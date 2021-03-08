@@ -11,7 +11,10 @@ help:
 	@echo "      Command to remove the generated non-hardware files."
 	@echo ""
 	@echo "  make distclean"
-	@echo "      Command to remove all the generated files."
+	@echo "      Command to remove all the generated files in the current directory"
+	@echo ""
+	@echo "  make distcleanall"
+	@echo "      Command to remove all the generated in the current directory and one level down"
 	@echo ""
 
 
@@ -61,9 +64,10 @@ ifeq (benchmark,$(DESIGN))
 else
 	LIST_XO += $(BASICDIR)$(TEMP_DIR)/krnl_mm2s.xo
 	LIST_XO += $(BASICDIR)$(TEMP_DIR)/krnl_s2mm.xo
+	LIST_XO += $(BASICDIR)$(TEMP_DIR)/krnl_counters.xo
 endif
 
-# Linker params
+# Linker parameters
 # Linker userPostSysLinkTcl param
 ifeq (u50,$(findstring u50, $(DEVICE)))
 	HLS_IP_FOLDER  = $(shell readlink -f ./$(NETLAYERDIR)$(NETLAYERHLS)/synthesis_results_HMB)
@@ -83,7 +87,7 @@ LIST_REPOS += --user_ip_repo_paths $(HLS_IP_FOLDER)
 LIST_REPOS += --user_ip_repo_paths $(SWITCH_IP_FOLDER)
 
 
-.PHONY: all clean distclean 
+.PHONY: all clean distclean distcleanall
 all: check-devices check-vitis check-xrt check-design check-interface create-conf-file $(BINARY_CONTAINERS)
 
 # Cleaning stuff
@@ -93,20 +97,22 @@ clean:
 distclean: clean
 	rm -rf _x* *.tmp.ini .Xil benchmark*/ basic*/ .ipcache/
 
+distcleanall: distclean
+	make -C $(NETLAYERDIR) distclean
+	make -C $(CMACDIR) distclean
+	make -C $(BASICDIR) distclean
+	make -C $(BENCHMARDIR) distclean
+
 
 # Building kernel
-$(BUILD_DIR)/${XCLBIN_NAME}.xclbin:
-	mkdir -p $(BUILD_DIR)
+$(BUILD_DIR)/${XCLBIN_NAME}.xclbin: $(LIST_XO)
+	make -C $(BASICDIR) all DEVICE=$(DEVICE) -j3
+	make -C $(BENCHMARDIR) all DEVICE=$(DEVICE) -j3
 	make -C $(CMACDIR) all DEVICE=$(DEVICE) INTERFACE=$(INTERFACE)
 	make -C $(NETLAYERDIR) all DEVICE=$(DEVICE)
-	make -C $(BASICDIR) all DEVICE=$(DEVICE)
-	make -C $(BENCHMARDIR) all DEVICE=$(DEVICE) -j2
-	$(VPP) $(CLFLAGS) $(CONFIGFLAGS) --temp_dir $(BUILD_DIR) -l -o'$@' $(LIST_XO) $(LIST_REPOS) -j 8 
-	#--dk chipscope:traffic_generator_$(INTERFACE):S_AXIS_n2k \
-	#--dk chipscope:traffic_generator_$(INTERFACE):M_AXIS_k2n \
-	#--dk chipscope:cmac_$(INTERFACE):M_AXIS \
-	#--dk chipscope:cmac_$(INTERFACE):S_AXIS
-	#--dk chipscope:collector_$(INTERFACE):SUMMARY \
+	mkdir -p $(BUILD_DIR)
+	$(VPP) $(CLFLAGS) $(CONFIGFLAGS) --temp_dir $(BUILD_DIR) -l -o'$@' $^ $(LIST_REPOS) -j 8
+
 
 check-devices:
 ifndef DEVICE

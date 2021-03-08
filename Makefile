@@ -88,7 +88,7 @@ LIST_REPOS += --user_ip_repo_paths $(SWITCH_IP_FOLDER)
 
 
 .PHONY: all clean distclean distcleanall
-all: check-devices check-vitis check-xrt check-design check-interface check-xo create-conf-file $(BINARY_CONTAINERS)
+all: check-devices check-vitis check-xrt check-design check-interface create-conf-file $(BINARY_CONTAINERS)
 
 # Cleaning stuff
 clean:
@@ -109,10 +109,16 @@ $(BUILD_DIR)/${XCLBIN_NAME}.xclbin: $(LIST_XO)
 	mkdir -p $(BUILD_DIR)
 	$(VPP) $(CLFLAGS) $(CONFIGFLAGS) --temp_dir $(BUILD_DIR) -l -o'$@' $^ $(LIST_REPOS) -j 8
 
-check-xo:
+$(BASICDIR)$(TEMP_DIR)/%.xo: $(BASICDIR)src/*.cpp
 	make -C $(BASICDIR) all DEVICE=$(DEVICE) -j3
+
+$(BENCHMARDIR)$(TEMP_DIR)/%.xo: $(BENCHMARDIR)src/*
 	make -C $(BENCHMARDIR) all DEVICE=$(DEVICE) -j3
+
+$(CMACDIR)$(TEMP_DIR)/%.xo:
 	make -C $(CMACDIR) all DEVICE=$(DEVICE) INTERFACE=$(INTERFACE)
+
+$(NETLAYERDIR)$(TEMP_DIR)/%.xo:
 	make -C $(NETLAYERDIR) all DEVICE=$(DEVICE)
 
 

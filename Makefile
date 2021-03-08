@@ -57,18 +57,17 @@ else
 endif
 
 LIST_REPOS := --user_ip_repo_paths $(CMAC_IP_FOLDER)
-LIST_REPOS += --user_ip_repo_paths $(HLS_IP_FOLDER)
 
 # Include application kernels depending on the design
 ifeq (benchmark,$(DESIGN))
 	LIST_XO += $(BENCHMARDIR)$(TEMP_DIR)/traffic_generator.xo
 	LIST_XO += $(BENCHMARDIR)$(TEMP_DIR)/collector.xo
 	LIST_XO += $(BENCHMARDIR)$(TEMP_DIR)/switch_wrapper.xo
+	LIST_REPOS += --user_ip_repo_paths $(SWITCH_IP_FOLDER)
 else
 	LIST_XO += $(BASICDIR)$(TEMP_DIR)/krnl_mm2s.xo
 	LIST_XO += $(BASICDIR)$(TEMP_DIR)/krnl_s2mm.xo
 	LIST_XO += $(BASICDIR)$(TEMP_DIR)/krnl_counters.xo
-	LIST_REPOS += --user_ip_repo_paths $(SWITCH_IP_FOLDER)
 endif
 
 # Linker parameters
@@ -86,7 +85,7 @@ ifeq (u280,$(findstring u280, $(DEVICE)))
 	HLS_IP_FOLDER  = $(shell readlink -f ./$(NETLAYERDIR)$(NETLAYERHLS)/synthesis_results_HMB)
 endif
 
-
+LIST_REPOS += --user_ip_repo_paths $(HLS_IP_FOLDER)
 
 .PHONY: all clean distclean distcleanall
 all: check-devices check-vitis check-xrt check-design check-interface create-conf-file $(BINARY_CONTAINERS)

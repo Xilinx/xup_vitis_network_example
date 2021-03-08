@@ -88,7 +88,7 @@ LIST_REPOS += --user_ip_repo_paths $(SWITCH_IP_FOLDER)
 
 
 .PHONY: all clean distclean distcleanall
-all: check-devices check-vitis check-xrt check-design check-interface create-conf-file $(BINARY_CONTAINERS)
+all: check-devices check-vitis check-xrt check-design check-interface check-xo create-conf-file $(BINARY_CONTAINERS)
 
 # Cleaning stuff
 clean:
@@ -106,12 +106,14 @@ distcleanall: distclean
 
 # Building kernel
 $(BUILD_DIR)/${XCLBIN_NAME}.xclbin: $(LIST_XO)
+	mkdir -p $(BUILD_DIR)
+	$(VPP) $(CLFLAGS) $(CONFIGFLAGS) --temp_dir $(BUILD_DIR) -l -o'$@' $^ $(LIST_REPOS) -j 8
+
+check-xo:
 	make -C $(BASICDIR) all DEVICE=$(DEVICE) -j3
 	make -C $(BENCHMARDIR) all DEVICE=$(DEVICE) -j3
 	make -C $(CMACDIR) all DEVICE=$(DEVICE) INTERFACE=$(INTERFACE)
 	make -C $(NETLAYERDIR) all DEVICE=$(DEVICE)
-	mkdir -p $(BUILD_DIR)
-	$(VPP) $(CLFLAGS) $(CONFIGFLAGS) --temp_dir $(BUILD_DIR) -l -o'$@' $^ $(LIST_REPOS) -j 8
 
 
 check-devices:

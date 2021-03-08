@@ -53,10 +53,8 @@ $(TEMP_DIR)/${KRNL_SWITCH}.xo:
 	mkdir -p $(TEMP_DIR)
 	$(VIVADO) -mode batch -source gen_switch_xo.tcl -notrace -tclargs $@ ${KRNL_SWITCH} $(XSA)
 
-# Remove $(TEMP_DIR)/ and .xo from the target name and store the result in current_kernel
-$(TEMP_DIR)/$(KRNL_NAME_HLS).xo: current_kernel=$(subst $(TEMP_DIR)/,,$(subst .xo,,$@))
-$(TEMP_DIR)/$(KRNL_NAME_HLS).xo:
-	$(VPP) $(CLFLAGS) -k $(current_kernel) -c -o $@ src/$(current_kernel).cpp
+$(TEMP_DIR)/$(KRNL_NAME_HLS).xo: src/$(KRNL_NAME_HLS).cpp
+	$(VPP) $(CLFLAGS) -k $(subst $(TEMP_DIR)/,,$(subst .xo,,$@)) -c -o $@ $^
 
 
 check-devices:

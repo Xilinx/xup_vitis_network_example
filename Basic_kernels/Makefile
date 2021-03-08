@@ -15,7 +15,7 @@ help:
 
 
 DEVICE ?= xilinx_u280_xdma_201920_3
-kernel_list ?= krnl_s2mm krnl_mm2s
+kernel_list ?= krnl_s2mm krnl_mm2s krnl_counters
 
 
 XSA := $(strip $(patsubst %.xpfm, % , $(shell basename $(DEVICE))))
@@ -40,6 +40,9 @@ $(TEMP_DIR)/krnl_mm2s.xo: src/krnl_mm2s.cpp
 	$(VPP) $(CLFLAGS) -k $(subst $(TEMP_DIR)/,,$(subst .xo,,$@)) -c -o $@ $^
 
 $(TEMP_DIR)/krnl_s2mm.xo: src/krnl_s2mm.cpp
+	$(VPP) $(CLFLAGS) -k $(subst $(TEMP_DIR)/,,$(subst .xo,,$@)) -c -o $@ $^
+
+$(TEMP_DIR)/krnl_counters.xo: src/krnl_counters.cpp
 	$(VPP) $(CLFLAGS) -k $(subst $(TEMP_DIR)/,,$(subst .xo,,$@)) -c -o $@ $^
 
 

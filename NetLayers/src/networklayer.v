@@ -35,7 +35,8 @@ module networklayer #(
   parameter integer AXIL_CTRL_ADDR_WIDTH  =  16,
   parameter integer AXIL_CTRL_DATA_WIDTH  =  32,
   parameter integer AXIS_TDATA_WIDTH      = 512,
-  parameter integer STREAMING_TDEST_WIDTH =  16
+  parameter integer STREAMING_TDEST_WIDTH =  16,
+  parameter integer STREAMING_TUSER_WIDTH =  96
 )
 (
   // System clocks and resets
@@ -72,6 +73,7 @@ module networklayer #(
   output wire     [AXIS_TDATA_WIDTH/8-1:0]    M_AXIS_nl2sk_tkeep,
   output wire                                 M_AXIS_nl2sk_tlast,
   output wire  [STREAMING_TDEST_WIDTH-1:0]    M_AXIS_nl2sk_tdest,
+  output wire  [STREAMING_TUSER_WIDTH-1:0]    M_AXIS_nl2sk_tuser,
   // AXI4-Lite
   input  wire                                 S_AXIL_nl_awvalid,
   output wire                                 S_AXIL_nl_awready,
@@ -121,6 +123,7 @@ module networklayer #(
     .M_AXIS_nl2sk_tlast   (   M_AXIS_nl2sk_tlast),
     .M_AXIS_nl2sk_tready  (  M_AXIS_nl2sk_tready),
     .M_AXIS_nl2sk_tdest   (   M_AXIS_nl2sk_tdest),
+    .M_AXIS_nl2sk_tuser   (   M_AXIS_nl2sk_tuser),
     .M_AXIS_nl2sk_tvalid  (  M_AXIS_nl2sk_tvalid),
     // AXI4-Lite
     .S_AXIL_nl_awvalid    (    S_AXIL_nl_awvalid),

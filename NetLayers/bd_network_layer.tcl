@@ -724,7 +724,7 @@ proc create_root_design { parentCell } {
    }
     set_property -dict [ list \
    CONFIG.TDEST_WIDTH {16} \
-   CONFIG.TUSER_WIDTH {0} \
+   CONFIG.TUSER_WIDTH {96} \
  ] $bandwith_app_out
 
   # Create instance: bandwith_eth_in, and set properties

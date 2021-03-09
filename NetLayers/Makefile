@@ -11,6 +11,8 @@ help:
 	@echo ""
 	@echo "  make distclean"
 	@echo "      Command to remove all the generated files."
+	@echo "  make distcleanall"
+	@echo "      Command to remove all the generated in the current directory and one level down"	
 	@echo ""
 
 
@@ -54,6 +56,9 @@ distclean: clean
 	rm -rf ./tmp_$(KRNL_NAME)* ./packaged_kernel* 
 	rm -rf _x.* *.str
 	rm -rf .Xil
+
+distcleanall: distclean
+	make -C $(SUBMODULENAME) distclean
 
 
 $(TEMP_DIR)/${KRNL_NAME}.xo: kernel.xml package_kernel.tcl gen_xo.tcl src/*.v src/*.vhd

@@ -51,7 +51,7 @@ struct my_axis_udp {
 }
 ```
 
-To find out more about this kernel check out [NetLayers/README.md](NetLayers/README.md)
+In the Rx path, the network layer provides additional metadata in the user signal. To find out more about this kernel check out [NetLayers/README.md](NetLayers/README.md)
 
 ## Examples
 
@@ -160,4 +160,4 @@ make all DEVICE=<full platform path> INTERFACE=<interface number> DESIGN=<design
 **NetLayers/100G-fpga-network-stack-core** License: [BSD 3-Clause License](THIRD_PARTY_LIC.md)
 
 ------------------------------------------------------
-<p align="center">Copyright&copy; 2020 Xilinx</p>
+<p align="center">Copyright&copy; 2021 Xilinx</p>

@@ -46,7 +46,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define DWIDTH 512
 #define TDWIDTH 16
 
-typedef ap_axiu<DWIDTH, 1, 1, TDWIDTH> pkt;
+typedef ap_axiu<DWIDTH, 96, 1, TDWIDTH> pkt;
 
 ap_uint<7> keep2len(ap_uint<64> keepValue);
 

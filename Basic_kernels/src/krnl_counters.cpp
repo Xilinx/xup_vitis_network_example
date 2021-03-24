@@ -83,7 +83,7 @@ void krnl_counters(
             pkts_i++;
     }
     // Only reset counters when rising edge
-    else if (reset && ~reset_1d) {
+    else if (reset && !reset_1d) {
         pkts_i = 0;
         beats_i = 0;
         bytes_i = 0;

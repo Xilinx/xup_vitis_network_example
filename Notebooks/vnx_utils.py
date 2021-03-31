@@ -35,6 +35,7 @@ import pynq
 from pynq import DefaultIP
 import numpy as np
 import ipaddress
+from packaging import version
 
 
 def _shiftedWord(value, index, width=1):
@@ -158,8 +159,8 @@ def _byteOrderingEndianess(num, length=4):
 
 
 class NetworkLayer(DefaultIP):
-    """
-    This class wraps the common function of the Network Layer IP
+    """This class wraps the common function of the Network Layer IP
+    
     """
 
     bindto = ["xilinx.com:kernel:networklayer:1.0"]
@@ -179,6 +180,7 @@ class NetworkLayer(DefaultIP):
         self.start = self.start_sw = self.start_none = \
             self.start_ert = self.call
         self.sockets = np.zeros(16, dtype=self._socketType)
+        self.freq = None
 
     def _setup_packet_prototype(self):
         pass
@@ -395,7 +397,7 @@ class TrafficGenerator(DefaultIP):
 
     def __init__(self, description):
         super().__init__(description=description)
-        self.freq = 300.0
+        self.freq = None
 
     def computeThroughputApp(self, direction="rx"):
         """
@@ -517,3 +519,25 @@ class CounterIP(DefaultIP):
         self.register_map.reset = 0
         self.register_map.reset = 1
         self.register_map.reset = 0
+
+
+class CollectorIP(DefaultIP):
+    """ This class wraps the common function the collector Kernel
+
+    """
+
+    bindto = ["xilinx.com:hls:collector:1.0"]
+
+    def __init__(self, description):
+        super().__init__(description=description)
+
+    @property
+    def received_packets(self):
+        # When a register is written by the kernel for non free running kernels
+        # the default offset refers to the value that the kernel reads
+        # the actual register where the kernel writes is not exposed in the 
+        # signature, so we need to compute the offset and use mmio to read it
+
+        rx_pkts_offset = self.register_map.received_packets.address + \
+            self.register_map.received_packets.width//8 + 4
+        return self.read(rx_pkts_offset)

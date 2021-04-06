@@ -159,5 +159,11 @@ make all DEVICE=<full platform path> INTERFACE=<interface number> DESIGN=<design
 
 **NetLayers/100G-fpga-network-stack-core** License: [BSD 3-Clause License](THIRD_PARTY_LIC.md)
 
+## Pitfall
+
+VXx **IS NOT** a Network Interface Card (NIC). VNx main goal is to provide networking offload to Vitis kernels, so these kernels can communicate from one Alveo card to another without spending CPU cycles and minimum communication latency.
+
+If you are interested in a NIC design, please check out [OpenNIC Platform](https://github.com/Xilinx/open-nic)
+
 ------------------------------------------------------
 <p align="center">Copyright&copy; 2021 Xilinx</p>

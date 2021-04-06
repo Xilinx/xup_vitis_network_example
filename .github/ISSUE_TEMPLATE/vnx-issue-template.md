@@ -19,12 +19,10 @@ https://forums.xilinx.com/t5/Alveo-Accelerator-Cards/bd-p/alveo)**
 **For pynq questions, please use [the PYNQ discussion forum](
 https://discuss.pynq.io/).**
 
-Before submitting a pull request, you can also raise an issue that explains the 
-problem the pull request is trying to resolve. Feel free to close the issue once
- the pull request has been merged.
-
 If you still want to raise an issue here, please give us as much detail as 
-possible to the issue you are seeing - we've listed some helpful fields below.
+possible to the issue you are seeing. We have listed some helpful fields below.
+
+- Please, use [code snippets](https://docs.github.com/en/github/writing-on-github/creating-and-highlighting-code-blocks) to provide textual content instead of images.
 
 ### Build Issues
 
@@ -37,4 +35,4 @@ possible to the issue you are seeing - we've listed some helpful fields below.
 1. OS version `lsb_release -a`
 1. XRT version `xbutil version`
 1. pynq version `pynq version`
-1. Jupyter Lab and Dask version if applies
+1. Jupyter Lab and Dask version if applicable

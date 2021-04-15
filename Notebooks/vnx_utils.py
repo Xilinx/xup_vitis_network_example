@@ -125,6 +125,81 @@ class cmac(DefaultIP):
 
         return status_dict
 
+    def copyStats(self):
+        """Copy CMAC Stats from its internal registers to external registers
+        """
+
+        self.register_map.stat_pm_tick = 1
+
+    def getStats(self, update_reg=True) -> dict:
+        """ Return a dictionary with the CMAC stats 
+        """
+        if update_reg:
+            self.copyStats()
+
+        rmap = self.register_map
+        stats_dict = dict()
+        stats_dict['tx'] = dict()
+        stats_dict['rx'] = dict()
+        stats_dict['cycle_count'] = int(rmap.stat_cycle_count)
+        # Tx
+        stats_dict['tx'] = {
+            "packets": int(rmap.stat_tx_total_packets),
+            "good_packets": int(rmap.stat_tx_total_good_packets),
+            "bytes": int(rmap.stat_tx_total_bytes),
+            "good_bytes": int(rmap.stat_tx_total_good_bytes),
+            "packets_64B": int(rmap.stat_tx_total_packets_64B),
+            "packets_65_127B": int(rmap.stat_tx_total_packets_65_127B),
+            "packets_128_255B": int(rmap.stat_tx_total_packets_128_255B),
+            "packets_256_511B": int(rmap.stat_tx_total_packets_256_511B),
+            "packets_512_1023B": int(rmap.stat_tx_total_packets_512_1023B),
+            "packets_1024_1518B": int(rmap.stat_tx_total_packets_1024_1518B),
+            "packets_1519_1522B": int(rmap.stat_tx_total_packets_1519_1522B),
+            "packets_1523_1548B": int(rmap.stat_tx_total_packets_1523_1548B),
+            "packets_1549_2047B": int(rmap.stat_tx_total_packets_1549_2047B),
+            "packets_2048_4095B": int(rmap.stat_tx_total_packets_2048_4095B),
+            "packets_4096_8191B": int(rmap.stat_tx_total_packets_4096_8191B),
+            "packets_8192_9215B": int(rmap.stat_tx_total_packets_8192_9215B),
+            "packets_large": int(rmap.stat_tx_total_packets_large),
+            "packets_small": int(rmap.stat_tx_total_packets_small),
+            "bad_fcs": int(rmap.stat_tx_total_bad_fcs),
+            "pause": int(rmap.stat_tx_pause),
+            "user_pause": int(rmap.stat_tx_user_pause),
+        }
+
+        stats_dict['rx'] = {
+            "packets": int(rmap.stat_rx_total_packets),
+            "good_packets": int(rmap.stat_rx_total_good_packets),
+            "bytes": int(rmap.stat_rx_total_bytes),
+            "good_bytes": int(rmap.stat_rx_total_good_bytes),
+            "packets_64B": int(rmap.stat_rx_total_packets_64B),
+            "packets_65_127B": int(rmap.stat_rx_total_packets_65_127B),
+            "packets_128_255B": int(rmap.stat_rx_total_packets_128_255B),
+            "packets_256_511B": int(rmap.stat_rx_total_packets_256_511B),
+            "packets_512_1023B": int(rmap.stat_rx_total_packets_512_1023B),
+            "packets_1024_1518B": int(rmap.stat_rx_total_packets_1024_1518B),
+            "packets_1519_1522B": int(rmap.stat_rx_total_packets_1519_1522B),
+            "packets_1523_1548B": int(rmap.stat_rx_total_packets_1523_1548B),
+            "packets_1549_2047B": int(rmap.stat_rx_total_packets_1549_2047B),
+            "packets_2048_4095B": int(rmap.stat_rx_total_packets_2048_4095B),
+            "packets_4096_8191B": int(rmap.stat_rx_total_packets_4096_8191B),
+            "packets_8192_9215B": int(rmap.stat_rx_total_packets_8192_9215B),
+            "packets_large": int(rmap.stat_rx_total_packets_large),
+            "packets_small": int(rmap.stat_rx_total_packets_small),
+            "packets_undersize": int(rmap.stat_rx_total_packets_undersize),
+            "packets_fragmented": int(rmap.stat_rx_total_packets_fragmented),
+            "packets_oversize": int(rmap.stat_rx_total_packets_oversize),
+            "packets_toolong": int(rmap.stat_rx_total_packets_toolong),
+            "packets_jabber": int(rmap.stat_rx_total_packets_jabber),
+            "bad_fcs": int(rmap.stat_rx_total_bad_fcs),
+            "packets_bad_fcs": int(rmap.stat_rx_packets_bad_fcs),
+            "stomped_fcs": int(rmap.stat_rx_stomped_fcs),
+            "pause": int(rmap.stat_rx_pause),
+            "user_pause": int(rmap.stat_rx_user_pause),
+        }
+
+        return stats_dict
+
 
 def _byteOrderingEndianess(num, length=4):
     """
@@ -253,10 +328,8 @@ class NetworkLayer(DefaultIP):
                     )
                 )
 
-    def readARPTable(self, num_entries=256):
-        """
-        Read the ARP table from the FPGA and print it out
-        in a friendly way
+    def readARPTable(self, num_entries=256) -> dict:
+        """Read the ARP table from the FPGA return a dict
 
         Parameters
         ----------
@@ -281,10 +354,15 @@ class NetworkLayer(DefaultIP):
         ip_addr_offset = self.register_map.arp_ip_addr_offset.address
         valid_addr_offset = self.register_map.arp_valid_offset.address
 
+        table = dict()
+
+        valid_entry = None
         for i in range(num_entries):
-            valid_entry = self.read(valid_addr_offset + (i // 4) * 4)
-            valid_entry = (valid_entry >> ((i % 4) * 8)) & 0x1
-            if valid_entry == 1:
+            if (i%4) == 0:
+                valid_entry = self.read(valid_addr_offset + (i // 4) * 4)
+            
+            isvalid = (valid_entry >> ((i % 4) * 8)) & 0x1
+            if isvalid:
                 mac_lsb = self.read(mac_addr_offset + (i * 2 * 4))
                 mac_msb = self.read(mac_addr_offset + ((i * 2 + 1) * 4))
                 ip_addr = self.read(ip_addr_offset + (i * 4))
@@ -294,11 +372,12 @@ class NetworkLayer(DefaultIP):
                     mac_hex[i : i + 2] for i in range(0, len(mac_hex), 2)
                 )
                 ip_addr_print = _byteOrderingEndianess(ip_addr)
-                print(
-                    "Position {:3}\tMAC address {}\tIP address {}".format(
-                        i, mac_str, ipaddress.IPv4Address(ip_addr_print)
-                    )
-                )
+                table[i] = {
+                    "MAC address": mac_str,
+                    "IP address": str(ipaddress.IPv4Address(ip_addr_print))
+                }
+
+        return table
 
     def invalidateARPTable(self):
         """

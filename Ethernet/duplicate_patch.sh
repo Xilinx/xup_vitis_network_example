@@ -41,13 +41,13 @@ sed -i 's/name=\"placeholder\"/name=\"cmac\_1\"/g' kernel_1.xml
 sed -i 's/xilinx\.com\:kernel\:placeholder/xilinx\.com\:kernel\:cmac_1/g' kernel_1.xml
 
 # Duplicate verilog
-cp template_top.v cmac_top_0.v
-cp template_top.v cmac_top_1.v
+cp src/template_top.v src/cmac_top_0.v
+cp src/template_top.v src/cmac_top_1.v
 
-sed -i 's/module\ placeholder/module\ cmac_0/g' cmac_top_0.v
-sed -i 's/cmac_bd\ placeholder/cmac_bd\ cmac_bd_0_i/g' cmac_top_0.v
-sed -i 's/gt_placeholder_clk/gt_refclk0/g' cmac_top_0.v
+sed -i 's/module\ placeholder/module\ cmac_0/g' src/cmac_top_0.v
+sed -i 's/cmac_bd\ placeholder/cmac_bd\ cmac_bd_0_i/g' src/cmac_top_0.v
+sed -i 's/gt_placeholder_clk/gt_refclk0/g' src/cmac_top_0.v
 
-sed -i 's/module\ placeholder/module\ cmac_1/g' cmac_top_1.v
-sed -i 's/cmac_bd\ placeholder/cmac_bd\ cmac_bd_1_i/g' cmac_top_1.v
-sed -i 's/gt_placeholder_clk/gt_refclk1/g' cmac_top_1.v
+sed -i 's/module\ placeholder/module\ cmac_1/g' src/cmac_top_1.v
+sed -i 's/cmac_bd\ placeholder/cmac_bd\ cmac_bd_1_i/g' src/cmac_top_1.v
+sed -i 's/gt_placeholder_clk/gt_refclk1/g' src/cmac_top_1.v

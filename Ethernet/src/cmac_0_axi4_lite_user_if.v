@@ -30,8 +30,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.// Copyright (c) 2020 Xilinx, 
 `timescale 1ps/1ps
 
 module cmac_0_axi4_lite_user_if #(
-    parameter integer ULTRASCALE_PLUS       = 0,
-    parameter integer SLAVE_CMAC_BASEADDR   = 32'h0
+    parameter integer SLAVE_CMAC_BASEADDR   = 12'h0
 )(
     input  wire            gt_locked_sync,
     input  wire            stat_rx_aligned_sync,
@@ -41,7 +40,7 @@ module cmac_0_axi4_lite_user_if #(
     input wire             s_axi_aclk,
     input wire             s_axi_sreset,
     input  wire            s_axi_pm_tick,
-    output wire [31:0]     s_axi_awaddr,
+    output wire [11:0]     s_axi_awaddr,
     output wire            s_axi_awvalid,
     input  wire            s_axi_awready,
     output wire [31:0]     s_axi_wdata,
@@ -51,7 +50,7 @@ module cmac_0_axi4_lite_user_if #(
     input  wire [1:0]      s_axi_bresp,
     input  wire            s_axi_bvalid,
     output wire            s_axi_bready,
-    output wire [31:0]     s_axi_araddr,
+    output wire [11:0]     s_axi_araddr,
     output wire            s_axi_arvalid,
     input  wire            s_axi_arready,
     input  wire [31:0]     s_axi_rdata,
@@ -63,9 +62,9 @@ module cmac_0_axi4_lite_user_if #(
 
 
    //// axi_reg_map offset address
-    localparam ADDR_CONFIG_TX_REG1                      =  32'h0000000C;
-    localparam ADDR_CONFIG_RX_REG1                      =  32'h00000014;
-    localparam ADDR_CORE_VERSION_REG                    =  32'h00000024;    
+    localparam ADDR_CONFIG_TX_REG1                      =  12'h00C;
+    localparam ADDR_CONFIG_RX_REG1                      =  12'h014;
+    localparam ADDR_CORE_VERSION_REG                    =  12'h024;    
 
     ////State Registers for TX
     reg  [3:0]     axi_user_prestate;
@@ -73,8 +72,8 @@ module cmac_0_axi4_lite_user_if #(
     reg  [31:0]    axi_wr_data;
     reg  [31:0]    axi_read_data;
     wire [31:0]    axi_rd_data;
-    reg  [31:0]    axi_wr_addr;
-    reg  [31:0]    axi_rd_addr;
+    reg  [11:0]    axi_wr_addr;
+    reg  [11:0]    axi_rd_addr;
     reg  [3:0]     axi_wr_strobe;
     reg            axi_wr_data_valid;
     reg            axi_wr_addr_valid;
@@ -113,11 +112,11 @@ module cmac_0_axi4_lite_user_if #(
     begin
         if ( s_axi_sreset == 1'b1 )begin
             axi_user_prestate         <= STATE_AXI_IDLE;
-            axi_rd_addr               <= 32'd0;
+            axi_rd_addr               <= 12'd0;
             axi_rd_addr_valid         <= 1'b0;
             axi_wr_data               <= 32'd0;
             axi_read_data             <= 32'd0;
-            axi_wr_addr               <= 32'd0;
+            axi_wr_addr               <= 12'd0;
             axi_wr_addr_valid         <= 1'b0;
             axi_wr_data_valid         <= 1'b0;
             axi_wr_strobe             <= 4'd0;
@@ -132,11 +131,11 @@ module cmac_0_axi4_lite_user_if #(
         else begin
             case (axi_user_prestate)
                 STATE_AXI_IDLE            : begin
-                     axi_rd_addr               <= 32'd0;
+                     axi_rd_addr               <= 12'd0;
                      axi_rd_addr_valid         <= 1'b0;
                      axi_wr_data               <= 32'd0;
                      axi_read_data             <= 32'd0;
-                     axi_wr_addr               <= 32'd0;
+                     axi_wr_addr               <= 12'd0;
                      axi_wr_addr_valid         <= 1'b0;
                      axi_wr_data_valid         <= 1'b0;
                      axi_wr_strobe             <= 4'd0;
@@ -157,11 +156,11 @@ module cmac_0_axi4_lite_user_if #(
                          axi_user_prestate <= STATE_AXI_IDLE;
                  end
                 STATE_GT_LOCKED          : begin
-                     axi_rd_addr             <= 32'd0;
+                     axi_rd_addr             <= 12'd0;
                      axi_rd_addr_valid       <= 1'b0;
                      axi_wr_data             <= 32'd0;
                      axi_read_data           <= 32'd0;
-                     axi_wr_addr             <= 32'd0;
+                     axi_wr_addr             <= 12'd0;
                      axi_wr_addr_valid       <= 1'b0;
                      axi_wr_data_valid       <= 1'b0;
                      axi_wr_strobe           <= 4'd0;
@@ -195,10 +194,7 @@ module cmac_0_axi4_lite_user_if #(
                             axi_wr_req              <= 1'b1;
                         end
                         'd1     : begin
-                            if (ULTRASCALE_PLUS==0)
-                                axi_wr_data             <= 32'h00000010;          //// ctl_tx_send_rfi
-                            else
-                                axi_wr_data             <= 32'h00000018;          //// ctl_tx_send_lfi, ctl_tx_send_rfi
+                            axi_wr_data             <= 32'h00000010;          //// ctl_tx_send_rfi
                             axi_wr_addr             <= ADDR_CONFIG_TX_REG1 + SLAVE_CMAC_BASEADDR;   //// CONFIGURATION_TX_REG1
                             axi_wr_addr_valid       <= 1'b1;
                             axi_wr_data_valid       <= 1'b1;
@@ -208,7 +204,7 @@ module cmac_0_axi4_lite_user_if #(
                         end
                         default : begin
                             axi_wr_data             <= 32'h0;
-                            axi_wr_addr             <= 32'h0;
+                            axi_wr_addr             <= 12'h0;
                             axi_wr_addr_valid       <= 1'b0;
                             axi_wr_data_valid       <= 1'b0;
                             axi_wr_strobe           <= 4'h0;
@@ -230,7 +226,7 @@ module cmac_0_axi4_lite_user_if #(
                 end
                 STATE_AXI_RD_WR          : begin
                     if (s_axi_awready == 1'b1) begin
-                        axi_wr_addr             <= 32'd0;
+                        axi_wr_addr             <= 12'd0;
                         axi_wr_addr_valid       <= 1'b0;
                         axi_wr_req              <= 1'b0;
                     end
@@ -240,7 +236,7 @@ module cmac_0_axi4_lite_user_if #(
                         axi_wr_strobe           <= 4'd0;
                     end
                     if (s_axi_arready == 1'b1) begin
-                        axi_rd_addr             <= 32'd0;
+                        axi_rd_addr             <= 12'd0;
                         axi_rd_addr_valid       <= 1'b0;
                         axi_rd_req              <= 1'b0;
                     end
@@ -263,11 +259,11 @@ module cmac_0_axi4_lite_user_if #(
                 end
                 STATE_WAIT_RX_ALIGNED    : begin
                     rx_busy_led_r           <= 1'b1;
-                    axi_rd_addr             <= 32'd0;
+                    axi_rd_addr             <= 12'd0;
                     axi_rd_addr_valid       <= 1'b0;
                     axi_wr_data             <= 32'd0;
                     axi_read_data           <= 32'd0;
-                    axi_wr_addr             <= 32'd0;
+                    axi_wr_addr             <= 12'd0;
                     axi_wr_addr_valid       <= 1'b0;
                     axi_wr_data_valid       <= 1'b0;
                     axi_wr_strobe           <= 4'd0;
@@ -294,27 +290,16 @@ module cmac_0_axi4_lite_user_if #(
 
                     case (rd_wr_cntr)
                         'd0     : begin
-                            $display( "           AXI4 Lite Read Started for Core Version Reg..." );
-                            axi_rd_addr             <= ADDR_CORE_VERSION_REG + SLAVE_CMAC_BASEADDR;
-                            axi_rd_addr_valid       <= 1'b1;
-                            axi_rd_req              <= 1'b1;
-                            axi_wr_req              <= 1'b0;
-                        end
-                        'd1     : begin
-                            $display( "           Core_Version  =  %d.%0d", axi_read_data[15:8], axi_read_data[7:0] );
-                            $display( "           AXI4 Lite Write Started to Enable data sanity check..." );
                             axi_wr_data             <= 32'h00000001;         //// ctl_tx_enable=1 and ctl_tx_send_rfi=0
                             axi_wr_addr             <= ADDR_CONFIG_TX_REG1 + SLAVE_CMAC_BASEADDR;  //// CONFIGURATION_TX_REG1
                             axi_wr_addr_valid       <= 1'b1;
                             axi_wr_data_valid       <= 1'b1;
                             axi_wr_strobe           <= 4'hF;
-                            axi_rd_addr_valid       <= 1'b0;
-                            axi_rd_req              <= 1'b0;
                             axi_wr_req              <= 1'b1;
                         end
                         default : begin
                             axi_wr_data             <= 32'h0;
-                            axi_wr_addr             <= 32'h0;
+                            axi_wr_addr             <= 12'h0;
                             axi_wr_addr_valid       <= 1'b0;
                             axi_wr_data_valid       <= 1'b0;
                             axi_wr_strobe           <= 4'h0;
@@ -327,7 +312,7 @@ module cmac_0_axi4_lite_user_if #(
                     //// State transition
                     if  (gt_locked_sync == 1'b0 || stat_rx_aligned_sync == 1'b0)
                         axi_user_prestate <= STATE_AXI_IDLE;
-                    else if  (rd_wr_cntr == 8'd2) begin
+                    else if  (rd_wr_cntr == 8'd1) begin
                         $display( "           AXI4 Lite Write Completed" );
                         $display("INFO : Packet Generator and Monitor (SANITY Testing) STARTED");
                         axi_user_prestate <= STATE_TEST_WAIT;
@@ -337,11 +322,11 @@ module cmac_0_axi4_lite_user_if #(
                 end
                 STATE_TEST_WAIT          : begin
                     rx_busy_led_r           <= 1'b1;
-                    axi_rd_addr             <= 32'd0;
+                    axi_rd_addr             <= 12'd0;
                     axi_rd_addr_valid       <= 1'b0;
                     axi_read_data           <= 32'd0;
                     axi_wr_data             <= 32'd0;
-                    axi_wr_addr             <= 32'd0;
+                    axi_wr_addr             <= 12'd0;
                     axi_wr_addr_valid       <= 1'b0;
                     axi_wr_data_valid       <= 1'b0;
                     axi_wr_strobe           <= 4'd0;
@@ -360,10 +345,10 @@ module cmac_0_axi4_lite_user_if #(
                 end
                 STATE_INVALID_AXI_RD_WR : begin
                     rx_busy_led_r           <= 1'b0;
-                    axi_rd_addr             <= 32'd0;
+                    axi_rd_addr             <= 12'd0;
                     axi_rd_addr_valid       <= 1'b0;
                     axi_wr_data             <= 32'd0;
-                    axi_wr_addr             <= 32'd0;
+                    axi_wr_addr             <= 12'd0;
                     axi_wr_addr_valid       <= 1'b0;
                     axi_wr_data_valid       <= 1'b0;
                     axi_wr_strobe           <= 4'd0;
@@ -381,11 +366,11 @@ module cmac_0_axi4_lite_user_if #(
                         axi_user_prestate <= STATE_INVALID_AXI_RD_WR;
                 end
                 default                  : begin
-                    axi_rd_addr               <= 32'd0;
+                    axi_rd_addr               <= 12'd0;
                     axi_rd_addr_valid         <= 1'b0;
                     axi_wr_data               <= 32'd0;
                     axi_read_data             <= 32'd0;
-                    axi_wr_addr               <= 32'd0;
+                    axi_wr_addr               <= 12'd0;
                     axi_wr_addr_valid         <= 1'b0;
                     axi_wr_data_valid         <= 1'b0;
                     axi_wr_strobe             <= 4'd0;
@@ -456,7 +441,7 @@ module cmac_0_axi4_lite_rd_wr_if
   input  wire                    usr_read_req,
 
   //// write side from usr
-  input  wire [31:0]             usr_awaddr,
+  input  wire [11:0]             usr_awaddr,
   input  wire                    usr_awvalid,
   input  wire [31:0]             usr_wdata,
   input  wire                    usr_wvalid,
@@ -468,7 +453,7 @@ module cmac_0_axi4_lite_rd_wr_if
   output wire                    axi_bready,
 
   //// read side from usr
-  input  wire [31:0]             usr_araddr,
+  input  wire [11:0]             usr_araddr,
   input  wire                    usr_arvalid,
 
   //// read side from axi
@@ -481,7 +466,7 @@ module cmac_0_axi4_lite_rd_wr_if
   input  wire                    axi_arready,
 
   //// write side to axi
-  output wire [31:0]             axi_awaddr,
+  output wire [11:0]             axi_awaddr,
   output wire                    axi_awvalid,
   input  wire                    axi_awready,
 
@@ -492,7 +477,7 @@ module cmac_0_axi4_lite_rd_wr_if
 
   //// read side to usr
   output wire [31:0]             usr_rdata,
-  output wire [31:0]             axi_araddr, 
+  output wire [11:0]             axi_araddr, 
   output wire                    usr_wrack,
   output wire                    usr_rdack,
   output wire                    usr_wrerr,
@@ -507,14 +492,14 @@ module cmac_0_axi4_lite_rd_wr_if
 
   reg [2:0] pstate;
 
-  reg [31:0]             axi_awaddr_r;
+  reg [11:0]             axi_awaddr_r;
   reg                    axi_awvalid_r;
   reg [31:0]             axi_wdata_r;
   reg [31:0]             axi_rdata_r;
   reg [3:0]              axi_wstrb_r;
   reg                    axi_wvalid_r;
 
-  reg [31:0]             usr_araddr_r;
+  reg [11:0]             usr_araddr_r;
   reg                    usr_wrack_r;
   reg                    usr_rdack_r;
   reg                    usr_wrerr_r;
@@ -595,11 +580,11 @@ module cmac_0_axi4_lite_rd_wr_if
         pstate        <=  IDLE_STATE;
 
         axi_arvalid_r <=  1'b0;
-        usr_araddr_r  <=  32'd0;
+        usr_araddr_r  <=  12'd0;
         axi_rdata_r   <=  32'd0;
 
         axi_awvalid_r <=  1'b0;
-        axi_awaddr_r  <=  32'd0;
+        axi_awaddr_r  <=  12'd0;
         axi_wvalid_r  <=  1'b0;
         axi_wdata_r   <=  32'd0;
         axi_wstrb_r   <=  4'd0;
@@ -632,11 +617,11 @@ module cmac_0_axi4_lite_rd_wr_if
                                     begin
                                        pstate        <=  IDLE_STATE;
                                        axi_arvalid_r <=  1'b0;
-                                       usr_araddr_r  <=  32'd0;
+                                       usr_araddr_r  <=  12'd0;
                                        axi_rdata_r   <=  32'd0;
 
                                        axi_awvalid_r <=  1'b0;
-                                       axi_awaddr_r  <=  32'd0;
+                                       axi_awaddr_r  <=  12'd0;
                                        axi_wvalid_r  <=  1'b0;
                                        axi_wdata_r   <=  32'd0;
                                        axi_wstrb_r   <=  4'd0;
@@ -698,11 +683,11 @@ module cmac_0_axi4_lite_rd_wr_if
                 default        : begin
                                     pstate        <=  IDLE_STATE;
                                     axi_arvalid_r <=  1'b0;
-                                    usr_araddr_r  <=  32'd0;
+                                    usr_araddr_r  <=  12'd0;
                                     axi_rdata_r   <=  32'd0;
                                     
                                     axi_awvalid_r <=  1'b0;
-                                    axi_awaddr_r  <=  32'd0;
+                                    axi_awaddr_r  <=  12'd0;
                                     axi_wvalid_r  <=  1'b0;
                                     axi_wdata_r   <=  32'd0;
                                     axi_wstrb_r   <=  4'd0;

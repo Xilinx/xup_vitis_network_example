@@ -1,29 +1,31 @@
-# Copyright (c) 2020, Xilinx, Inc.
-# All rights reserved.
-# 
-# Redistribution and use in source and binary forms, with or without modification, 
-# are permitted provided that the following conditions are met:
-# 
-# 1. Redistributions of source code must retain the above copyright notice, 
-# this list of conditions and the following disclaimer.
-# 
-# 2. Redistributions in binary form must reproduce the above copyright notice, 
-# this list of conditions and the following disclaimer in the documentation 
-# and/or other materials provided with the distribution.
-# 
-# 3. Neither the name of the copyright holder nor the names of its contributors 
-# may be used to endorse or promote products derived from this software 
-# without specific prior written permission.
-# 
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
-# THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
-# IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, 
-# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
-# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) 
-# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
-# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
-# EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.// Copyright (c) 2020 Xilinx, Inc.
+#   Copyright (c) 2021, Xilinx, Inc.
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are met:
+#
+#   1.  Redistributions of source code must retain the above copyright notice,
+#       this list of conditions and the following disclaimer.
+#
+#   2.  Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#
+#   3.  Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+#   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+#   THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+#   PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+#   CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+#   EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+#   PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+#   OR BUSINESS INTERRUPTION). HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+#   WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+#   OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+#   ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 set projName kernel_pack
@@ -42,16 +44,12 @@ if {[string first "u50" ${board}] != -1} {
         exit
     }
     set projPart "xcu50-fsvh2104-2L-e"
-    set cmac_name "ALVEOu50_${interface}"
 } elseif {[string first "u200" ${board}] != -1} {
     set projPart "xcu200-fsgd2104-2-e"
-    set cmac_name "ALVEOu200_${interface}"
 } elseif {[string first "u250" ${board}] != -1} {
     set projPart "xcu250-figd2104-2L-e"
-    set cmac_name "ALVEOu250_${interface}"
 } elseif {[string first "u280" ${board}] != -1} {
     set projPart "xcu280-fsvh2892-2L-e"
-    set cmac_name "ALVEOu280_${interface}"
 } else {
     puts "ERROR: unsupported $board"
     exit
@@ -60,9 +58,12 @@ if {[string first "u50" ${board}] != -1} {
 
 
 create_project -force $projName $path_to_tmp_project -part $projPart
-set_property ip_repo_paths "${root_dir}/cmac/" [current_project]
-add_files -norecurse [glob $root_dir/cmac_top_${interface}.v]
-add_files -norecurse [glob $root_dir/axi4lite.v]
+add_files -norecurse [glob ${root_dir}/src/cmac_top_${interface}.v]
+add_files -norecurse [glob ${root_dir}/src/cmac_0_axi4_lite_user_if.v]
+add_files -norecurse [glob ${root_dir}/src/cmac_sync.v]
+add_files -norecurse [glob ${root_dir}/src/rx_sync.v]
+add_files -fileset constrs_1 -norecurse [glob ${root_dir}/src/cmac_synq_false_path.xdc]
+
 update_compile_order -fileset sources_1
 
 source ${root_dir}/bd_cmac.tcl

@@ -70,10 +70,16 @@ def _shiftedWord(value, index, width=1):
 
     return (value >> index) & ((2 ** width) - 1)
 
+_cmac_modes = {
+        0: 'CAUI10',
+        1: 'CAUI4',
+        2: 'Runtime Switchable CAUI10',
+        3: 'Runtime Switchable CAUI4'
+    }
+
 
 class cmac(DefaultIP):
-    """
-    This class wrapps the common function of the CMAC IP
+    """This class wrapps the common function of the CMAC IP
     """
 
     bindto = ["xilinx.com:kernel:cmac_0:1.0", 
@@ -92,10 +98,9 @@ class cmac(DefaultIP):
         raise RuntimeError("{} is a free running kernel and cannot be " 
             "starter or called".format(self._fullpath))
 
-    def linkStatus(self, debug=False):
-        """
-        Current link status.
-
+    def linkStatus(self, debug:bool=False) -> dict:
+        """Current CMAC link status
+        
         Parameters
         ----------
         debug: bool
@@ -110,29 +115,47 @@ class cmac(DefaultIP):
         if not isinstance(debug, bool):
             raise ValueError("debug must be a bool type")
 
-        cmac_status = int(self.register_map.led_status)
-        status_dict = {}
+        #The first time these registers are not populated properly,
+        #read them twice to get real value
+        for _ in range(2):
+            rx_status = int(self.register_map.stat_rx_status)
+            tx_status = int(self.register_map.stat_tx_status)
 
-        status_dict["cmac_link"] = bool(_shiftedWord(cmac_status, 0))
+        status_dict = {}
+        status_dict["cmac_link"] = bool(_shiftedWord(rx_status, 0))
         if debug:
-            status_dict["rx_busy"] = bool(_shiftedWord(cmac_status, 28))
-            status_dict["rx_data_fail"] = bool(_shiftedWord(cmac_status, 24))
-            status_dict["rx_done"] = bool(_shiftedWord(cmac_status, 20))
-            status_dict["tx_busy"] = bool(_shiftedWord(cmac_status, 16))
-            status_dict["tx_done"] = bool(_shiftedWord(cmac_status, 12))
-            status_dict["rx_gt_locked"] = bool(_shiftedWord(cmac_status, 8))
-            status_dict["rx_aligned"] = bool(_shiftedWord(cmac_status, 4))
+            status_dict["rx_status"] = bool(_shiftedWord(rx_status, 0))
+            status_dict["rx_aligned"] = bool(_shiftedWord(rx_status, 1))
+            status_dict["rx_misaligned"] = bool(_shiftedWord(rx_status, 2))
+            status_dict["rx_aligned_err"] = bool(_shiftedWord(rx_status, 3))
+            status_dict["rx_hi_ber"] = bool(_shiftedWord(rx_status, 4))
+            status_dict["rx_remote_fault"] = bool(_shiftedWord(rx_status, 5))
+            status_dict["rx_local_fault"] = bool(_shiftedWord(rx_status, 6))
+            status_dict["rx_got_signal_os"] = bool(_shiftedWord(rx_status, 14))
+            status_dict["tx_local_fault"] = bool(_shiftedWord(tx_status, 0))
 
         return status_dict
 
-    def copyStats(self):
-        """Copy CMAC Stats from its internal registers to external registers
+    def copyStats(self) -> None:
+        """Triggers a snapshot of CMAC Statistics
+
+        Triggers a snapshot of all the Statistics counters into their
+        readable register. The bit self-clears.
         """
 
         self.register_map.stat_pm_tick = 1
 
-    def getStats(self, update_reg=True) -> dict:
+    def getStats(self, update_reg:bool=True) -> dict:
         """ Return a dictionary with the CMAC stats 
+
+        Parameters
+        ----------
+        debug: bool
+        if enabled, the CMAC registers are copied from internal counters
+
+        Returns
+        -------
+        A dictionary with the CMAC statistics
         """
         if update_reg:
             self.copyStats()
@@ -199,6 +222,21 @@ class cmac(DefaultIP):
         }
 
         return stats_dict
+    @property
+    def version(self):
+        """Returns the CMAC Core version
+        """
+
+        version =  int(self.register_map.version)
+        return str(_shiftedWord(version, 8, 8)) + '.' \
+            + str(_shiftedWord(version, 0, 8))
+    
+    @property
+    def mode(self):
+        """Returns the CMAC Core mode
+        """
+        mode =  int(self.register_map.core_mode) & 0x3
+        return _cmac_modes[mode]
 
 
 def _byteOrderingEndianess(num, length=4):
@@ -464,6 +502,66 @@ class NetworkLayer(DefaultIP):
 
         if debug:
             return self.getNetworkInfo()
+
+    def resetDebugProbes(self) -> None:
+        """Reset debug probes
+        """
+
+        self.register_map.debug_reset_counters = 1
+
+    @property
+    def getDebugProbes(self) -> dict:
+        """ Return a dictionary with the value of the Network Layer probes
+        """
+
+        rmap = self.register_map
+        probes = dict()
+        probes['tx_path'] = dict()
+        probes['rx_path'] = dict()
+
+        probes['rx_path'] = {
+            "ethernet_packets": int(rmap.eth_inpackets),
+            "ethernet_bytes": int(rmap.eth_inbytes),
+            "ethernet_cycles": int(rmap.eth_incycles),
+            "packet_handler_packets": int(rmap.pkth_inpackets),
+            "packet_handler_bytes": int(rmap.pkth_inbytes),
+            "packet_handler_cycles": int(rmap.pkth_incycles),
+            "arp_packets": int(rmap.arp_in_packets),
+            "arp_bytes": int(rmap.arp_in_bytes),
+            "arp_cycles": int(rmap.arp_in_cycles),
+            "icmp_packets": int(rmap.icmp_in_packets),
+            "icmp_bytes": int(rmap.icmp_in_bytes),
+            "icmp_cycles": int(rmap.icmp_in_cycles),
+            "udp_packets": int(rmap.udp_in_packets),
+            "udp_bytes": int(rmap.udp_in_bytes),
+            "udp_cycles": int(rmap.udp_in_cycles),
+            "udp_to_app_packets": int(rmap.udp_app_out_packets),
+            "udp_to_app_bytes": int(rmap.udp_app_out_bytes),
+            "udp_to_app_cycles": int(rmap.udp_app_out_cycles),
+        }
+
+        probes['tx_path'] = {
+            "arp_packets": int(rmap.arp_out_packets),
+            "arp_bytes": int(rmap.arp_out_bytes),
+            "arp_cycles": int(rmap.arp_out_cycles),
+            "icmp_packets": int(rmap.icmp_out_packets),
+            "icmp_bytes": int(rmap.icmp_out_bytes),
+            "icmp_cycles": int(rmap.icmp_out_cycles),
+            "ethernet_header_inserter_packets": int(rmap.ethhi_out_packets),
+            "ethernet_header_inserter_bytes": int(rmap.ethhi_out_bytes),
+            "ethernet_header_inserter_cycles": int(rmap.ethhi_out_cycles),
+            "ethernet_packets": int(rmap.eth_outpackets),
+            "ethernet_bytes": int(rmap.eth_outbytes),
+            "ethernet_cycles": int(rmap.eth_outcycles),
+            "udp_from_app_packets": int(rmap.udp_app_in_packets),
+            "udp_from_app_bytes": int(rmap.udp_app_in_bytes),
+            "udp_from_app_cycles": int(rmap.udp_app_in_cycles),
+            "udp_packets": int(rmap.udp_out_packets),
+            "udp_bytes": int(rmap.udp_out_bytes),
+            "udp_cycles": int(rmap.udp_out_cycles),
+        }
+
+        return probes
 
 
 benchmark_mode = ["PRODUCER", "LATENCY", "LOOPBACK", "CONSUMER"]

@@ -34,8 +34,9 @@ set __TCLID "(Post-linking ${board_name} QSFP GT pins Tcl hook): "
 puts "${__TCLID} the name of the board is: ${board_name}"
 puts "${__TCLID} get_property PFM_NAME $pfm_name"
 #--------------------------------------------------------------
-# Get GT port name and GT reference clock
+# Get GT port name, GT reference clock and free running clock
 #--------------------------------------------------------------
+
 set io_clk_gt0 "io_clk_qsfp_refclka_00"
 set io_clk_gt1 "io_clk_gtyquad_refclk0_00"
 
@@ -58,6 +59,29 @@ if {[llength [get_bd_intf_ports ${io_clk_gt0}]] eq 1} {
 }
 
 puts "${__TCLID} bd gt quad is ${bd_gt_gtyquad_0} and gt clock ref is ${bd_gt_ref_clk_0_name_a}"
+
+# U280 -> frc0(50)
+# U250 -> frc1(100 MHz)
+# U50  -> frc2(100 MHz)
+
+set frc0 "clk_gt_freerun"
+set frc1 "ii_level1_wire/ulp_m_aclk_freerun_ref_00"
+set frc2 "ii_level0_wire/ulp_m_aclk_freerun_ref_00"
+set frc3 "blp_s_aclk_freerun_ref_00"
+
+if {[llength [get_bd_ports ${frc0}]] eq 1} {
+  set __bd_free_running_clk ${frc0}
+} elseif {[llength [get_bd_pins ${frc1}]] eq 1} {
+  set __bd_free_running_clk ${frc1}
+} elseif {[llength [get_bd_pins ${frc2}]] eq 1} {
+  set __bd_free_running_clk ${frc2}
+} elseif {[llength [get_bd_pins ${frc3}]] eq 1} {
+  set __bd_free_running_clk ${frc3}
+} else {
+  puts "${__TCLID} WARNING no free running clock was found"
+}
+
+puts "${__TCLID} free running clock is ${__bd_free_running_clk}"
 
 set __gt_k_list {}
 set __gt_intf_width 0
@@ -128,6 +152,21 @@ if {[dict exists $config_info kernels]} {
         connect_bd_net [get_bd_ports ${bd_gt_ref_clk_1_name_a}_clk_n] [get_bd_pins ${__k_inst}/gt_refclk1_n]
         connect_bd_net [get_bd_ports ${bd_gt_ref_clk_1_name_a}_clk_p] [get_bd_pins ${__k_inst}/gt_refclk1_p]
       }
+      # Get Free runninc clock pin name and connection if any
+      set __kernel_freerunclk_pins [get_bd_pins -of_objects [get_bd_cells ${__k_inst}] -filter {NAME =~ "clk_gt_freerun"}]
+      set __freerunclk_connection [get_bd_nets -of_objects [get_bd_pins -of_objects [get_bd_cells ${__k_inst}] -filter {NAME =~ "clk_gt_freerun"}]]
+      puts "${__TCLID} kernel free running clock pin ${__kernel_freerunclk_pins}"
+
+      if {[llength ${__kernel_freerunclk_pins}] ne 1} {
+        puts "${__TCLID} ERROR - No clk_gt_freerun pin found"
+      } else {
+        if {[llength ${__freerunclk_connection}] ne 0} {
+          puts "${__TCLID} ${__kernel_freerunclk_pins} was connected to ${__freerunclk_connection}. Connection was removed"
+          disconnect_bd_net ${__freerunclk_connection} [get_bd_pins ${__kernel_freerunclk_pins}]
+        }
+        puts "${__TCLID} connecting free running clock ${__bd_free_running_clk} -> ${__kernel_freerunclk_pins}"
+        connect_bd_net [get_bd_pins ${__bd_free_running_clk}] [get_bd_pins ${__kernel_freerunclk_pins}]
+      }      
     }
   }
 }

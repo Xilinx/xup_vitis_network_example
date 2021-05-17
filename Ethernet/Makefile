@@ -61,16 +61,15 @@ clean:
 
 distclean: clean
 	rm -rf build_dir*
-	rm -rf _x.* kernel_*.xml cmac_top*.v *.str
+	rm -rf _x.* kernel_*.xml src/cmac_top*.v *.str
 	rm -rf ./tmp_cmac* ./packaged_kernel* .Xil
 	rm -rf component.xml xgui/
 
 
 $(TEMP_DIR)/${KRNL_NAME}%.xo: current_interface=$(subst $(TEMP_DIR)/${KRNL_NAME}_,,$(subst .xo,,$@))
-$(TEMP_DIR)/${KRNL_NAME}%.xo: template.xml package_kernel.tcl gen_xo.tcl *.v
+$(TEMP_DIR)/${KRNL_NAME}%.xo: template.xml package_kernel.tcl gen_xo.tcl src/*.v
 	mkdir -p $(TEMP_DIR)
 	./duplicate_patch.sh
-	make -C $(SUBMODULENAME) $(SUBMODULEIPTARGET)
 	$(VIVADO) -mode batch -source gen_xo.tcl -notrace -tclargs $@ ${KRNL_NAME}_$(current_interface) $(XSA) $(current_interface)
 
 

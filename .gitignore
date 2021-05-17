@@ -9,3 +9,4 @@ build*/
 *.xclbin
 basic.*/
 benchmark.*/
+__pycache__/

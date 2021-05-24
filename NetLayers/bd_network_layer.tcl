@@ -964,7 +964,7 @@ proc create_root_design { parentCell } {
 
   # Create address segments
   assign_bd_address -offset 0x00004000 -range 0x00002000 -target_address_space [get_bd_addr_spaces S_AXIL_nl] [get_bd_addr_segs arp/arp_server_0/s_axi_s_axilite/Reg] -force
-  assign_bd_address -offset 0x00000080 -range 0x00000080 -target_address_space [get_bd_addr_spaces S_AXIL_nl] [get_bd_addr_segs interface_settings_0/S_AXI/reg0] -force
+  assign_bd_address -offset 0x00000000 -range 0x00000080 -target_address_space [get_bd_addr_spaces S_AXIL_nl] [get_bd_addr_segs interface_settings_0/S_AXI/reg0] -force
   assign_bd_address -offset 0x00001000 -range 0x00001000 -target_address_space [get_bd_addr_spaces S_AXIL_nl] [get_bd_addr_segs performance_debug_reg_0/S_AXI/reg0] -force
   assign_bd_address -offset 0x00002000 -range 0x00001000 -target_address_space [get_bd_addr_spaces S_AXIL_nl] [get_bd_addr_segs udp_0/s_axi_s_axilite/Reg] -force
 

@@ -40,7 +40,6 @@ BENCHMARDIR = Benchmark_kernel/
 NETLAYERHLS = 100G-fpga-network-stack-core
 
 POSTSYSLINKTCL ?= $(shell readlink -f ./post_sys_link.tcl)
-CMAC_IP_FOLDER ?= $(shell readlink -f ./$(CMACDIR)/cmac)
 SWITCH_IP_FOLDER ?= $(shell readlink -f ./$(BENCHMARDIR)/packaged_kernel_switch_wrapper_$(XSA))
 
 
@@ -56,7 +55,7 @@ else
 	LIST_XO += $(CMACDIR)$(TEMP_DIR)/cmac_$(INTERFACE).xo
 endif
 
-LIST_REPOS := --user_ip_repo_paths $(CMAC_IP_FOLDER)
+LIST_REPOS = 
 
 # Include application kernels depending on the design
 ifeq (benchmark,$(DESIGN))
@@ -163,7 +162,8 @@ create-conf-file:
 	echo "" >> configuration_$(DESIGN)_if$(INTERFACE).tmp.ini
 	echo "[advanced]" >> configuration_$(DESIGN)_if$(INTERFACE).tmp.ini
 	echo "param=compiler.userPostSysLinkOverlayTcl=$(POSTSYSLINKTCL)" >> configuration_$(DESIGN)_if$(INTERFACE).tmp.ini
-	echo "#param=compiler.worstNegativeSlack=-2" >> configuration_$(DESIGN)_if$(INTERFACE).tmp.ini
+	#echo "param=compiler.worstNegativeSlack=-2" >> configuration_$(DESIGN)_if$(INTERFACE).tmp.ini
+	#echo "param=compiler.compiler.errorOnHoldViolation=false" >> configuration_$(DESIGN)_if$(INTERFACE).tmp.ini
 	@if [[ $(DEVICE) = *"u50"* ]]; then\
 		sed -i 's/SLR2/SLR1/g' configuration_$(DESIGN)_if$(INTERFACE).tmp.ini;\
 	fi

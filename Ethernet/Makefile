@@ -32,24 +32,6 @@ ifeq (3,$(INTERFACE))
 	BINARY_NETLAYER_OBJS += $(TEMP_DIR)/${KRNL_NAME}_1.xo
 endif
 
-
-
-ifeq (u50,$(findstring u50, $(DEVICE)))
-	SUBMODULEIPTARGET = alveou50
-endif
-
-ifeq (u200,$(findstring u200, $(DEVICE)))
-	SUBMODULEIPTARGET = alveou200
-endif
-
-ifeq (u250,$(findstring u250, $(DEVICE)))
-	SUBMODULEIPTARGET = alveou250
-endif
-
-ifeq (u280,$(findstring u280, $(DEVICE)))
-	SUBMODULEIPTARGET = alveou280
-endif
-
 .PHONY: all clean distclean 
 all: check-devices check-vivado check-interface $(BINARY_NETLAYER_OBJS)  
 

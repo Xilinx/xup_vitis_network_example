@@ -103,7 +103,8 @@ The following notebooks demonstrate how to use the benchmark design to measure t
 | Alveo | Development Target Platform(s) | Notes |
 |-------|----------|------|
 | U50   | xilinx_u50_gen3x16_xdma_201920_3 | |
-| U250  | xilinx-u250-gen3x16-xdma-3.1-202020-1  | See [#16](https://github.com/Xilinx/xup_vitis_network_example/issues/16) | 
+| U200  | xilinx_u200_gen3x16_xdma_1_202110_1  | See [#28](https://github.com/Xilinx/xup_vitis_network_example/issues/28) | 
+| U250  | xilinx_u250_gen3x16_xdma_3.1_202020_1  | See [#16](https://github.com/Xilinx/xup_vitis_network_example/issues/16) | 
 | U280  | xilinx_u280_xdma_201920_3 | |
 
 ### Requirements

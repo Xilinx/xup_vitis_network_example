@@ -16,15 +16,15 @@
     <args>
       <!-- Streaming connections -->
       <arg name="s_rx_in"     addressQualifier="4" id="0" port="s_rx_in"    size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
-      <arg name="s_tx_in0"    addressQualifier="4" id="0" port="s_tx_in0"   size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
-      <arg name="s_tx_in1"    addressQualifier="4" id="0" port="s_tx_in1"   size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
-      <arg name="s_tx_in2"    addressQualifier="4" id="0" port="s_tx_in2"   size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
-      <arg name="s_tx_in3"    addressQualifier="4" id="0" port="s_tx_in3"   size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
-      <arg name="m_rx_out0"   addressQualifier="4" id="0" port="m_rx_out0"  size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
-      <arg name="m_rx_out1"   addressQualifier="4" id="0" port="m_rx_out1"  size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
-      <arg name="m_rx_out2"   addressQualifier="4" id="0" port="m_rx_out2"  size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
-      <arg name="m_rx_out3"   addressQualifier="4" id="0" port="m_rx_out3"  size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
-      <arg name="m_tx_out"    addressQualifier="4" id="0" port="m_tx_out"   size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
+      <arg name="s_tx_in0"    addressQualifier="4" id="1" port="s_tx_in0"   size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
+      <arg name="s_tx_in1"    addressQualifier="4" id="2" port="s_tx_in1"   size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
+      <arg name="s_tx_in2"    addressQualifier="4" id="3" port="s_tx_in2"   size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
+      <arg name="s_tx_in3"    addressQualifier="4" id="4" port="s_tx_in3"   size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
+      <arg name="m_rx_out0"   addressQualifier="4" id="5" port="m_rx_out0"  size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
+      <arg name="m_rx_out1"   addressQualifier="4" id="6" port="m_rx_out1"  size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
+      <arg name="m_rx_out2"   addressQualifier="4" id="7" port="m_rx_out2"  size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
+      <arg name="m_rx_out3"   addressQualifier="4" id="8" port="m_rx_out3"  size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
+      <arg name="m_tx_out"    addressQualifier="4" id="9" port="m_tx_out"   size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
     </args>
   </kernel>
 </root>

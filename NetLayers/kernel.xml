@@ -43,12 +43,12 @@
       <arg name="udp_in_cycles"           addressQualifier="0" id="29" port="S_AXIL_nl" size="0x8" offset="0x10C0" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="udp_in_bytes"            addressQualifier="0" id="30" port="S_AXIL_nl" size="0x8" offset="0x10C8" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="udp_in_packets"          addressQualifier="0" id="31" port="S_AXIL_nl" size="0x8" offset="0x10D0" type="uint" hostOffset="0x00" hostSize="0x8"/> 
-      <arg name="udp_out_cycles"          addressQualifier="0" id="32" port="S_AXIL_nl" size="0x8" offset="0x10D8" type="uint" hostOffset="0x00" hostSize="0x8"/> 
-      <arg name="udp_out_bytes"           addressQualifier="0" id="33" port="S_AXIL_nl" size="0x8" offset="0x10E0" type="uint" hostOffset="0x00" hostSize="0x8"/> 
-      <arg name="udp_out_packets"         addressQualifier="0" id="34" port="S_AXIL_nl" size="0x8" offset="0x10E8" type="uint" hostOffset="0x00" hostSize="0x8"/>
-      <arg name="udp_app_in_cycles"       addressQualifier="0" id="35" port="S_AXIL_nl" size="0x8" offset="0x10F0" type="uint" hostOffset="0x00" hostSize="0x8"/> 
-      <arg name="udp_app_in_bytes"        addressQualifier="0" id="36" port="S_AXIL_nl" size="0x8" offset="0x10F8" type="uint" hostOffset="0x00" hostSize="0x8"/> 
-      <arg name="udp_app_in_packets"      addressQualifier="0" id="37" port="S_AXIL_nl" size="0x8" offset="0x1100" type="uint" hostOffset="0x00" hostSize="0x8"/> 
+      <arg name="udp_app_in_cycles"       addressQualifier="0" id="32" port="S_AXIL_nl" size="0x8" offset="0x10D8" type="uint" hostOffset="0x00" hostSize="0x8"/> 
+      <arg name="udp_app_in_bytes"        addressQualifier="0" id="33" port="S_AXIL_nl" size="0x8" offset="0x10E0" type="uint" hostOffset="0x00" hostSize="0x8"/> 
+      <arg name="udp_app_in_packets"      addressQualifier="0" id="34" port="S_AXIL_nl" size="0x8" offset="0x10E8" type="uint" hostOffset="0x00" hostSize="0x8"/>
+      <arg name="udp_out_cycles"          addressQualifier="0" id="35" port="S_AXIL_nl" size="0x8" offset="0x10F0" type="uint" hostOffset="0x00" hostSize="0x8"/> 
+      <arg name="udp_out_bytes"           addressQualifier="0" id="36" port="S_AXIL_nl" size="0x8" offset="0x10F8" type="uint" hostOffset="0x00" hostSize="0x8"/> 
+      <arg name="udp_out_packets"         addressQualifier="0" id="37" port="S_AXIL_nl" size="0x8" offset="0x1100" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="udp_app_out_cycles"      addressQualifier="0" id="38" port="S_AXIL_nl" size="0x8" offset="0x1108" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="udp_app_out_bytes"       addressQualifier="0" id="39" port="S_AXIL_nl" size="0x8" offset="0x1110" type="uint" hostOffset="0x00" hostSize="0x8"/> 
       <arg name="udp_app_out_packets"     addressQualifier="0" id="40" port="S_AXIL_nl" size="0x8" offset="0x1118" type="uint" hostOffset="0x00" hostSize="0x8"/>  
@@ -63,10 +63,10 @@
       <arg name="arp_valid_offset"       addressQualifier="0" id="47" port="S_AXIL_nl" size="0x4" offset="0x5400" type="uint" hostOffset="0x00" hostSize="0x4"/> 
       <arg name="arp_discovery"          addressQualifier="0" id="48" port="S_AXIL_nl" size="0x4" offset="0x5500" type="uint" hostOffset="0x00" hostSize="0x4"/> 
       <!-- Streaming connections -->
-      <arg name="S_AXIS_sk2nl"  addressQualifier="4" id="0" port="S_AXIS_sk2nl"  size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
-      <arg name="M_AXIS_nl2sk"  addressQualifier="4" id="0" port="M_AXIS_nl2sk"  size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,96,0,16>>&amp;" />
-      <arg name="S_AXIS_eth2nl" addressQualifier="4" id="0" port="S_AXIS_eth2nl" size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,0>>&amp;" />
-      <arg name="M_AXIS_nl2eth" addressQualifier="4" id="0" port="M_AXIS_nl2eth" size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,0>>&amp;" />
+      <arg name="S_AXIS_sk2nl"  addressQualifier="4" id="49" port="S_AXIS_sk2nl"  size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,16>>&amp;" />
+      <arg name="M_AXIS_nl2sk"  addressQualifier="4" id="50" port="M_AXIS_nl2sk"  size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,96,0,16>>&amp;" />
+      <arg name="S_AXIS_eth2nl" addressQualifier="4" id="51" port="S_AXIS_eth2nl" size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,0>>&amp;" />
+      <arg name="M_AXIS_nl2eth" addressQualifier="4" id="52" port="M_AXIS_nl2eth" size="0x0" offset="0x0" hostOffset="0x0" hostSize="0x0" memSize="0" type="stream&lt;ap_axiu&lt;512,0,0,0>>&amp;" />
     </args>
   </kernel>
 </root>

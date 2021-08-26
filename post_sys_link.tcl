@@ -39,6 +39,7 @@ puts "${__TCLID} get_property PFM_NAME $pfm_name"
 
 set io_clk_gt0 "io_clk_qsfp_refclka_00"
 set io_clk_gt1 "io_clk_gtyquad_refclk0_00"
+set io_clk_gt2 "io_clk_qsfp0_refclka_00"
 
 if {[llength [get_bd_intf_ports ${io_clk_gt0}]] eq 1} {
   set bd_gt_ref_clk_0_name_a "io_clk_qsfp_refclka_00"
@@ -54,15 +55,22 @@ if {[llength [get_bd_intf_ports ${io_clk_gt0}]] eq 1} {
   set bd_gt_ref_clk_1_name_b "io_clk_gtyquad_refclk1_01"
   set bd_gt_gtyquad_0        "io_gt_gtyquad_00"
   set bd_gt_gtyquad_1        "io_gt_gtyquad_01"
+} elseif {[llength [get_bd_intf_ports ${io_clk_gt2}]] eq 1} {
+  set bd_gt_ref_clk_0_name_a "io_clk_qsfp0_refclka_00"
+  set bd_gt_ref_clk_1_name_a "io_clk_qsfp1_refclka_00"
+  set bd_gt_gtyquad_0        "io_gt_qsfp0_00"
+  set bd_gt_gtyquad_1        "io_gt_qsfp1_00"
 } else {
   puts "${__TCLID} WARNING no GT ports were found"
 }
 
 puts "${__TCLID} bd gt quad is ${bd_gt_gtyquad_0} and gt clock ref is ${bd_gt_ref_clk_0_name_a}"
+puts "${__TCLID} bd gt quad is ${bd_gt_gtyquad_1} and gt clock ref is ${bd_gt_ref_clk_1_name_a}"
 
 # U280 -> frc0(50)
 # U250 -> frc1(100 MHz)
 # U50  -> frc2(100 MHz)
+# U55c -> frc2(100 MHz)
 
 set frc0 "clk_gt_freerun"
 set frc1 "ii_level1_wire/ulp_m_aclk_freerun_ref_00"

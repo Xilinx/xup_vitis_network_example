@@ -40,6 +40,9 @@ set board [lindex $words 1]
 if {[string first "u50" ${board}] != -1} {
     set projPart "xcu50-fsvh2104-2L-e"
     set path_to_ip ${path_to_ip}/synthesis_results_HMB
+} elseif {[string first "u55" ${board}] != -1} {
+    set projPart "xcu55c-fsvh2892-2L-e"
+    set path_to_ip ${path_to_ip}/synthesis_results_HMB
 } elseif {[string first "u200" ${board}] != -1} {
     set projPart "xcu200-fsgd2104-2-e"
     set path_to_ip ${path_to_ip}/synthesis_results_noHMB

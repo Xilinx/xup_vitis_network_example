@@ -44,6 +44,8 @@ if {[string first "u50" ${board}] != -1} {
         exit
     }
     set projPart "xcu50-fsvh2104-2L-e"
+} elseif {[string first "u55" ${board}] != -1} {
+    set projPart "xcu55c-fsvh2892-2L-e"
 } elseif {[string first "u200" ${board}] != -1} {
     set projPart "xcu200-fsgd2104-2-e"
 } elseif {[string first "u250" ${board}] != -1} {
@@ -54,7 +56,6 @@ if {[string first "u50" ${board}] != -1} {
     puts "ERROR: unsupported $board"
     exit
 }
-
 
 
 create_project -force $projName $path_to_tmp_project -part $projPart

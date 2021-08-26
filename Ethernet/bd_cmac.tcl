@@ -46,6 +46,22 @@ if {${projPart} eq "xcu50-fsvh2104-2L-e"} {
   set core_selection  CMACE4_X0Y3
   set group_selection X0Y28~X0Y31
   set interface_number 0
+} elseif {${projPart} eq "xcu55c-fsvh2892-2L-e"} {
+  set gt_ref_clk 161.1328125
+  switch ${interface} {
+    "1" {
+      # Possible core_selection CMACE4_X0Y3 and CMACE4_X0Y4
+      set core_selection  CMACE4_X0Y4
+      set group_selection X0Y28~X0Y31
+      set interface_number 1
+    }
+    default {
+      # Possible core_selection CMACE4_X0Y2; CMACE4_X0Y3; CMACE4_X0Y4
+      set core_selection  CMACE4_X0Y2
+      set group_selection X0Y24~X0Y27
+      set interface_number 0
+    }
+  }
 } elseif {${projPart} eq "xcu200-fsgd2104-2-e"} {
   switch ${interface} {
     "1" {

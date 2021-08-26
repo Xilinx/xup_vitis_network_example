@@ -73,7 +73,7 @@ endif
 
 # Linker parameters
 # Linker userPostSysLinkTcl param
-ifeq (u50,$(findstring u50, $(DEVICE)))
+ifeq (u5,$(findstring u5, $(DEVICE)))
 	HLS_IP_FOLDER  = $(shell readlink -f ./$(NETLAYERDIR)$(NETLAYERHLS)/synthesis_results_HMB)
 endif
 ifeq (u200,$(findstring u200, $(DEVICE)))
@@ -166,6 +166,6 @@ create-conf-file:
 	echo "param=compiler.userPostSysLinkOverlayTcl=$(POSTSYSLINKTCL)" >> configuration_$(DESIGN)_if$(INTERFACE).tmp.ini
 	#echo "param=compiler.worstNegativeSlack=-2" >> configuration_$(DESIGN)_if$(INTERFACE).tmp.ini
 	#echo "param=compiler.compiler.errorOnHoldViolation=false" >> configuration_$(DESIGN)_if$(INTERFACE).tmp.ini
-	@if [[ $(DEVICE) = *"u50"* ]]; then\
+	@if [[ $(DEVICE) = *"u5"* ]]; then\
 		sed -i 's/SLR2/SLR1/g' configuration_$(DESIGN)_if$(INTERFACE).tmp.ini;\
 	fi

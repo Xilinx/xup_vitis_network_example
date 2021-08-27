@@ -27,7 +27,7 @@ set script_folder [_tcl::get_script_folder]
 
 # The design that will be created by this Tcl script contains the following 
 # module references:
-# axi4stream_sinker, bandwith_reg, bandwith_reg, bandwith_reg, bandwith_reg, bandwith_reg, bandwith_reg, bandwith_reg, bandwith_reg, interface_settings, performance_debug_reg, bandwith_reg, bandwith_reg, bandwith_reg, bandwith_reg
+# axi4stream_sinker, bandwidth_reg, bandwidth_reg, bandwidth_reg, bandwidth_reg, bandwidth_reg, bandwidth_reg, bandwidth_reg, bandwidth_reg, interface_settings, performance_debug_reg, bandwidth_reg, bandwidth_reg, bandwidth_reg, bandwidth_reg
 
 # Please add the sources of those modules before sourcing this Tcl script.
 
@@ -152,20 +152,20 @@ set bCheckModules 1
 if { $bCheckModules == 1 } {
    set list_check_mods "\ 
 axi4stream_sinker\
-bandwith_reg\
-bandwith_reg\
-bandwith_reg\
-bandwith_reg\
-bandwith_reg\
-bandwith_reg\
-bandwith_reg\
-bandwith_reg\
+bandwidth_reg\
+bandwidth_reg\
+bandwidth_reg\
+bandwidth_reg\
+bandwidth_reg\
+bandwidth_reg\
+bandwidth_reg\
+bandwidth_reg\
 interface_settings\
 performance_debug_reg\
-bandwith_reg\
-bandwith_reg\
-bandwith_reg\
-bandwith_reg\
+bandwidth_reg\
+bandwidth_reg\
+bandwidth_reg\
+bandwidth_reg\
 "
 
    set list_mods_missing ""
@@ -270,54 +270,54 @@ proc create_hier_cell_icmp { parentCell nameHier } {
    CONFIG.TUSER_WIDTH {0} \
  ] $asr_icmp_out
 
-  # Create instance: bandwith_icmp_in, and set properties
-  set block_name bandwith_reg
-  set block_cell_name bandwith_icmp_in
-  if { [catch {set bandwith_icmp_in [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+  # Create instance: bandwidth_icmp_in, and set properties
+  set block_name bandwidth_reg
+  set block_cell_name bandwidth_icmp_in
+  if { [catch {set bandwidth_icmp_in [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
-   } elseif { $bandwith_icmp_in eq "" } {
+   } elseif { $bandwidth_icmp_in eq "" } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
    }
     set_property -dict [ list \
    CONFIG.TDEST_WIDTH {0} \
    CONFIG.TUSER_WIDTH {0} \
- ] $bandwith_icmp_in
+ ] $bandwidth_icmp_in
 
-  # Create instance: bandwith_icmp_out, and set properties
-  set block_name bandwith_reg
-  set block_cell_name bandwith_icmp_out
-  if { [catch {set bandwith_icmp_out [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+  # Create instance: bandwidth_icmp_out, and set properties
+  set block_name bandwidth_reg
+  set block_cell_name bandwidth_icmp_out
+  if { [catch {set bandwidth_icmp_out [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
-   } elseif { $bandwith_icmp_out eq "" } {
+   } elseif { $bandwidth_icmp_out eq "" } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
    }
     set_property -dict [ list \
    CONFIG.TDEST_WIDTH {0} \
    CONFIG.TUSER_WIDTH {0} \
- ] $bandwith_icmp_out
+ ] $bandwidth_icmp_out
 
-  # Create instance: icmp_server_0, and set properties
-  set icmp_server_0 [ create_bd_cell -type ip -vlnv xilinx.com:hls:icmp_server:1.0 icmp_server_0 ]
+  # Create instance: icmp_server, and set properties
+  set icmp_server [ create_bd_cell -type ip -vlnv xilinx.com:hls:icmp_server:1.0 icmp_server ]
 
   # Create interface connections
-  connect_bd_intf_net -intf_net asr_icmp_in_M_AXIS [get_bd_intf_pins asr_icmp_in/M_AXIS] [get_bd_intf_pins icmp_server_0/s_axis_icmp]
+  connect_bd_intf_net -intf_net asr_icmp_in_M_AXIS [get_bd_intf_pins asr_icmp_in/M_AXIS] [get_bd_intf_pins icmp_server/s_axis_icmp]
   connect_bd_intf_net -intf_net asr_icmp_out_M_AXIS [get_bd_intf_pins M_AXIS] [get_bd_intf_pins asr_icmp_out/M_AXIS]
-  connect_bd_intf_net -intf_net axis_switch_0_M01_AXIS [get_bd_intf_pins IN_DBG] [get_bd_intf_pins bandwith_icmp_in/IN_DBG]
-  connect_bd_intf_net -intf_net bandwith_icmp_in_OUT_DBG [get_bd_intf_pins asr_icmp_in/S_AXIS] [get_bd_intf_pins bandwith_icmp_in/OUT_DBG]
-  connect_bd_intf_net -intf_net bandwith_icmp_out_OUT_DBG [get_bd_intf_pins asr_icmp_out/S_AXIS] [get_bd_intf_pins bandwith_icmp_out/OUT_DBG]
-  connect_bd_intf_net -intf_net icmp_server_0_m_axis_icmp [get_bd_intf_pins bandwith_icmp_out/IN_DBG] [get_bd_intf_pins icmp_server_0/m_axis_icmp]
+  connect_bd_intf_net -intf_net axis_switch_0_M01_AXIS [get_bd_intf_pins IN_DBG] [get_bd_intf_pins bandwidth_icmp_in/IN_DBG]
+  connect_bd_intf_net -intf_net bandwidth_icmp_in_OUT_DBG [get_bd_intf_pins asr_icmp_in/S_AXIS] [get_bd_intf_pins bandwidth_icmp_in/OUT_DBG]
+  connect_bd_intf_net -intf_net bandwidth_icmp_out_OUT_DBG [get_bd_intf_pins asr_icmp_out/S_AXIS] [get_bd_intf_pins bandwidth_icmp_out/OUT_DBG]
+  connect_bd_intf_net -intf_net icmp_server_m_axis_icmp [get_bd_intf_pins bandwidth_icmp_out/IN_DBG] [get_bd_intf_pins icmp_server/m_axis_icmp]
 
   # Create port connections
-  connect_bd_net -net bandwith_eth_in_debug_slot [get_bd_pins user_rst_n] [get_bd_pins bandwith_icmp_in/user_rst_n] [get_bd_pins bandwith_icmp_out/user_rst_n]
-  connect_bd_net -net bandwith_icmp_in_debug_slot [get_bd_pins debug_slot_out] [get_bd_pins bandwith_icmp_in/debug_slot]
-  connect_bd_net -net bandwith_icmp_out_debug_slot [get_bd_pins debug_slot_in] [get_bd_pins bandwith_icmp_out/debug_slot]
-  connect_bd_net -net interface_settings_0_my_ip_address [get_bd_pins myIpAddress_V] [get_bd_pins icmp_server_0/myIpAddress_V]
-  connect_bd_net -net s_aclk_0_1 [get_bd_pins ap_clk] [get_bd_pins asr_icmp_in/aclk] [get_bd_pins asr_icmp_out/aclk] [get_bd_pins bandwith_icmp_in/S_AXI_ACLK] [get_bd_pins bandwith_icmp_out/S_AXI_ACLK] [get_bd_pins icmp_server_0/ap_clk]
-  connect_bd_net -net s_aresetn_0_1 [get_bd_pins ap_rst_n] [get_bd_pins asr_icmp_in/aresetn] [get_bd_pins asr_icmp_out/aresetn] [get_bd_pins bandwith_icmp_in/S_AXI_ARESETN] [get_bd_pins bandwith_icmp_out/S_AXI_ARESETN] [get_bd_pins icmp_server_0/ap_rst_n]
+  connect_bd_net -net bandwidth_eth_in_debug_slot [get_bd_pins user_rst_n] [get_bd_pins bandwidth_icmp_in/user_rst_n] [get_bd_pins bandwidth_icmp_out/user_rst_n]
+  connect_bd_net -net bandwidth_icmp_in_debug_slot [get_bd_pins debug_slot_out] [get_bd_pins bandwidth_icmp_in/debug_slot]
+  connect_bd_net -net bandwidth_icmp_out_debug_slot [get_bd_pins debug_slot_in] [get_bd_pins bandwidth_icmp_out/debug_slot]
+  connect_bd_net -net interface_settings_0_my_ip_address [get_bd_pins myIpAddress_V] [get_bd_pins icmp_server/myIpAddress]
+  connect_bd_net -net s_aclk_0_1 [get_bd_pins ap_clk] [get_bd_pins asr_icmp_in/aclk] [get_bd_pins asr_icmp_out/aclk] [get_bd_pins bandwidth_icmp_in/S_AXI_ACLK] [get_bd_pins bandwidth_icmp_out/S_AXI_ACLK] [get_bd_pins icmp_server/ap_clk]
+  connect_bd_net -net s_aresetn_0_1 [get_bd_pins ap_rst_n] [get_bd_pins asr_icmp_in/aresetn] [get_bd_pins asr_icmp_out/aresetn] [get_bd_pins bandwidth_icmp_in/S_AXI_ARESETN] [get_bd_pins bandwidth_icmp_out/S_AXI_ARESETN] [get_bd_pins icmp_server/ap_rst_n]
 
   # Restore current instance
   current_bd_instance $oldCurInst
@@ -362,7 +362,7 @@ proc create_hier_cell_arp { parentCell nameHier } {
 
   create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 M_AXIS
 
-  create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 macIpEncode_req_V_V
+  create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 macIpEncode_req
 
   create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 macIpEncode_rsp_V
 
@@ -380,8 +380,8 @@ proc create_hier_cell_arp { parentCell nameHier } {
   create_bd_pin -dir I -from 31 -to 0 -type data networkMask_V
   create_bd_pin -dir I -type rst user_rst_n
 
-  # Create instance: arp_server_0, and set properties
-  set arp_server_0 [ create_bd_cell -type ip -vlnv xilinx.com:hls:arp_server:1.0 arp_server_0 ]
+  # Create instance: arp_server, and set properties
+  set arp_server [ create_bd_cell -type ip -vlnv xilinx.com:hls:arp_server:1.0 arp_server ]
 
   # Create instance: asr_arp_in, and set properties
   set asr_arp_in [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_register_slice:1.1 asr_arp_in ]
@@ -411,57 +411,57 @@ proc create_hier_cell_arp { parentCell nameHier } {
    CONFIG.TUSER_WIDTH {0} \
  ] $asr_arp_in1
 
-  # Create instance: bandwith_arp_in, and set properties
-  set block_name bandwith_reg
-  set block_cell_name bandwith_arp_in
-  if { [catch {set bandwith_arp_in [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+  # Create instance: bandwidth_arp_in, and set properties
+  set block_name bandwidth_reg
+  set block_cell_name bandwidth_arp_in
+  if { [catch {set bandwidth_arp_in [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
-   } elseif { $bandwith_arp_in eq "" } {
+   } elseif { $bandwidth_arp_in eq "" } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
    }
     set_property -dict [ list \
    CONFIG.TDEST_WIDTH {0} \
    CONFIG.TUSER_WIDTH {0} \
- ] $bandwith_arp_in
+ ] $bandwidth_arp_in
 
-  # Create instance: bandwith_arp_out, and set properties
-  set block_name bandwith_reg
-  set block_cell_name bandwith_arp_out
-  if { [catch {set bandwith_arp_out [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+  # Create instance: bandwidth_arp_out, and set properties
+  set block_name bandwidth_reg
+  set block_cell_name bandwidth_arp_out
+  if { [catch {set bandwidth_arp_out [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
-   } elseif { $bandwith_arp_out eq "" } {
+   } elseif { $bandwidth_arp_out eq "" } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
    }
     set_property -dict [ list \
    CONFIG.TDEST_WIDTH {0} \
    CONFIG.TUSER_WIDTH {0} \
- ] $bandwith_arp_out
+ ] $bandwidth_arp_out
 
   # Create interface connections
-  connect_bd_intf_net -intf_net Conn1 [get_bd_intf_pins s_axilite] [get_bd_intf_pins arp_server_0/s_axi_s_axilite]
-  connect_bd_intf_net -intf_net arp_server_0_arpDataOut [get_bd_intf_pins arp_server_0/arpDataOut] [get_bd_intf_pins bandwith_arp_out/IN_DBG]
-  connect_bd_intf_net -intf_net arp_server_0_macIpEncode_rsp_V [get_bd_intf_pins macIpEncode_rsp_V] [get_bd_intf_pins arp_server_0/macIpEncode_rsp_V]
+  connect_bd_intf_net -intf_net Conn1 [get_bd_intf_pins s_axilite] [get_bd_intf_pins arp_server/s_axi_s_axilite]
+  connect_bd_intf_net -intf_net arp_server_arpDataOut [get_bd_intf_pins arp_server/arpDataOut] [get_bd_intf_pins bandwidth_arp_out/IN_DBG]
+  connect_bd_intf_net -intf_net arp_server_macIpEncode_rsp_V [get_bd_intf_pins macIpEncode_rsp_V] [get_bd_intf_pins arp_server/macIpEncode_rsp_V]
   connect_bd_intf_net -intf_net asr_arp_in1_M_AXIS [get_bd_intf_pins M_AXIS] [get_bd_intf_pins asr_arp_in1/M_AXIS]
-  connect_bd_intf_net -intf_net asr_arp_in_M_AXIS [get_bd_intf_pins arp_server_0/arpDataIn] [get_bd_intf_pins asr_arp_in/M_AXIS]
-  connect_bd_intf_net -intf_net axis_switch_0_M00_AXIS [get_bd_intf_pins IN_DBG] [get_bd_intf_pins bandwith_arp_in/IN_DBG]
-  connect_bd_intf_net -intf_net bandwith_arp_in1_OUT_DBG [get_bd_intf_pins asr_arp_in1/S_AXIS] [get_bd_intf_pins bandwith_arp_out/OUT_DBG]
-  connect_bd_intf_net -intf_net bandwith_arp_in_OUT_DBG [get_bd_intf_pins asr_arp_in/S_AXIS] [get_bd_intf_pins bandwith_arp_in/OUT_DBG]
-  connect_bd_intf_net -intf_net ethernet_header_inse_0_arpTableRequest_V_V [get_bd_intf_pins macIpEncode_req_V_V] [get_bd_intf_pins arp_server_0/macIpEncode_req_V_V]
+  connect_bd_intf_net -intf_net asr_arp_in_M_AXIS [get_bd_intf_pins arp_server/arpDataIn] [get_bd_intf_pins asr_arp_in/M_AXIS]
+  connect_bd_intf_net -intf_net axis_switch_0_M00_AXIS [get_bd_intf_pins IN_DBG] [get_bd_intf_pins bandwidth_arp_in/IN_DBG]
+  connect_bd_intf_net -intf_net bandwidth_arp_in1_OUT_DBG [get_bd_intf_pins asr_arp_in1/S_AXIS] [get_bd_intf_pins bandwidth_arp_out/OUT_DBG]
+  connect_bd_intf_net -intf_net bandwidth_arp_in_OUT_DBG [get_bd_intf_pins asr_arp_in/S_AXIS] [get_bd_intf_pins bandwidth_arp_in/OUT_DBG]
+  connect_bd_intf_net -intf_net ethh_inserter_arpTableRequest [get_bd_intf_pins macIpEncode_req] [get_bd_intf_pins arp_server/macIpEncode_req_V]
 
   # Create port connections
-  connect_bd_net -net bandwith_arp_in_debug_slot [get_bd_pins debug_slot_in] [get_bd_pins bandwith_arp_in/debug_slot]
-  connect_bd_net -net bandwith_arp_out_debug_slot [get_bd_pins debug_slot_out] [get_bd_pins bandwith_arp_out/debug_slot]
-  connect_bd_net -net interface_settings_0_my_gateway [get_bd_pins gatewayIP_V] [get_bd_pins arp_server_0/gatewayIP_V]
-  connect_bd_net -net interface_settings_0_my_ip_address [get_bd_pins myIpAddress_V] [get_bd_pins arp_server_0/myIpAddress_V]
-  connect_bd_net -net interface_settings_0_my_ip_subnet_mask [get_bd_pins networkMask_V] [get_bd_pins arp_server_0/networkMask_V]
-  connect_bd_net -net interface_settings_0_my_mac [get_bd_pins myMacAddress_V] [get_bd_pins arp_server_0/myMacAddress_V]
-  connect_bd_net -net performance_debug_reg_0_user_rst_n [get_bd_pins user_rst_n] [get_bd_pins bandwith_arp_in/user_rst_n] [get_bd_pins bandwith_arp_out/user_rst_n]
-  connect_bd_net -net s_aclk_0_1 [get_bd_pins ap_clk] [get_bd_pins arp_server_0/ap_clk] [get_bd_pins asr_arp_in/aclk] [get_bd_pins asr_arp_in1/aclk] [get_bd_pins bandwith_arp_in/S_AXI_ACLK] [get_bd_pins bandwith_arp_out/S_AXI_ACLK]
-  connect_bd_net -net s_aresetn_0_1 [get_bd_pins ap_rst_n] [get_bd_pins arp_server_0/ap_rst_n] [get_bd_pins asr_arp_in/aresetn] [get_bd_pins asr_arp_in1/aresetn] [get_bd_pins bandwith_arp_in/S_AXI_ARESETN] [get_bd_pins bandwith_arp_out/S_AXI_ARESETN]
+  connect_bd_net -net bandwidth_arp_in_debug_slot [get_bd_pins debug_slot_in] [get_bd_pins bandwidth_arp_in/debug_slot]
+  connect_bd_net -net bandwidth_arp_out_debug_slot [get_bd_pins debug_slot_out] [get_bd_pins bandwidth_arp_out/debug_slot]
+  connect_bd_net -net interface_settings_0_my_gateway [get_bd_pins gatewayIP_V] [get_bd_pins arp_server/gatewayIP]
+  connect_bd_net -net interface_settings_0_my_ip_address [get_bd_pins myIpAddress_V] [get_bd_pins arp_server/myIpAddress]
+  connect_bd_net -net interface_settings_0_my_ip_subnet_mask [get_bd_pins networkMask_V] [get_bd_pins arp_server/networkMask]
+  connect_bd_net -net interface_settings_0_my_mac [get_bd_pins myMacAddress_V] [get_bd_pins arp_server/myMacAddress]
+  connect_bd_net -net performance_debug_reg_0_user_rst_n [get_bd_pins user_rst_n] [get_bd_pins bandwidth_arp_in/user_rst_n] [get_bd_pins bandwidth_arp_out/user_rst_n]
+  connect_bd_net -net s_aclk_0_1 [get_bd_pins ap_clk] [get_bd_pins arp_server/ap_clk] [get_bd_pins asr_arp_in/aclk] [get_bd_pins asr_arp_in1/aclk] [get_bd_pins bandwidth_arp_in/S_AXI_ACLK] [get_bd_pins bandwidth_arp_out/S_AXI_ACLK]
+  connect_bd_net -net s_aresetn_0_1 [get_bd_pins ap_rst_n] [get_bd_pins arp_server/ap_rst_n] [get_bd_pins asr_arp_in/aresetn] [get_bd_pins asr_arp_in1/aresetn] [get_bd_pins bandwidth_arp_in/S_AXI_ARESETN] [get_bd_pins bandwidth_arp_out/S_AXI_ARESETN]
 
   # Restore current instance
   current_bd_instance $oldCurInst
@@ -697,125 +697,125 @@ proc create_root_design { parentCell } {
    CONFIG.TUSER_WIDTH {0} \
  ] $axis_switch_0
 
-  # Create instance: bandwith_app_in, and set properties
-  set block_name bandwith_reg
-  set block_cell_name bandwith_app_in
-  if { [catch {set bandwith_app_in [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+  # Create instance: bandwidth_app_in, and set properties
+  set block_name bandwidth_reg
+  set block_cell_name bandwidth_app_in
+  if { [catch {set bandwidth_app_in [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
-   } elseif { $bandwith_app_in eq "" } {
+   } elseif { $bandwidth_app_in eq "" } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
    }
     set_property -dict [ list \
    CONFIG.TDEST_WIDTH {16} \
    CONFIG.TUSER_WIDTH {0} \
- ] $bandwith_app_in
+ ] $bandwidth_app_in
 
-  # Create instance: bandwith_app_out, and set properties
-  set block_name bandwith_reg
-  set block_cell_name bandwith_app_out
-  if { [catch {set bandwith_app_out [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+  # Create instance: bandwidth_app_out, and set properties
+  set block_name bandwidth_reg
+  set block_cell_name bandwidth_app_out
+  if { [catch {set bandwidth_app_out [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
-   } elseif { $bandwith_app_out eq "" } {
+   } elseif { $bandwidth_app_out eq "" } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
    }
     set_property -dict [ list \
    CONFIG.TDEST_WIDTH {16} \
    CONFIG.TUSER_WIDTH {96} \
- ] $bandwith_app_out
+ ] $bandwidth_app_out
 
-  # Create instance: bandwith_eth_in, and set properties
-  set block_name bandwith_reg
-  set block_cell_name bandwith_eth_in
-  if { [catch {set bandwith_eth_in [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+  # Create instance: bandwidth_eth_in, and set properties
+  set block_name bandwidth_reg
+  set block_cell_name bandwidth_eth_in
+  if { [catch {set bandwidth_eth_in [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
-   } elseif { $bandwith_eth_in eq "" } {
+   } elseif { $bandwidth_eth_in eq "" } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
    }
     set_property -dict [ list \
    CONFIG.TDEST_WIDTH {0} \
    CONFIG.TUSER_WIDTH {0} \
- ] $bandwith_eth_in
+ ] $bandwidth_eth_in
 
-  # Create instance: bandwith_eth_out, and set properties
-  set block_name bandwith_reg
-  set block_cell_name bandwith_eth_out
-  if { [catch {set bandwith_eth_out [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+  # Create instance: bandwidth_eth_out, and set properties
+  set block_name bandwidth_reg
+  set block_cell_name bandwidth_eth_out
+  if { [catch {set bandwidth_eth_out [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
-   } elseif { $bandwith_eth_out eq "" } {
+   } elseif { $bandwidth_eth_out eq "" } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
    }
     set_property -dict [ list \
    CONFIG.TDEST_WIDTH {0} \
    CONFIG.TUSER_WIDTH {0} \
- ] $bandwith_eth_out
+ ] $bandwidth_eth_out
 
-  # Create instance: bandwith_headerin_out, and set properties
-  set block_name bandwith_reg
-  set block_cell_name bandwith_headerin_out
-  if { [catch {set bandwith_headerin_out [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+  # Create instance: bandwidth_headerin_out, and set properties
+  set block_name bandwidth_reg
+  set block_cell_name bandwidth_headerin_out
+  if { [catch {set bandwidth_headerin_out [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
-   } elseif { $bandwith_headerin_out eq "" } {
+   } elseif { $bandwidth_headerin_out eq "" } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
    }
     set_property -dict [ list \
    CONFIG.TDEST_WIDTH {0} \
    CONFIG.TUSER_WIDTH {0} \
- ] $bandwith_headerin_out
+ ] $bandwidth_headerin_out
 
-  # Create instance: bandwith_pkth_out, and set properties
-  set block_name bandwith_reg
-  set block_cell_name bandwith_pkth_out
-  if { [catch {set bandwith_pkth_out [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+  # Create instance: bandwidth_pkth_out, and set properties
+  set block_name bandwidth_reg
+  set block_cell_name bandwidth_pkth_out
+  if { [catch {set bandwidth_pkth_out [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
-   } elseif { $bandwith_pkth_out eq "" } {
+   } elseif { $bandwidth_pkth_out eq "" } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
    }
     set_property -dict [ list \
    CONFIG.TDEST_WIDTH {3} \
    CONFIG.TUSER_WIDTH {0} \
- ] $bandwith_pkth_out
+ ] $bandwidth_pkth_out
 
-  # Create instance: bandwith_udp_in, and set properties
-  set block_name bandwith_reg
-  set block_cell_name bandwith_udp_in
-  if { [catch {set bandwith_udp_in [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+  # Create instance: bandwidth_udp_in, and set properties
+  set block_name bandwidth_reg
+  set block_cell_name bandwidth_udp_in
+  if { [catch {set bandwidth_udp_in [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
-   } elseif { $bandwith_udp_in eq "" } {
+   } elseif { $bandwidth_udp_in eq "" } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
    }
     set_property -dict [ list \
    CONFIG.TDEST_WIDTH {3} \
    CONFIG.TUSER_WIDTH {0} \
- ] $bandwith_udp_in
+ ] $bandwidth_udp_in
 
-  # Create instance: bandwith_udp_out, and set properties
-  set block_name bandwith_reg
-  set block_cell_name bandwith_udp_out
-  if { [catch {set bandwith_udp_out [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+  # Create instance: bandwidth_udp_out, and set properties
+  set block_name bandwidth_reg
+  set block_cell_name bandwidth_udp_out
+  if { [catch {set bandwidth_udp_out [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
-   } elseif { $bandwith_udp_out eq "" } {
+   } elseif { $bandwidth_udp_out eq "" } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
    }
     set_property -dict [ list \
    CONFIG.TDEST_WIDTH {3} \
    CONFIG.TUSER_WIDTH {0} \
- ] $bandwith_udp_out
+ ] $bandwidth_udp_out
 
   # Create instance: eth_level_merger, and set properties
   set eth_level_merger [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_switch:1.1 eth_level_merger ]
@@ -835,8 +835,8 @@ proc create_root_design { parentCell } {
    CONFIG.TUSER_WIDTH {0} \
  ] $eth_level_merger
 
-  # Create instance: ethernet_header_inse_0, and set properties
-  set ethernet_header_inse_0 [ create_bd_cell -type ip -vlnv xilinx.com:hls:ethernet_header_inserter:1.0 ethernet_header_inse_0 ]
+  # Create instance: ethh_inserter, and set properties
+  set ethh_inserter [ create_bd_cell -type ip -vlnv xilinx.com:hls:ethernet_header_inserter:1.0 ethh_inserter ]
 
   # Create instance: icmp
   create_hier_cell_icmp [current_bd_instance .] icmp
@@ -870,8 +870,8 @@ proc create_root_design { parentCell } {
    CONFIG.TUSER_WIDTH {0} \
  ] $ip_level_merger
 
-  # Create instance: packet_handler_0, and set properties
-  set packet_handler_0 [ create_bd_cell -type ip -vlnv xilinx.com:hls:packet_handler:1.0 packet_handler_0 ]
+  # Create instance: packet_handler, and set properties
+  set packet_handler [ create_bd_cell -type ip -vlnv xilinx.com:hls:packet_handler:1.0 packet_handler ]
 
   # Create instance: performance_debug_reg_0, and set properties
   set block_name performance_debug_reg
@@ -887,14 +887,14 @@ proc create_root_design { parentCell } {
    CONFIG.CLOCK_FREQUENCY {250000000} \
  ] $performance_debug_reg_0
 
-  # Create instance: smartconnect_0, and set properties
-  set smartconnect_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect:1.0 smartconnect_0 ]
+  # Create instance: smartconnect, and set properties
+  set smartconnect [ create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect:1.0 smartconnect ]
   set_property -dict [ list \
    CONFIG.NUM_MI {4} \
- ] $smartconnect_0
+ ] $smartconnect
 
-  # Create instance: udp_0, and set properties
-  set udp_0 [ create_bd_cell -type ip -vlnv xilinx.com:hls:udp:1.0 udp_0 ]
+  # Create instance: udp, and set properties
+  set udp [ create_bd_cell -type ip -vlnv xilinx.com:hls:udp:1.0 udp ]
 
   # Create instance: xlconstant_0, and set properties
   set xlconstant_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 xlconstant_0 ]
@@ -904,69 +904,69 @@ proc create_root_design { parentCell } {
  ] $xlconstant_0
 
   # Create interface connections
-  connect_bd_intf_net -intf_net S_AXIL_nl_1 [get_bd_intf_ports S_AXIL_nl] [get_bd_intf_pins smartconnect_0/S00_AXI]
-  connect_bd_intf_net -intf_net S_AXIS_eth2nl_1 [get_bd_intf_ports S_AXIS_eth2nl] [get_bd_intf_pins bandwith_eth_in/IN_DBG]
-  connect_bd_intf_net -intf_net S_AXIS_sk2nl_1 [get_bd_intf_ports S_AXIS_sk2nl] [get_bd_intf_pins bandwith_app_in/IN_DBG]
-  connect_bd_intf_net -intf_net arp_server_0_macIpEncode_rsp_V [get_bd_intf_pins arp/macIpEncode_rsp_V] [get_bd_intf_pins ethernet_header_inse_0/arpTableReplay_V]
+  connect_bd_intf_net -intf_net S_AXIL_nl_1 [get_bd_intf_ports S_AXIL_nl] [get_bd_intf_pins smartconnect/S00_AXI]
+  connect_bd_intf_net -intf_net S_AXIS_eth2nl_1 [get_bd_intf_ports S_AXIS_eth2nl] [get_bd_intf_pins bandwidth_eth_in/IN_DBG]
+  connect_bd_intf_net -intf_net S_AXIS_sk2nl_1 [get_bd_intf_ports S_AXIS_sk2nl] [get_bd_intf_pins bandwidth_app_in/IN_DBG]
+  connect_bd_intf_net -intf_net arp_server_macIpEncode_rsp_V [get_bd_intf_pins arp/macIpEncode_rsp_V] [get_bd_intf_pins ethh_inserter/arpTableReplay_V]
   connect_bd_intf_net -intf_net asr_arp_in1_M_AXIS [get_bd_intf_pins arp/M_AXIS] [get_bd_intf_pins eth_level_merger/S01_AXIS]
   connect_bd_intf_net -intf_net asr_eth_in1_M_AXIS [get_bd_intf_pins asr_pkth_out/M_AXIS] [get_bd_intf_pins axis_switch_0/S00_AXIS]
   connect_bd_intf_net -intf_net asr_eth_in1_M_AXIS1 [get_bd_intf_pins asr_headerin_out/M_AXIS] [get_bd_intf_pins eth_level_merger/S00_AXIS]
-  connect_bd_intf_net -intf_net asr_eth_in_M_AXIS [get_bd_intf_pins asr_eth_in/M_AXIS] [get_bd_intf_pins packet_handler_0/s_axis]
+  connect_bd_intf_net -intf_net asr_eth_in_M_AXIS [get_bd_intf_pins asr_eth_in/M_AXIS] [get_bd_intf_pins packet_handler/s_axis]
   connect_bd_intf_net -intf_net asr_eth_out_M_AXIS [get_bd_intf_ports M_AXIS_nl2eth] [get_bd_intf_pins asr_eth_out/M_AXIS]
-  connect_bd_intf_net -intf_net asr_udp_in_M_AXIS [get_bd_intf_pins asr_udp_in/M_AXIS] [get_bd_intf_pins udp_0/rxUdpDataIn]
+  connect_bd_intf_net -intf_net asr_udp_in_M_AXIS [get_bd_intf_pins asr_udp_in/M_AXIS] [get_bd_intf_pins udp/rxUdpDataIn]
   connect_bd_intf_net -intf_net asr_udp_out_M_AXIS [get_bd_intf_pins asr_udp_out/M_AXIS] [get_bd_intf_pins ip_level_merger/S00_AXIS]
   connect_bd_intf_net -intf_net axis_switch_0_M00_AXIS [get_bd_intf_pins arp/IN_DBG] [get_bd_intf_pins axis_switch_0/M00_AXIS]
   connect_bd_intf_net -intf_net axis_switch_0_M01_AXIS [get_bd_intf_pins axis_switch_0/M01_AXIS] [get_bd_intf_pins icmp/IN_DBG]
   connect_bd_intf_net -intf_net axis_switch_0_M02_AXIS [get_bd_intf_pins axi4stream_sinker_0/S_AXIS] [get_bd_intf_pins axis_switch_0/M02_AXIS]
-  connect_bd_intf_net -intf_net axis_switch_0_M03_AXIS [get_bd_intf_pins axis_switch_0/M03_AXIS] [get_bd_intf_pins bandwith_udp_in/IN_DBG]
-  connect_bd_intf_net -intf_net bandwith_app_in_OUT_DBG [get_bd_intf_pins bandwith_app_in/OUT_DBG] [get_bd_intf_pins udp_0/DataInApp]
-  connect_bd_intf_net -intf_net bandwith_app_out_OUT_DBG [get_bd_intf_ports M_AXIS_nl2sk] [get_bd_intf_pins bandwith_app_out/OUT_DBG]
-  connect_bd_intf_net -intf_net bandwith_eth_in1_OUT_DBG [get_bd_intf_pins asr_headerin_out/S_AXIS] [get_bd_intf_pins bandwith_headerin_out/OUT_DBG]
-  connect_bd_intf_net -intf_net bandwith_eth_in_OUT_DBG [get_bd_intf_pins asr_eth_in/S_AXIS] [get_bd_intf_pins bandwith_eth_in/OUT_DBG]
-  connect_bd_intf_net -intf_net bandwith_eth_out_OUT_DBG [get_bd_intf_pins asr_eth_out/S_AXIS] [get_bd_intf_pins bandwith_eth_out/OUT_DBG]
-  connect_bd_intf_net -intf_net bandwith_pkth_out_OUT_DBG [get_bd_intf_pins asr_pkth_out/S_AXIS] [get_bd_intf_pins bandwith_pkth_out/OUT_DBG]
-  connect_bd_intf_net -intf_net bandwith_udp_in_OUT_DBG [get_bd_intf_pins asr_udp_in/S_AXIS] [get_bd_intf_pins bandwith_udp_in/OUT_DBG]
-  connect_bd_intf_net -intf_net bandwith_udp_out_OUT_DBG [get_bd_intf_pins asr_udp_out/S_AXIS] [get_bd_intf_pins bandwith_udp_out/OUT_DBG]
-  connect_bd_intf_net -intf_net eth_level_merger_M00_AXIS [get_bd_intf_pins bandwith_eth_out/IN_DBG] [get_bd_intf_pins eth_level_merger/M00_AXIS]
-  connect_bd_intf_net -intf_net ethernet_header_inse_0_arpTableRequest_V_V [get_bd_intf_pins arp/macIpEncode_req_V_V] [get_bd_intf_pins ethernet_header_inse_0/arpTableRequest_V_V]
-  connect_bd_intf_net -intf_net ethernet_header_inse_0_dataOut [get_bd_intf_pins bandwith_headerin_out/IN_DBG] [get_bd_intf_pins ethernet_header_inse_0/dataOut]
+  connect_bd_intf_net -intf_net axis_switch_0_M03_AXIS [get_bd_intf_pins axis_switch_0/M03_AXIS] [get_bd_intf_pins bandwidth_udp_in/IN_DBG]
+  connect_bd_intf_net -intf_net bandwidth_app_in_OUT_DBG [get_bd_intf_pins bandwidth_app_in/OUT_DBG] [get_bd_intf_pins udp/DataInApp]
+  connect_bd_intf_net -intf_net bandwidth_app_out_OUT_DBG [get_bd_intf_ports M_AXIS_nl2sk] [get_bd_intf_pins bandwidth_app_out/OUT_DBG]
+  connect_bd_intf_net -intf_net bandwidth_eth_in1_OUT_DBG [get_bd_intf_pins asr_headerin_out/S_AXIS] [get_bd_intf_pins bandwidth_headerin_out/OUT_DBG]
+  connect_bd_intf_net -intf_net bandwidth_eth_in_OUT_DBG [get_bd_intf_pins asr_eth_in/S_AXIS] [get_bd_intf_pins bandwidth_eth_in/OUT_DBG]
+  connect_bd_intf_net -intf_net bandwidth_eth_out_OUT_DBG [get_bd_intf_pins asr_eth_out/S_AXIS] [get_bd_intf_pins bandwidth_eth_out/OUT_DBG]
+  connect_bd_intf_net -intf_net bandwidth_pkth_out_OUT_DBG [get_bd_intf_pins asr_pkth_out/S_AXIS] [get_bd_intf_pins bandwidth_pkth_out/OUT_DBG]
+  connect_bd_intf_net -intf_net bandwidth_udp_in_OUT_DBG [get_bd_intf_pins asr_udp_in/S_AXIS] [get_bd_intf_pins bandwidth_udp_in/OUT_DBG]
+  connect_bd_intf_net -intf_net bandwidth_udp_out_OUT_DBG [get_bd_intf_pins asr_udp_out/S_AXIS] [get_bd_intf_pins bandwidth_udp_out/OUT_DBG]
+  connect_bd_intf_net -intf_net eth_level_merger_M00_AXIS [get_bd_intf_pins bandwidth_eth_out/IN_DBG] [get_bd_intf_pins eth_level_merger/M00_AXIS]
+  connect_bd_intf_net -intf_net ethh_inserter_arpTableRequest [get_bd_intf_pins arp/macIpEncode_req] [get_bd_intf_pins ethh_inserter/arpTableRequest_V]
+  connect_bd_intf_net -intf_net ethh_inserter_dataOut [get_bd_intf_pins bandwidth_headerin_out/IN_DBG] [get_bd_intf_pins ethh_inserter/dataOut]
   connect_bd_intf_net -intf_net icmp_M_AXIS [get_bd_intf_pins icmp/M_AXIS] [get_bd_intf_pins ip_level_merger/S01_AXIS]
-  connect_bd_intf_net -intf_net ip_level_merger_M00_AXIS [get_bd_intf_pins ethernet_header_inse_0/dataIn] [get_bd_intf_pins ip_level_merger/M00_AXIS]
-  connect_bd_intf_net -intf_net packet_handler_0_m_axis [get_bd_intf_pins bandwith_pkth_out/IN_DBG] [get_bd_intf_pins packet_handler_0/m_axis]
-  connect_bd_intf_net -intf_net smartconnect_0_M01_AXI [get_bd_intf_pins performance_debug_reg_0/S_AXI] [get_bd_intf_pins smartconnect_0/M01_AXI]
-  connect_bd_intf_net -intf_net smartconnect_arp_s_axilite [get_bd_intf_pins arp/s_axilite] [get_bd_intf_pins smartconnect_0/M03_AXI]
-  connect_bd_intf_net -intf_net smartconnect_interface_settings [get_bd_intf_pins interface_settings_0/S_AXI] [get_bd_intf_pins smartconnect_0/M00_AXI]
-  connect_bd_intf_net -intf_net smartconnect_udp_s_axilite [get_bd_intf_pins smartconnect_0/M02_AXI] [get_bd_intf_pins udp_0/s_axi_s_axilite]
-  connect_bd_intf_net -intf_net udp_0_DataOutApp [get_bd_intf_pins bandwith_app_out/IN_DBG] [get_bd_intf_pins udp_0/DataOutApp]
-  connect_bd_intf_net -intf_net udp_0_txUdpDataOut [get_bd_intf_pins bandwith_udp_out/IN_DBG] [get_bd_intf_pins udp_0/txUdpDataOut]
+  connect_bd_intf_net -intf_net ip_level_merger_M00_AXIS [get_bd_intf_pins ethh_inserter/dataIn] [get_bd_intf_pins ip_level_merger/M00_AXIS]
+  connect_bd_intf_net -intf_net packet_handler_m_axis [get_bd_intf_pins bandwidth_pkth_out/IN_DBG] [get_bd_intf_pins packet_handler/m_axis]
+  connect_bd_intf_net -intf_net smartconnect_M01_AXI [get_bd_intf_pins performance_debug_reg_0/S_AXI] [get_bd_intf_pins smartconnect/M01_AXI]
+  connect_bd_intf_net -intf_net smartconnect_arp_s_axilite [get_bd_intf_pins arp/s_axilite] [get_bd_intf_pins smartconnect/M03_AXI]
+  connect_bd_intf_net -intf_net smartconnect_interface_settings [get_bd_intf_pins interface_settings_0/S_AXI] [get_bd_intf_pins smartconnect/M00_AXI]
+  connect_bd_intf_net -intf_net smartconnect_udp_s_axilite [get_bd_intf_pins smartconnect/M02_AXI] [get_bd_intf_pins udp/s_axi_s_axilite]
+  connect_bd_intf_net -intf_net udp_DataOutApp [get_bd_intf_pins bandwidth_app_out/IN_DBG] [get_bd_intf_pins udp/DataOutApp]
+  connect_bd_intf_net -intf_net udp_txUdpDataOut [get_bd_intf_pins bandwidth_udp_out/IN_DBG] [get_bd_intf_pins udp/txUdpDataOut]
 
   # Create port connections
-  connect_bd_net -net bandwith_app_in1_debug_slot [get_bd_pins bandwith_app_out/debug_slot] [get_bd_pins performance_debug_reg_0/PORT11]
-  connect_bd_net -net bandwith_app_in_debug_slot [get_bd_pins bandwith_app_in/debug_slot] [get_bd_pins performance_debug_reg_0/PORT9]
-  connect_bd_net -net bandwith_arp_in_debug_slot [get_bd_pins arp/debug_slot_in] [get_bd_pins performance_debug_reg_0/PORT2]
-  connect_bd_net -net bandwith_arp_out_debug_slot [get_bd_pins arp/debug_slot_out] [get_bd_pins performance_debug_reg_0/PORT3]
-  connect_bd_net -net bandwith_eth_in1_debug_slot [get_bd_pins bandwith_headerin_out/debug_slot] [get_bd_pins performance_debug_reg_0/PORT6]
-  connect_bd_net -net bandwith_eth_in_debug_slot [get_bd_pins bandwith_eth_in/debug_slot] [get_bd_pins performance_debug_reg_0/PORT0]
-  connect_bd_net -net bandwith_eth_out_debug_slot [get_bd_pins bandwith_eth_out/debug_slot] [get_bd_pins performance_debug_reg_0/PORT7]
-  connect_bd_net -net bandwith_icmp_in_debug_slot [get_bd_pins icmp/debug_slot_out] [get_bd_pins performance_debug_reg_0/PORT4]
-  connect_bd_net -net bandwith_icmp_out_debug_slot [get_bd_pins icmp/debug_slot_in] [get_bd_pins performance_debug_reg_0/PORT5]
-  connect_bd_net -net bandwith_pkth_out_debug_slot [get_bd_pins bandwith_pkth_out/debug_slot] [get_bd_pins performance_debug_reg_0/PORT1]
-  connect_bd_net -net bandwith_udp_in_debug_slot [get_bd_pins bandwith_udp_in/debug_slot] [get_bd_pins performance_debug_reg_0/PORT8]
-  connect_bd_net -net bandwith_udp_out_debug_slot [get_bd_pins bandwith_udp_out/debug_slot] [get_bd_pins performance_debug_reg_0/PORT10]
-  connect_bd_net -net interface_settings_0_my_gateway [get_bd_pins arp/gatewayIP_V] [get_bd_pins ethernet_header_inse_0/regDefaultGateway_V] [get_bd_pins interface_settings_0/my_gateway]
-  connect_bd_net -net interface_settings_0_my_ip_address [get_bd_pins arp/myIpAddress_V] [get_bd_pins icmp/myIpAddress_V] [get_bd_pins interface_settings_0/my_ip_address] [get_bd_pins udp_0/myIpAddress_V]
-  connect_bd_net -net interface_settings_0_my_ip_subnet_mask [get_bd_pins arp/networkMask_V] [get_bd_pins ethernet_header_inse_0/regSubNetMask_V] [get_bd_pins interface_settings_0/my_ip_subnet_mask]
-  connect_bd_net -net interface_settings_0_my_mac [get_bd_pins arp/myMacAddress_V] [get_bd_pins ethernet_header_inse_0/myMacAddress_V] [get_bd_pins interface_settings_0/my_mac]
-  connect_bd_net -net performance_debug_reg_0_user_rst_n [get_bd_pins arp/user_rst_n] [get_bd_pins bandwith_app_in/user_rst_n] [get_bd_pins bandwith_app_out/user_rst_n] [get_bd_pins bandwith_eth_in/user_rst_n] [get_bd_pins bandwith_eth_out/user_rst_n] [get_bd_pins bandwith_headerin_out/user_rst_n] [get_bd_pins bandwith_pkth_out/user_rst_n] [get_bd_pins bandwith_udp_in/user_rst_n] [get_bd_pins bandwith_udp_out/user_rst_n] [get_bd_pins performance_debug_reg_0/user_rst_n] [get_bd_pins icmp/user_rst_n]
-  connect_bd_net -net s_aclk_0_1 [get_bd_ports ap_clk] [get_bd_pins arp/ap_clk] [get_bd_pins asr_eth_in/aclk] [get_bd_pins asr_eth_out/aclk] [get_bd_pins asr_headerin_out/aclk] [get_bd_pins asr_pkth_out/aclk] [get_bd_pins asr_udp_in/aclk] [get_bd_pins asr_udp_out/aclk] [get_bd_pins axi4stream_sinker_0/CLK] [get_bd_pins axis_switch_0/aclk] [get_bd_pins bandwith_app_in/S_AXI_ACLK] [get_bd_pins bandwith_app_out/S_AXI_ACLK] [get_bd_pins bandwith_eth_in/S_AXI_ACLK] [get_bd_pins bandwith_eth_out/S_AXI_ACLK] [get_bd_pins bandwith_headerin_out/S_AXI_ACLK] [get_bd_pins bandwith_pkth_out/S_AXI_ACLK] [get_bd_pins bandwith_udp_in/S_AXI_ACLK] [get_bd_pins bandwith_udp_out/S_AXI_ACLK] [get_bd_pins eth_level_merger/aclk] [get_bd_pins ethernet_header_inse_0/ap_clk] [get_bd_pins icmp/ap_clk] [get_bd_pins interface_settings_0/S_AXI_ACLK] [get_bd_pins ip_level_merger/aclk] [get_bd_pins packet_handler_0/ap_clk] [get_bd_pins performance_debug_reg_0/S_AXI_ACLK] [get_bd_pins smartconnect_0/aclk] [get_bd_pins udp_0/ap_clk]
-  connect_bd_net -net s_aresetn_0_1 [get_bd_ports ap_rst_n] [get_bd_pins arp/ap_rst_n] [get_bd_pins asr_eth_in/aresetn] [get_bd_pins asr_eth_out/aresetn] [get_bd_pins asr_headerin_out/aresetn] [get_bd_pins asr_pkth_out/aresetn] [get_bd_pins asr_udp_in/aresetn] [get_bd_pins asr_udp_out/aresetn] [get_bd_pins axi4stream_sinker_0/RST_N] [get_bd_pins axis_switch_0/aresetn] [get_bd_pins bandwith_app_in/S_AXI_ARESETN] [get_bd_pins bandwith_app_out/S_AXI_ARESETN] [get_bd_pins bandwith_eth_in/S_AXI_ARESETN] [get_bd_pins bandwith_eth_out/S_AXI_ARESETN] [get_bd_pins bandwith_headerin_out/S_AXI_ARESETN] [get_bd_pins bandwith_pkth_out/S_AXI_ARESETN] [get_bd_pins bandwith_udp_in/S_AXI_ARESETN] [get_bd_pins bandwith_udp_out/S_AXI_ARESETN] [get_bd_pins eth_level_merger/aresetn] [get_bd_pins ethernet_header_inse_0/ap_rst_n] [get_bd_pins icmp/ap_rst_n] [get_bd_pins interface_settings_0/S_AXI_ARESETN] [get_bd_pins ip_level_merger/aresetn] [get_bd_pins packet_handler_0/ap_rst_n] [get_bd_pins performance_debug_reg_0/S_AXI_ARESETN] [get_bd_pins smartconnect_0/aresetn] [get_bd_pins udp_0/ap_rst_n]
+  connect_bd_net -net bandwidth_app_in1_debug_slot [get_bd_pins bandwidth_app_out/debug_slot] [get_bd_pins performance_debug_reg_0/PORT11]
+  connect_bd_net -net bandwidth_app_in_debug_slot [get_bd_pins bandwidth_app_in/debug_slot] [get_bd_pins performance_debug_reg_0/PORT9]
+  connect_bd_net -net bandwidth_arp_in_debug_slot [get_bd_pins arp/debug_slot_in] [get_bd_pins performance_debug_reg_0/PORT2]
+  connect_bd_net -net bandwidth_arp_out_debug_slot [get_bd_pins arp/debug_slot_out] [get_bd_pins performance_debug_reg_0/PORT3]
+  connect_bd_net -net bandwidth_eth_in1_debug_slot [get_bd_pins bandwidth_headerin_out/debug_slot] [get_bd_pins performance_debug_reg_0/PORT6]
+  connect_bd_net -net bandwidth_eth_in_debug_slot [get_bd_pins bandwidth_eth_in/debug_slot] [get_bd_pins performance_debug_reg_0/PORT0]
+  connect_bd_net -net bandwidth_eth_out_debug_slot [get_bd_pins bandwidth_eth_out/debug_slot] [get_bd_pins performance_debug_reg_0/PORT7]
+  connect_bd_net -net bandwidth_icmp_in_debug_slot [get_bd_pins icmp/debug_slot_out] [get_bd_pins performance_debug_reg_0/PORT4]
+  connect_bd_net -net bandwidth_icmp_out_debug_slot [get_bd_pins icmp/debug_slot_in] [get_bd_pins performance_debug_reg_0/PORT5]
+  connect_bd_net -net bandwidth_pkth_out_debug_slot [get_bd_pins bandwidth_pkth_out/debug_slot] [get_bd_pins performance_debug_reg_0/PORT1]
+  connect_bd_net -net bandwidth_udp_in_debug_slot [get_bd_pins bandwidth_udp_in/debug_slot] [get_bd_pins performance_debug_reg_0/PORT8]
+  connect_bd_net -net bandwidth_udp_out_debug_slot [get_bd_pins bandwidth_udp_out/debug_slot] [get_bd_pins performance_debug_reg_0/PORT10]
+  connect_bd_net -net interface_settings_0_my_gateway [get_bd_pins arp/gatewayIP_V] [get_bd_pins ethh_inserter/regDefaultGateway] [get_bd_pins interface_settings_0/my_gateway]
+  connect_bd_net -net interface_settings_0_my_ip_address [get_bd_pins arp/myIpAddress_V] [get_bd_pins icmp/myIpAddress_V] [get_bd_pins interface_settings_0/my_ip_address] [get_bd_pins udp/myIpAddress]
+  connect_bd_net -net interface_settings_0_my_ip_subnet_mask [get_bd_pins arp/networkMask_V] [get_bd_pins ethh_inserter/regSubNetMask] [get_bd_pins interface_settings_0/my_ip_subnet_mask]
+  connect_bd_net -net interface_settings_0_my_mac [get_bd_pins arp/myMacAddress_V] [get_bd_pins ethh_inserter/myMacAddress] [get_bd_pins interface_settings_0/my_mac]
+  connect_bd_net -net performance_debug_reg_0_user_rst_n [get_bd_pins arp/user_rst_n] [get_bd_pins bandwidth_app_in/user_rst_n] [get_bd_pins bandwidth_app_out/user_rst_n] [get_bd_pins bandwidth_eth_in/user_rst_n] [get_bd_pins bandwidth_eth_out/user_rst_n] [get_bd_pins bandwidth_headerin_out/user_rst_n] [get_bd_pins bandwidth_pkth_out/user_rst_n] [get_bd_pins bandwidth_udp_in/user_rst_n] [get_bd_pins bandwidth_udp_out/user_rst_n] [get_bd_pins icmp/user_rst_n] [get_bd_pins performance_debug_reg_0/user_rst_n]
+  connect_bd_net -net s_aclk_0_1 [get_bd_ports ap_clk] [get_bd_pins arp/ap_clk] [get_bd_pins asr_eth_in/aclk] [get_bd_pins asr_eth_out/aclk] [get_bd_pins asr_headerin_out/aclk] [get_bd_pins asr_pkth_out/aclk] [get_bd_pins asr_udp_in/aclk] [get_bd_pins asr_udp_out/aclk] [get_bd_pins axi4stream_sinker_0/CLK] [get_bd_pins axis_switch_0/aclk] [get_bd_pins bandwidth_app_in/S_AXI_ACLK] [get_bd_pins bandwidth_app_out/S_AXI_ACLK] [get_bd_pins bandwidth_eth_in/S_AXI_ACLK] [get_bd_pins bandwidth_eth_out/S_AXI_ACLK] [get_bd_pins bandwidth_headerin_out/S_AXI_ACLK] [get_bd_pins bandwidth_pkth_out/S_AXI_ACLK] [get_bd_pins bandwidth_udp_in/S_AXI_ACLK] [get_bd_pins bandwidth_udp_out/S_AXI_ACLK] [get_bd_pins eth_level_merger/aclk] [get_bd_pins ethh_inserter/ap_clk] [get_bd_pins icmp/ap_clk] [get_bd_pins interface_settings_0/S_AXI_ACLK] [get_bd_pins ip_level_merger/aclk] [get_bd_pins packet_handler/ap_clk] [get_bd_pins performance_debug_reg_0/S_AXI_ACLK] [get_bd_pins smartconnect/aclk] [get_bd_pins udp/ap_clk]
+  connect_bd_net -net s_aresetn_0_1 [get_bd_ports ap_rst_n] [get_bd_pins arp/ap_rst_n] [get_bd_pins asr_eth_in/aresetn] [get_bd_pins asr_eth_out/aresetn] [get_bd_pins asr_headerin_out/aresetn] [get_bd_pins asr_pkth_out/aresetn] [get_bd_pins asr_udp_in/aresetn] [get_bd_pins asr_udp_out/aresetn] [get_bd_pins axi4stream_sinker_0/RST_N] [get_bd_pins axis_switch_0/aresetn] [get_bd_pins bandwidth_app_in/S_AXI_ARESETN] [get_bd_pins bandwidth_app_out/S_AXI_ARESETN] [get_bd_pins bandwidth_eth_in/S_AXI_ARESETN] [get_bd_pins bandwidth_eth_out/S_AXI_ARESETN] [get_bd_pins bandwidth_headerin_out/S_AXI_ARESETN] [get_bd_pins bandwidth_pkth_out/S_AXI_ARESETN] [get_bd_pins bandwidth_udp_in/S_AXI_ARESETN] [get_bd_pins bandwidth_udp_out/S_AXI_ARESETN] [get_bd_pins eth_level_merger/aresetn] [get_bd_pins ethh_inserter/ap_rst_n] [get_bd_pins icmp/ap_rst_n] [get_bd_pins interface_settings_0/S_AXI_ARESETN] [get_bd_pins ip_level_merger/aresetn] [get_bd_pins packet_handler/ap_rst_n] [get_bd_pins performance_debug_reg_0/S_AXI_ARESETN] [get_bd_pins smartconnect/aresetn] [get_bd_pins udp/ap_rst_n]
   connect_bd_net -net xlconstant_0_dout [get_bd_pins eth_level_merger/s_req_suppress] [get_bd_pins ip_level_merger/s_req_suppress] [get_bd_pins xlconstant_0/dout]
 
   # Create address segments
-  assign_bd_address -offset 0x00004000 -range 0x00002000 -target_address_space [get_bd_addr_spaces S_AXIL_nl] [get_bd_addr_segs arp/arp_server_0/s_axi_s_axilite/Reg] -force
+  assign_bd_address -offset 0x00003000 -range 0x00001000 -target_address_space [get_bd_addr_spaces S_AXIL_nl] [get_bd_addr_segs arp/arp_server/s_axi_s_axilite/Reg] -force
   assign_bd_address -offset 0x00000000 -range 0x00000080 -target_address_space [get_bd_addr_spaces S_AXIL_nl] [get_bd_addr_segs interface_settings_0/S_AXI/reg0] -force
   assign_bd_address -offset 0x00001000 -range 0x00001000 -target_address_space [get_bd_addr_spaces S_AXIL_nl] [get_bd_addr_segs performance_debug_reg_0/S_AXI/reg0] -force
-  assign_bd_address -offset 0x00002000 -range 0x00001000 -target_address_space [get_bd_addr_spaces S_AXIL_nl] [get_bd_addr_segs udp_0/s_axi_s_axilite/Reg] -force
+  assign_bd_address -offset 0x00002000 -range 0x00001000 -target_address_space [get_bd_addr_spaces S_AXIL_nl] [get_bd_addr_segs udp/s_axi_s_axilite/Reg] -force
 
 
   # Restore current instance

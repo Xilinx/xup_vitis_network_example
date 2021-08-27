@@ -15,7 +15,7 @@ help:
 
 
 DEVICE ?= xilinx_u280_xdma_201920_3
-kernel_list ?= krnl_s2mm krnl_mm2s krnl_counters
+kernel_list ?= krnl_s2mm krnl_mm2s
 
 
 XSA := $(strip $(patsubst %.xpfm, % , $(shell basename $(DEVICE))))
@@ -25,8 +25,8 @@ CLFLAGS += -t hw --platform $(DEVICE) --save-temps
 BINARY_OBJS = $(addprefix $(TEMP_DIR)/, $(addsuffix .xo, $(kernel_list)))
 
 
-.PHONY: all clean distclean 
-all: check-devices check-vitis check-xrt $(BINARY_OBJS)  
+.PHONY: all clean distclean
+all: check-devices check-vitis check-xrt $(BINARY_OBJS)
 
 
 # Cleaning stuff

@@ -68,7 +68,6 @@ ifeq (benchmark,$(DESIGN))
 else
 	LIST_XO += $(BASICDIR)$(TEMP_DIR)/krnl_mm2s.xo
 	LIST_XO += $(BASICDIR)$(TEMP_DIR)/krnl_s2mm.xo
-	LIST_XO += $(BASICDIR)$(TEMP_DIR)/krnl_counters.xo
 endif
 
 # Linker parameters

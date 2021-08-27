@@ -65,9 +65,9 @@ The following figure depicts the different kernels and their interconnection in 
 
 *cmac* and *network layer* kernels are explained in the section above. In this example the application is split into two kernels, memory mapped to stream (mm2s) and stream to memory mapped (s2mm).
 
-* [mm2s](Kernels/src/krnl_mm2s.cpp): pulls data from global memory and converts it to a 512-bit stream. It chunks the data into 1408-Byte packets, meaning that *last* is asserted. It also asserts *last* when there is no more data to send. The *dest* is set according to the argument with the same name.
+* [mm2s](Basic_kernels/src/krnl_mm2s.cpp): pulls data from global memory and converts it to a 512-bit stream. It chunks the data into 1408-Byte packets, meaning that *last* is asserted. It also asserts *last* when there is no more data to send. The *dest* is set according to the argument with the same name.
 
-* [s2mm](Kernels/src/krnl_s2mm.cpp): gets payload from the UDP module and push the payload to global memory. *dest* and *last* are ignored in this module.
+* [s2mm](Basic_kernels/src/krnl_s2mm.cpp): gets payload from the UDP module and push the payload to global memory. *dest* and *last* are ignored in this module.
 
 The current limitation of this *application* is that the size of the data must be multiple of 64-Byte to work properly.
 
@@ -160,11 +160,13 @@ make all DEVICE=<full platform path> INTERFACE=<interface number> DESIGN=<design
 
 **NetLayers/100G-fpga-network-stack-core** License: [BSD 3-Clause License](THIRD_PARTY_LIC.md)
 
-## Pitfall
+## Considerations
 
 VXx **IS NOT** a Network Interface Card (NIC). VNx main goal is to provide networking offload to Vitis kernels, so these kernels can communicate from one Alveo card to another without spending CPU cycles and minimum communication latency.
 
 If you are interested in a NIC design, please check out [OpenNIC Platform](https://github.com/Xilinx/open-nic)
+
+VNx was originally developed within [Xilinx University Program](https://www.xilinx.com/support/university.html) to support compute application that need to scale out. It has now been open sourced by Xilinx as a community resource. VNx is not a **Xilinx product** and so does not have formal Xilinx support in place, [GitHub issues](https://github.com/Xilinx/xup_vitis_network_example/issues) is the best place to request support.
 
 ------------------------------------------------------
 <p align="center">Copyright&copy; 2021 Xilinx</p>

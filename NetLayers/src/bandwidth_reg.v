@@ -44,7 +44,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
  
-module bandwith_reg #
+module bandwidth_reg #
     (
         // Users to add parameters here
 

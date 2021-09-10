@@ -54,7 +54,7 @@ if {[string first "u50" ${board}] != -1} {
 create_project -force $projName $path_to_tmp_project -part $projPart
 
 add_files -norecurse ${path_to_hdl}
-add_files -norecurse ${path_to_hdl_debug}/bandwith_reg.v
+add_files -norecurse ${path_to_hdl_debug}/bandwidth_reg.v
 add_files -norecurse ${path_to_hdl_debug}/6to3_reducer.vhd
 add_files -norecurse ${path_to_hdl_debug}/counter_64_7_v3.vhd
 

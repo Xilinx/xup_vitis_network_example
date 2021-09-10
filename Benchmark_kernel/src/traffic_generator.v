@@ -189,7 +189,7 @@ module traffic_generator #(
         .debug_fsm_summary    (   debug_fsm_summary_w)
     );
 
-    bandwith_reg #(
+    bandwidth_reg #(
         .C_AXIS_DATA_WIDTH(AXIS_TDATA_WIDTH)
     ) bw_producer_i (
         .S_AXI_ACLK    (                   ap_clk),
@@ -207,7 +207,7 @@ module traffic_generator #(
         .user_rst_n    (            debug_reset_n)
     );
 
-    bandwith_reg #(
+    bandwidth_reg #(
         .C_AXIS_DATA_WIDTH(AXIS_TDATA_WIDTH)
     ) bw_consumer_i (
         .S_AXI_ACLK    (                   ap_clk),
@@ -225,7 +225,7 @@ module traffic_generator #(
         .user_rst_n    (            debug_reset_n)
     );
 
-    bandwith_reg #(
+    bandwidth_reg #(
         .C_AXIS_DATA_WIDTH(AXIS_SUMMARY_WIDTH)
     ) bw_summary_i (
         .S_AXI_ACLK    (                         ap_clk),

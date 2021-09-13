@@ -33,6 +33,7 @@ __email__ = "xup@xilinx.com"
 
 import pynq
 from pynq import DefaultIP
+from pynq.utils import ReprDict
 import numpy as np
 import ipaddress
 from packaging import version
@@ -78,7 +79,7 @@ _cmac_modes = {
     }
 
 
-class cmac(DefaultIP):
+class CMAC(DefaultIP):
     """This class wrapps the common function of the CMAC IP
     """
 
@@ -317,8 +318,11 @@ class NetworkLayer(DefaultIP):
 
         """
 
-        offset = self.register_map.udp_offset.address
-        numSocketsHW = int(self.read(offset + 0x210))
+        theirIP_offset = self.register_map.udp_theirIP_offset.address
+        theirPort_offset = self.register_map.udp_theirPort_offset.address
+        udp_myPort_offset = self.register_map.udp_myPort_offset.address
+        udp_valid_offset = self.register_map.udp_valid_offset.address
+        numSocketsHW = int(self.register_map.udp_number_sockets)
 
         if numSocketsHW < len(self.sockets):
             raise Exception(
@@ -330,10 +334,10 @@ class NetworkLayer(DefaultIP):
 
         # Iterate over the socket object
         for i in range(numSocketsHW):
-            ti_offset = offset + 0x10 + i * 8
-            tp_offset = ti_offset + numSocketsHW * 8
-            mp_offset = ti_offset + numSocketsHW * 8 * 2
-            v_offset = ti_offset + numSocketsHW * 8 * 3
+            ti_offset = theirIP_offset + i * 8
+            tp_offset = theirPort_offset + i * 8
+            mp_offset = udp_myPort_offset + i * 8
+            v_offset = udp_valid_offset + i * 8
 
             theirIP = 0
             if self.sockets[i]["theirIP"]:
@@ -346,25 +350,26 @@ class NetworkLayer(DefaultIP):
             self.write(v_offset, int(self.sockets[i]["valid"]))
 
         if debug:
-            print("Number of Sockets: {}".format(numSocketsHW))
+            socket_dict = dict()
+            socket_dict['Number of Sockets'] = numSocketsHW
+            socket_dict['socket'] = dict()
             # Iterate over all the UDP table
             for i in range(numSocketsHW):
-                ti_offset = offset + 0x10 + i * 8
-                tp_offset = ti_offset + numSocketsHW * 8
-                mp_offset = ti_offset + numSocketsHW * 8 * 2
-                v_offset = ti_offset + numSocketsHW * 8 * 3
+                ti_offset = theirIP_offset + i * 8
+                tp_offset = theirPort_offset + i * 8
+                mp_offset = udp_myPort_offset + i * 8
+                v_offset = udp_valid_offset + i * 8
+                isvalid = ti = self.read(v_offset)
+                if isvalid:
+                    ti = self.read(ti_offset)
+                    tp = self.read(tp_offset)
+                    mp = self.read(mp_offset)
+                    socket_dict['socket'][i] = dict()
+                    socket_dict['socket'][i]['theirIP'] = str(ipaddress.IPv4Address(ti))
+                    socket_dict['socket'][i]['theirPort'] = tp
+                    socket_dict['socket'][i]['myPort'] = mp
 
-                ti = self.read(ti_offset)
-                tp = self.read(tp_offset)
-                mp = self.read(mp_offset)
-                v = self.read(v_offset)
-
-                print(
-                    "HW socket table[{:3d}], ti: {}\ttp: {:5d}\tmp: {:5d}\t\
-                    v: {:1d}".format(
-                        i, str(ipaddress.IPv4Address(ti)), tp, mp, v
-                    )
-                )
+            return socket_dict
 
     def readARPTable(self, num_entries=256) -> dict:
         """Read the ARP table from the FPGA return a dict
@@ -516,52 +521,76 @@ class NetworkLayer(DefaultIP):
 
         rmap = self.register_map
         probes = dict()
-        probes['tx_path'] = dict()
-        probes['rx_path'] = dict()
+        probes["tx_path"] = dict()
+        probes["rx_path"] = dict()
 
-        probes['rx_path'] = {
-            "ethernet_packets": int(rmap.eth_in_packets),
-            "ethernet_bytes": int(rmap.eth_in_bytes),
-            "ethernet_cycles": int(rmap.eth_in_cycles),
-            "packet_handler_packets": int(rmap.pkth_in_packets),
-            "packet_handler_bytes": int(rmap.pkth_in_bytes),
-            "packet_handler_cycles": int(rmap.pkth_in_cycles),
-            "arp_packets": int(rmap.arp_in_packets),
-            "arp_bytes": int(rmap.arp_in_bytes),
-            "arp_cycles": int(rmap.arp_in_cycles),
-            "icmp_packets": int(rmap.icmp_in_packets),
-            "icmp_bytes": int(rmap.icmp_in_bytes),
-            "icmp_cycles": int(rmap.icmp_in_cycles),
-            "udp_packets": int(rmap.udp_in_packets),
-            "udp_bytes": int(rmap.udp_in_bytes),
-            "udp_cycles": int(rmap.udp_in_cycles),
-            "udp_to_app_packets": int(rmap.udp_app_out_packets),
-            "udp_to_app_bytes": int(rmap.udp_app_out_bytes),
-            "udp_to_app_cycles": int(rmap.udp_app_out_cycles),
+        probes["rx_path"] = {
+            "ethernet": {
+                "packets": int(rmap.eth_in_packets),
+                "bytes": int(rmap.eth_in_bytes),
+                "cycles": int(rmap.eth_in_cycles)
+            },
+            "packet_handler": {
+                "packets": int(rmap.pkth_in_packets),
+                "bytes": int(rmap.pkth_in_bytes),
+                "cycles": int(rmap.pkth_in_cycles)
+            },
+            "arp": {
+                "packets": int(rmap.arp_in_packets),
+                "bytes": int(rmap.arp_in_bytes),
+                "cycles": int(rmap.arp_in_cycles)
+            },
+            "icmp": {
+                "packets": int(rmap.icmp_in_packets),
+                "bytes": int(rmap.icmp_in_bytes),
+                "cycles": int(rmap.icmp_in_cycles)
+            },
+            "udp": {
+                "packets": int(rmap.udp_in_packets),
+                "bytes": int(rmap.udp_in_bytes),
+                "cycles": int(rmap.udp_in_cycles)
+            },
+            "udp_to_app": {
+                "packets": int(rmap.udp_app_out_packets),
+                "bytes": int(rmap.udp_app_out_bytes),
+                "cycles": int(rmap.udp_app_out_cycles)
+            }
         }
 
         probes['tx_path'] = {
-            "arp_packets": int(rmap.arp_out_packets),
-            "arp_bytes": int(rmap.arp_out_bytes),
-            "arp_cycles": int(rmap.arp_out_cycles),
-            "icmp_packets": int(rmap.icmp_out_packets),
-            "icmp_bytes": int(rmap.icmp_out_bytes),
-            "icmp_cycles": int(rmap.icmp_out_cycles),
-            "ethernet_header_inserter_packets": int(rmap.ethhi_out_packets),
-            "ethernet_header_inserter_bytes": int(rmap.ethhi_out_bytes),
-            "ethernet_header_inserter_cycles": int(rmap.ethhi_out_cycles),
-            "ethernet_packets": int(rmap.eth_out_packets),
-            "ethernet_bytes": int(rmap.eth_out_bytes),
-            "ethernet_cycles": int(rmap.eth_out_cycles),
-            "udp_from_app_packets": int(rmap.udp_app_in_packets),
-            "udp_from_app_bytes": int(rmap.udp_app_in_bytes),
-            "udp_from_app_cycles": int(rmap.udp_app_in_cycles),
-            "udp_packets": int(rmap.udp_out_packets),
-            "udp_bytes": int(rmap.udp_out_bytes),
-            "udp_cycles": int(rmap.udp_out_cycles),
+            "arp": {
+                "packets": int(rmap.arp_out_packets),
+                "bytes": int(rmap.arp_out_bytes),
+                "cycles": int(rmap.arp_out_cycles)
+            },
+            "icmp": {
+                "packets": int(rmap.icmp_out_packets),
+                "bytes": int(rmap.icmp_out_bytes),
+                "cycles": int(rmap.icmp_out_cycles)
+            },
+            "ethernet_header_inserter": {
+                "packets": int(rmap.ethhi_out_packets),
+                "bytes": int(rmap.ethhi_out_bytes),
+                "cycles": int(rmap.ethhi_out_cycles)
+            },
+            "ethernet": {
+                "packets": int(rmap.eth_out_packets),
+                "bytes": int(rmap.eth_out_bytes),
+                "cycles": int(rmap.eth_out_cycles)
+            },
+            "udp_from_app": {
+                "packets": int(rmap.udp_app_in_packets),
+                "bytes": int(rmap.udp_app_in_bytes),
+                "cycles": int(rmap.udp_app_in_cycles)
+            },
+            "udp": {
+                "packets": int(rmap.udp_out_packets),
+                "bytes": int(rmap.udp_out_bytes),
+                "cycles": int(rmap.udp_out_cycles)
+            }
         }
 
-        return probes
+        return ReprDict(probes, rootname='debug_probes')
 
 
 benchmark_mode = ["PRODUCER", "LATENCY", "LOOPBACK", "CONSUMER"]

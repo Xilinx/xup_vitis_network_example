@@ -27,6 +27,20 @@
 #   OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 #   ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+if { $::argc != 4 } {
+    puts "ERROR: Program \"$::argv0\" requires 4 arguments!, (${argc} given)\n"
+    puts "Usage: $::argv0 <xoname> <krnl_name> <device> <interface>\n"
+    exit
+}
+
+set xoname  [lindex $::argv 0]
+set krnl_name [lindex $::argv 1]
+set device    [lindex $::argv 2]
+set interface [lindex $::argv 3]
+
+set suffix "${krnl_name}_${device}"
+
+puts "INFO: xoname-> ${xoname}\n      krnl_name-> ${krnl_name}\n      device-> ${device}\n      interface-> ${interface}"
 
 set projName kernel_pack
 set bd_name cmac_bd
@@ -35,34 +49,23 @@ set path_to_hdl "./src"
 set path_to_packaged "./packaged_kernel_${suffix}"
 set path_to_tmp_project "./tmp_${suffix}"
 
-set words [split $device "_"]
-set board [lindex $words 1]
+#get projPart
+source platform.tcl
 
-if {[string first "u50" ${board}] != -1} {
+if {${projPart} eq "xcu50-fsvh2104-2L-e"} {
     if {$interface != 0} {
-        puts "ERROR: Alveo U50 only has one interface"
-        exit
+        catch {common::send_gid_msg -ssname BD::TCL -id 2041 -severity "ERROR" "Alveo U50 only has one interface (0)"}
+        return 1
     }
-    set projPart "xcu50-fsvh2104-2L-e"
-} elseif {[string first "u55" ${board}] != -1} {
-    set projPart "xcu55c-fsvh2892-2L-e"
-} elseif {[string first "u200" ${board}] != -1} {
-    set projPart "xcu200-fsgd2104-2-e"
-} elseif {[string first "u250" ${board}] != -1} {
-    set projPart "xcu250-figd2104-2L-e"
-} elseif {[string first "u280" ${board}] != -1} {
-    set projPart "xcu280-fsvh2892-2L-e"
-} else {
-    puts "ERROR: unsupported $board"
-    exit
 }
 
-
+## Create Vivado project and add IP cores
 create_project -force $projName $path_to_tmp_project -part $projPart
 add_files -norecurse [glob ${root_dir}/src/cmac_top_${interface}.v]
 add_files -norecurse [glob ${root_dir}/src/cmac_0_axi4_lite_user_if.v]
 add_files -norecurse [glob ${root_dir}/src/cmac_sync.v]
 add_files -norecurse [glob ${root_dir}/src/rx_sync.v]
+add_files -norecurse [glob ${root_dir}/src/frame_padding.v]
 add_files -fileset constrs_1 -norecurse [glob ${root_dir}/src/cmac_synq_false_path.xdc]
 
 update_compile_order -fileset sources_1
@@ -78,7 +81,8 @@ update_compile_order -fileset sources_1
 set_property top cmac_${interface} [current_fileset]
 
 
-set gt_name gt_serial_port${interface}
+set gt_name "gt_serial_port${interface}"
+set refclkIntfName "gt_refclk${interface}"
 # Package IP
 
 ipx::package_project -root_dir ${path_to_packaged} -vendor xilinx.com -library RTLKernel -taxonomy /KernelIP -import_files -set_current false
@@ -113,6 +117,15 @@ set_property physical_name gt_txp_out [ipx::get_port_maps GTX_P -of_objects [ipx
 ipx::add_port_map GTX_N [ipx::get_bus_interfaces ${gt_name} -of_objects [ipx::current_core]]
 set_property physical_name gt_txn_out [ipx::get_port_maps GTX_N -of_objects [ipx::get_bus_interfaces ${gt_name} -of_objects [ipx::current_core]]]
 
+# GT Differential Reference Clock
+ipx::add_bus_interface ${refclkIntfName} [ipx::current_core]
+set_property abstraction_type_vlnv xilinx.com:interface:diff_clock_rtl:1.0 [ipx::get_bus_interfaces ${refclkIntfName} -of_objects [ipx::current_core]]
+set_property bus_type_vlnv xilinx.com:interface:diff_clock:1.0 [ipx::get_bus_interfaces ${refclkIntfName} -of_objects [ipx::current_core]]
+ipx::add_port_map CLK_P [ipx::get_bus_interfaces ${refclkIntfName} -of_objects [ipx::current_core]]
+set_property physical_name ${refclkIntfName}_p [ipx::get_port_maps CLK_P -of_objects [ipx::get_bus_interfaces ${refclkIntfName} -of_objects [ipx::current_core]]]
+ipx::add_port_map CLK_N [ipx::get_bus_interfaces ${refclkIntfName} -of_objects [ipx::current_core]]
+set_property physical_name ${refclkIntfName}_n [ipx::get_port_maps CLK_N -of_objects [ipx::get_bus_interfaces ${refclkIntfName} -of_objects [ipx::current_core]]]
+
 
 set_property xpm_libraries {XPM_CDC XPM_MEMORY XPM_FIFO} [ipx::current_core]
 set_property supported_families { } [ipx::current_core]
@@ -120,3 +133,10 @@ set_property auto_family_support_level level_2 [ipx::current_core]
 ipx::update_checksums [ipx::current_core]
 ipx::save_core [ipx::current_core]
 close_project -delete
+
+## Generate XO
+if {[file exists "${xoname}"]} {
+    file delete -force "${xoname}"
+}
+
+package_xo -xo_path ${xoname} -kernel_name ${krnl_name} -ip_directory ./packaged_kernel_${suffix} -kernel_xml ./kernel_${interface}.xml

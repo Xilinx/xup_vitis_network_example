@@ -26,6 +26,20 @@
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
 # Copyright (c) 2020 Xilinx, Inc.
 
+## Get variables
+if { $::argc != 3 } {
+    puts "ERROR: Program \"$::argv0\" requires 3 arguments!, (${argc} given)\n"
+    puts "Usage: $::argv0 <xoname> <krnl_name> <device>\n"
+    exit
+}
+
+set xoname  [lindex $::argv 0]
+set krnl_name [lindex $::argv 1]
+set device    [lindex $::argv 2]
+
+set suffix "${krnl_name}_${device}"
+
+puts "INFO: xoname-> ${xoname}\n      krnl_name-> ${krnl_name}\n      device-> ${device}\n"
 
 set projName kernel_pack
 set root_dir "[file normalize "."]"
@@ -34,27 +48,14 @@ set path_to_hdl_debug "${root_dir}/../NetLayers/src"
 set path_to_packaged "./packaged_kernel_${suffix}"
 set path_to_tmp_project "./tmp_${suffix}"
 
-set words [split $device "_"]
-set board [lindex $words 1]
+#get projPart
+source platform.tcl
 
-if {[string first "u50" ${board}] != -1} {
-    set projPart "xcu50-fsvh2104-2L-e"
-} elseif {[string first "u200" ${board}] != -1} {
-    set projPart "xcu200-fsgd2104-2-e"
-} elseif {[string first "u250" ${board}] != -1} {
-    set projPart "xcu250-figd2104-2L-e"
-} elseif {[string first "u280" ${board}] != -1} {
-    set projPart xcu280-fsvh2892-2L-e
-} else {
-    puts "ERROR: unsupported $board"
-    exit
-}
-
-
+## Create Vivado project and add IP cores
 create_project -force $projName $path_to_tmp_project -part $projPart
 
 add_files -norecurse ${path_to_hdl}
-add_files -norecurse ${path_to_hdl_debug}/bandwith_reg.v
+add_files -norecurse ${path_to_hdl_debug}/bandwidth_reg.v
 add_files -norecurse ${path_to_hdl_debug}/6to3_reducer.vhd
 add_files -norecurse ${path_to_hdl_debug}/counter_64_7_v3.vhd
 
@@ -90,3 +91,10 @@ set_property auto_family_support_level level_2 [ipx::current_core]
 ipx::update_checksums [ipx::current_core]
 ipx::save_core [ipx::current_core]
 close_project -delete
+
+## Generate XO
+if {[file exists "${xoname}"]} {
+    file delete -force "${xoname}"
+}
+
+package_xo -xo_path ${xoname} -kernel_name ${krnl_name} -ip_directory ./packaged_kernel_${suffix} -kernel_xml ./kernel.xml

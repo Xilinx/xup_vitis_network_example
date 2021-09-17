@@ -10,3 +10,4 @@ build*/
 basic.*/
 benchmark.*/
 __pycache__/
+*.jstack

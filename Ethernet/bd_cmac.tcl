@@ -337,10 +337,14 @@ set_property -dict [list \
   CONFIG.NUM_MI {1} \
 ] [get_bd_cells smartconnect]
 
+# Create instance: frame_padding, and set properties
+set frame_padding [ create_bd_cell -type module -reference frame_padding frame_padding ]
+
 # Create interface connections
 connect_bd_intf_net -intf_net S_AXILITE_1 -boundary_type lower [get_bd_intf_ports S_AXILITE] [get_bd_intf_pins smartconnect/S00_AXI]
 connect_bd_intf_net -intf_net smartconnect_M00_AXI -boundary_type lower [get_bd_intf_pins smartconnect/M00_AXI] [get_bd_intf_pins ${cmac_name}/s_axi]
-connect_bd_intf_net -intf_net S_AXIS_1 [get_bd_intf_ports S_AXIS] [get_bd_intf_pins acc_kernel_tx_cdc/S_AXIS]
+connect_bd_intf_net -intf_net S_AXIS_1 [get_bd_intf_ports S_AXIS] [get_bd_intf_pins frame_padding/S_AXIS]
+connect_bd_intf_net -intf_net frame_padding_M_AXIS [get_bd_intf_pins frame_padding/M_AXIS] [get_bd_intf_pins acc_kernel_tx_cdc/S_AXIS]
 connect_bd_intf_net -intf_net acc_kernel_tx_cdc_M_AXIS [get_bd_intf_pins acc_kernel_tx_cdc/M_AXIS] [get_bd_intf_pins fifo_cmac_tx/S_AXIS]
 connect_bd_intf_net -intf_net ${cmac_name}_axis_rx [get_bd_intf_pins ${cmac_name}/axis_rx] [get_bd_intf_pins fifo_cmac_rx_cdc/S_AXIS]
 connect_bd_intf_net -intf_net ${cmac_name}_gt_serial_port [get_bd_intf_ports gt_serial_port] [get_bd_intf_pins ${cmac_name}/gt_serial_port]
@@ -351,8 +355,8 @@ connect_bd_intf_net -intf_net cmac_sync_s_axi [get_bd_intf_pins cmac_sync/s_axi]
 
 ###### Create port connections ######
 
-connect_bd_net -net ap_rst_n [get_bd_ports ap_rst_n] [get_bd_pins acc_kernel_tx_cdc/s_axis_aresetn] [get_bd_pins util_vector_logic_1/Op1] [get_bd_pins smartconnect/aresetn]
-connect_bd_net -net s_aclk_0_1 [get_bd_ports ap_clk] [get_bd_pins acc_kernel_tx_cdc/s_axis_aclk] [get_bd_pins ${cmac_name}/s_axi_aclk] [get_bd_pins fifo_cmac_rx_cdc/m_aclk] [get_bd_pins smartconnect/aclk] [get_bd_pins cmac_sync/s_axi_aclk]
+connect_bd_net -net ap_rst_n [get_bd_ports ap_rst_n] [get_bd_pins acc_kernel_tx_cdc/s_axis_aresetn] [get_bd_pins util_vector_logic_1/Op1] [get_bd_pins smartconnect/aresetn] [get_bd_pins frame_padding/S_AXI_ARESETN]
+connect_bd_net -net s_aclk_0_1 [get_bd_ports ap_clk] [get_bd_pins acc_kernel_tx_cdc/s_axis_aclk] [get_bd_pins ${cmac_name}/s_axi_aclk] [get_bd_pins fifo_cmac_rx_cdc/m_aclk] [get_bd_pins smartconnect/aclk] [get_bd_pins cmac_sync/s_axi_aclk] [get_bd_pins frame_padding/S_AXI_ACLK]
 connect_bd_net -net usr_rx_reset [get_bd_pins ${cmac_name}/usr_rx_reset] [get_bd_pins util_vector_logic_0/Op1] [get_bd_pins cmac_sync/usr_rx_reset]
 connect_bd_net -net usr_tx_reset [get_bd_pins ${cmac_name}/usr_tx_reset] [get_bd_pins util_vector_logic_2/Op1] [get_bd_pins cmac_sync/usr_tx_reset]
 connect_bd_net -net ${cmac_name}_usr_rx_clk [get_bd_pins ${cmac_name}/gt_rxusrclk2] [get_bd_pins fifo_cmac_rx_cdc/s_aclk] [get_bd_pins ${cmac_name}/rx_clk]

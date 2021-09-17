@@ -83,7 +83,7 @@ module placeholder #(
   input  wire                        [3:0]    gt_rxp_in,
   input  wire                        [3:0]    gt_rxn_in,
   output wire                        [3:0]    gt_txp_out,
-  output wire                        [3:0]    gt_txn_out, 
+  output wire                        [3:0]    gt_txn_out,
   input  wire                                 gt_placeholder_clk_p,
   input  wire                                 gt_placeholder_clk_n
 );

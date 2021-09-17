@@ -23,16 +23,17 @@
 # PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) 
 # HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
-# EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.// Copyright (c) 2020 Xilinx, Inc.
+# EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# Copyright (c) 2021 Xilinx, Inc.
 
 
 set board_name [get_property board_part [current_project]]
 set pfm_name [get_property PFM_NAME [get_files [current_bd_design].bd]]
-set __TCLID "(Post-linking ${board_name} QSFP GT pins Tcl hook): "
+set __TCLID "(Post-linking ${board_name} QSFP GT pins and GT clock TCL hook): "
 
 # *************************************************************************
 puts "${__TCLID} the name of the board is: ${board_name}"
-puts "${__TCLID} get_property PFM_NAME $pfm_name"
+puts "${__TCLID} get_property PFM_NAME ${pfm_name}"
 #--------------------------------------------------------------
 # Get GT port name, GT reference clock and free running clock
 #--------------------------------------------------------------
@@ -41,21 +42,21 @@ set io_clk_gt0 "io_clk_qsfp_refclka_00"
 set io_clk_gt1 "io_clk_gtyquad_refclk0_00"
 set io_clk_gt2 "io_clk_qsfp0_refclka_00"
 
-if {[llength [get_bd_intf_ports ${io_clk_gt0}]] eq 1} {
+if {[llength [get_bd_intf_ports ${io_clk_gt0} -quiet]] eq 1} {
   set bd_gt_ref_clk_0_name_a "io_clk_qsfp_refclka_00"
   set bd_gt_ref_clk_0_name_b "io_clk_qsfp_refclkb_00"
   set bd_gt_ref_clk_1_name_a "io_clk_qsfp_refclka_01"
   set bd_gt_ref_clk_1_name_b "io_clk_qsfp_refclkb_01"
   set bd_gt_gtyquad_0        "io_gt_qsfp_00"
   set bd_gt_gtyquad_1        "io_gt_qsfp_01"
-} elseif {[llength [get_bd_intf_ports ${io_clk_gt1}]] eq 1} {
+} elseif {[llength [get_bd_intf_ports ${io_clk_gt1} -quiet]] eq 1} {
   set bd_gt_ref_clk_0_name_a "io_clk_gtyquad_refclk0_00"
   set bd_gt_ref_clk_0_name_b "io_clk_gtyquad_refclk1_00"
   set bd_gt_ref_clk_1_name_a "io_clk_gtyquad_refclk0_01"
   set bd_gt_ref_clk_1_name_b "io_clk_gtyquad_refclk1_01"
   set bd_gt_gtyquad_0        "io_gt_gtyquad_00"
   set bd_gt_gtyquad_1        "io_gt_gtyquad_01"
-} elseif {[llength [get_bd_intf_ports ${io_clk_gt2}]] eq 1} {
+} elseif {[llength [get_bd_intf_ports ${io_clk_gt2} -quiet]] eq 1} {
   set bd_gt_ref_clk_0_name_a "io_clk_qsfp0_refclka_00"
   set bd_gt_ref_clk_1_name_a "io_clk_qsfp1_refclka_00"
   set bd_gt_gtyquad_0        "io_gt_qsfp0_00"
@@ -94,32 +95,32 @@ puts "${__TCLID} free running clock is ${__bd_free_running_clk}"
 set __gt_k_list {}
 set __gt_intf_width 0
 # Make sure the kernel key in the config_info dict exists
-if {[dict exists $config_info kernels]} {
+if {[dict exists ${config_info} kernels]} {
   puts "${__TCLID} got config_info which is: ${config_info}"
-  set __k_list [dict get $config_info kernels]
-  puts "${__TCLID} __k_list: ${__k_list}"
+  set __k_list [dict get ${config_info} kernels]
+  puts "${__TCLID} {__k_list}: ${__k_list}"
   # Make sure that list of kernels is populated  
-  if {[llength $__k_list] > 0} {
+  if {[llength ${__k_list}] > 0} {
     # Iterate over each kernel
-    foreach __k_inst $__k_list {
+    foreach __k_inst ${__k_list} {
       puts "${__TCLID} K Inst: ${__k_inst}"
       set __cu_bd_cell_list [get_bd_cells -quiet -filter "VLNV=~*:*:${__k_inst}:*"]
       # Iterate over each compute unit for the current kernel
       foreach __cu_bd_cell $__cu_bd_cell_list {
         puts "${__TCLID} CU Cell: ${__cu_bd_cell}"
-        set __cu_bd_cell_sub [string range $__cu_bd_cell 1 [string length $__cu_bd_cell]]
+        set __cu_bd_cell_sub [string range ${__cu_bd_cell} 1 [string length ${__cu_bd_cell}]]
         #Create a list of GT capable kernels. 
-        set __gt_pins [get_bd_intf_pins -quiet -of_objects [get_bd_cells $__cu_bd_cell_sub] -filter {VLNV=~*gt_rtl*}]
+        set __gt_pins [get_bd_intf_pins -quiet -of_objects [get_bd_cells ${__cu_bd_cell_sub}] -filter {VLNV=~*gt_rtl*}]
         if {[llength ${__gt_pins} ] > 0} {
-          puts "${__TCLID} found gt interface on $__cu_bd_cell_sub"
-          lappend __gt_k_list $__cu_bd_cell_sub
+          puts "${__TCLID} found GT interface on ${__cu_bd_cell_sub}"
+          lappend __gt_k_list ${__cu_bd_cell_sub}
         }
       }
     }
   } else {
     puts "${__TCLID} kernel list 0"
   }
-  puts "${__TCLID} list of gt kernels ${__gt_k_list}"
+  puts "${__TCLID} list of GT kernels ${__gt_k_list}"
 
   if {[llength ${__gt_k_list}] > 2} {
     puts "${__TCLID} More than 2 GT interfaces are not supported."
@@ -128,17 +129,17 @@ if {[dict exists $config_info kernels]} {
 
   if {[llength $__gt_k_list] > 0} {
     puts "${__TCLID} Iterating over kernels"
-    if {[info exist bd_gt_gtyquad_0] eq 0} {
-      puts "${__TCLID} ERROR this shell does not have gt support or the gt port names are unknown"
-      # The line below will always give an error and it is indeed to stop vpl process
+    if {[info exists bd_gt_gtyquad_0] eq 0} {
+      puts "${__TCLID} ERROR this platform (${pfm_name}) does not have GT support or the GT port names are unknown"
+      # The line below will always give an error and it is used to stop vpl process
       connect_bd_intf_net error error
     }
 
-    puts "${__TCLID} GT Kernel List $__gt_k_list"
-    foreach __k_inst $__gt_k_list {
+    puts "${__TCLID} GT Kernel List ${__gt_k_list}"
+    foreach __k_inst ${__gt_k_list} {
       # Look for a gt capable interface
-      set __gt_intf [get_bd_intf_pins -quiet -of_objects [get_bd_cells $__k_inst] -filter {VLNV=~*gt_rtl*}]
-      puts "${__TCLID} found GT caplable interface: ${__gt_intf}"
+      set __gt_intf [get_bd_intf_pins -quiet -of_objects [get_bd_cells ${__k_inst}] -filter {VLNV=~*gt_rtl*}]
+      puts "${__TCLID} found GT capable interface: ${__gt_intf}"
       if {[string first "gt_serial_port0" ${__gt_intf}] != -1} {
         puts "${__TCLID} connecting GT quad ${bd_gt_gtyquad_0} <-> ${__gt_intf}"
         connect_bd_intf_net [get_bd_intf_ports ${bd_gt_gtyquad_0}] ${__gt_intf}
@@ -148,22 +149,20 @@ if {[dict exists $config_info kernels]} {
         connect_bd_intf_net [get_bd_intf_ports ${bd_gt_gtyquad_1}] ${__gt_intf}
       }
       # Look for a gt clock capable interface
-      set __refclk0_pins [get_bd_pins -of_objects [get_bd_cells ${__k_inst}] -filter {NAME =~ "gt_refclk0*"}]
-      if {[llength $__refclk0_pins] > 0} {
-        puts "${__TCLID} connecting ${bd_gt_ref_clk_0_name_a} -> ${__k_inst}/gt_refclk0"
-        connect_bd_net [get_bd_ports ${bd_gt_ref_clk_0_name_a}_clk_n] [get_bd_pins ${__k_inst}/gt_refclk0_n]
-        connect_bd_net [get_bd_ports ${bd_gt_ref_clk_0_name_a}_clk_p] [get_bd_pins ${__k_inst}/gt_refclk0_p]
+      set __refclk0_intf [get_bd_intf_pins -of_objects [get_bd_cells ${__k_inst}] -filter {NAME =~ "gt_refclk0*"} -quiet]
+      if {[llength ${__refclk0_intf}] > 0} {
+        puts "${__TCLID} connecting GT reference clock ${bd_gt_ref_clk_0_name_a} -> ${__k_inst}/gt_refclk0"
+        connect_bd_intf_net [get_bd_intf_ports ${bd_gt_ref_clk_0_name_a}] ${__refclk0_intf}
       }
-      set __refclk1_pins [get_bd_pins -of_objects [get_bd_cells ${__k_inst}] -filter {NAME =~ "gt_refclk1*"}]
-      if {[llength $__refclk1_pins] > 0} {
-        puts "${__TCLID} connecting ${bd_gt_ref_clk_1_name_a} -> ${__k_inst}/gt_refclk1"
-        connect_bd_net [get_bd_ports ${bd_gt_ref_clk_1_name_a}_clk_n] [get_bd_pins ${__k_inst}/gt_refclk1_n]
-        connect_bd_net [get_bd_ports ${bd_gt_ref_clk_1_name_a}_clk_p] [get_bd_pins ${__k_inst}/gt_refclk1_p]
+      set __refclk1_intf [get_bd_intf_pins -of_objects [get_bd_cells ${__k_inst}] -filter {NAME =~ "gt_refclk1*"} -quiet]
+      if {[llength ${__refclk1_intf}] > 0} {
+        puts "${__TCLID} connecting GT reference clock ${bd_gt_ref_clk_1_name_a} -> ${__k_inst}/gt_refclk1"
+        connect_bd_intf_net [get_bd_intf_ports ${bd_gt_ref_clk_1_name_a}] ${__refclk1_intf}
       }
-      # Get Free runninc clock pin name and connection if any
+      # Get Free running clock pin name and connection if any
       set __kernel_freerunclk_pins [get_bd_pins -of_objects [get_bd_cells ${__k_inst}] -filter {NAME =~ "clk_gt_freerun"}]
       set __freerunclk_connection [get_bd_nets -of_objects [get_bd_pins -of_objects [get_bd_cells ${__k_inst}] -filter {NAME =~ "clk_gt_freerun"}]]
-      puts "${__TCLID} kernel free running clock pin ${__kernel_freerunclk_pins}"
+      puts "${__TCLID} kernel free running clock pin: ${__kernel_freerunclk_pins}"
 
       if {[llength ${__kernel_freerunclk_pins}] ne 1} {
         puts "${__TCLID} ERROR - No clk_gt_freerun pin found"
@@ -179,4 +178,4 @@ if {[dict exists $config_info kernels]} {
   }
 }
 
-puts "${__TCLID} QSFP GT pins Tcl hook DONE!"
+puts "${__TCLID} QSFP GT pins TCL hook DONE!"

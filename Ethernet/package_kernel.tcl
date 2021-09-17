@@ -78,7 +78,8 @@ update_compile_order -fileset sources_1
 set_property top cmac_${interface} [current_fileset]
 
 
-set gt_name gt_serial_port${interface}
+set gt_name "gt_serial_port${interface}"
+set refclkIntfName "gt_refclk${interface}"
 # Package IP
 
 ipx::package_project -root_dir ${path_to_packaged} -vendor xilinx.com -library RTLKernel -taxonomy /KernelIP -import_files -set_current false
@@ -112,6 +113,15 @@ ipx::add_port_map GTX_P [ipx::get_bus_interfaces ${gt_name} -of_objects [ipx::cu
 set_property physical_name gt_txp_out [ipx::get_port_maps GTX_P -of_objects [ipx::get_bus_interfaces ${gt_name} -of_objects [ipx::current_core]]]
 ipx::add_port_map GTX_N [ipx::get_bus_interfaces ${gt_name} -of_objects [ipx::current_core]]
 set_property physical_name gt_txn_out [ipx::get_port_maps GTX_N -of_objects [ipx::get_bus_interfaces ${gt_name} -of_objects [ipx::current_core]]]
+
+# GT Differential Reference Clock
+ipx::add_bus_interface ${refclkIntfName} [ipx::current_core]
+set_property abstraction_type_vlnv xilinx.com:interface:diff_clock_rtl:1.0 [ipx::get_bus_interfaces ${refclkIntfName} -of_objects [ipx::current_core]]
+set_property bus_type_vlnv xilinx.com:interface:diff_clock:1.0 [ipx::get_bus_interfaces ${refclkIntfName} -of_objects [ipx::current_core]]
+ipx::add_port_map CLK_P [ipx::get_bus_interfaces ${refclkIntfName} -of_objects [ipx::current_core]]
+set_property physical_name ${refclkIntfName}_p [ipx::get_port_maps CLK_P -of_objects [ipx::get_bus_interfaces ${refclkIntfName} -of_objects [ipx::current_core]]]
+ipx::add_port_map CLK_N [ipx::get_bus_interfaces ${refclkIntfName} -of_objects [ipx::current_core]]
+set_property physical_name ${refclkIntfName}_n [ipx::get_port_maps CLK_N -of_objects [ipx::get_bus_interfaces ${refclkIntfName} -of_objects [ipx::current_core]]]
 
 
 set_property xpm_libraries {XPM_CDC XPM_MEMORY XPM_FIFO} [ipx::current_core]

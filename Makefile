@@ -41,7 +41,7 @@ BENCHMARDIR = Benchmark_kernel/
 
 NETLAYERHLS = 100G-fpga-network-stack-core
 
-POSTSYSLINKTCL ?= $(shell readlink -f ./post_sys_link.tcl)
+POSTSYSLINKTCL ?= $(shell readlink -f ./Ethernet/post_sys_link.tcl)
 SWITCH_IP_FOLDER ?= $(shell readlink -f ./$(BENCHMARDIR)/packaged_kernel_switch_wrapper_$(XSA))
 
 

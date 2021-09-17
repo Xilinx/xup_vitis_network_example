@@ -46,7 +46,7 @@ set suffix "${krnl_name}_${device}"
 
 puts "INFO: xoname-> ${xoname}\n      krnl_name-> ${krnl_name}\n      device-> ${device}\n"
 
-source -notrace ./package_kernel.tcl
+source -notrace ./package_trafficgen.tcl
 
 if {[file exists "${xoname}"]} {
     file delete -force "${xoname}"

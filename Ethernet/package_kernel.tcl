@@ -35,26 +35,14 @@ set path_to_hdl "./src"
 set path_to_packaged "./packaged_kernel_${suffix}"
 set path_to_tmp_project "./tmp_${suffix}"
 
-set words [split $device "_"]
-set board [lindex $words 1]
+#get projPart
+source platform.tcl
 
-if {[string first "u50" ${board}] != -1} {
+if {${projPart} eq "xcu50-fsvh2104-2L-e"} {
     if {$interface != 0} {
-        puts "ERROR: Alveo U50 only has one interface"
-        exit
+        catch {common::send_gid_msg -ssname BD::TCL -id 2041 -severity "ERROR" "Alveo U50 only has one interface (0)"}
+        return 1
     }
-    set projPart "xcu50-fsvh2104-2L-e"
-} elseif {[string first "u55" ${board}] != -1} {
-    set projPart "xcu55c-fsvh2892-2L-e"
-} elseif {[string first "u200" ${board}] != -1} {
-    set projPart "xcu200-fsgd2104-2-e"
-} elseif {[string first "u250" ${board}] != -1} {
-    set projPart "xcu250-figd2104-2L-e"
-} elseif {[string first "u280" ${board}] != -1} {
-    set projPart "xcu280-fsvh2892-2L-e"
-} else {
-    puts "ERROR: unsupported $board"
-    exit
 }
 
 

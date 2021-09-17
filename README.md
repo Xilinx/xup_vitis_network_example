@@ -16,13 +16,13 @@ This repository provides:
 
 ## Clone this repository
 
-Build the examples by cloning the repository.
+Get everything you need by cloning the repository, recursively.
 
 ```sh
 git clone https://github.com/Xilinx/xup_vitis_network_example.git --recursive
 ```
 
-## Common infrastructure
+## Common Infrastructure
 
 This section provides a brief overview of the common infrastructure needed for the examples to work. The examples rely on the same underlying infrastructure, which is `cmac` and `network_layer` kernels.
 
@@ -38,7 +38,7 @@ The `cmac_kernel` contains an UltraScale+ Integrated 100G Ethernet Subsystem. Th
 
 The network layer kernel is a collection of HLS modules to provide basic network functionality. It exposes two 512-bit (with 16-bit TDEST) AXI4-Stream to the application, S_AXIS_sk2nl and M_AXIS_nl2sk.
 
-The ARP table is readable from the host side, and the UDP table is configurable from the host as well. Helper functions to read and configure the tables are available in [Notebooks/vnx_utils.py](Notebooks/vnx_utils.py).
+The ARP table is readable from the host side, and the UDP table is configurable from the host as well. Helper functions to read and configure the tables are available in the class `NetworkLayer` [Notebooks/vnx_utils.py](Notebooks/vnx_utils.py).
 
 The application communicates with the UDP module using *S_AXIS_sk2nl* and *M_AXIS_nl2sk* AXI4-Stream interfaces with the following structure:
 
@@ -75,15 +75,15 @@ Check out [vnx-basic](Notebooks/vnx-basic.ipynb) notebook to see how to run this
 
 ### Benchmark
 
-The following figure depicts the benchmark design, which contains four *benchmark* kernels. Each benchmark kernel has two modules, traffic generator and collector
+The following figure depicts the benchmark example design, which contains four *benchmark* kernels. Each benchmark kernel has two modules, traffic generator and collector.
 
 ![](img/udp_network_benchmark.png)
 
 > **_NOTE:_** the reference clock frequency can change depending on the Alveo card.
 
-More information about the benchmark kernel in [Benchmark_kernel/README.md](Benchmark_kernel/README.md)
+Find out more information about the benchmark kernel in [Benchmark_kernel/README.md](Benchmark_kernel/README.md)
 
-The following notebooks demonstrate how to use the benchmark design to measure throughput and latency either point to point or with a switch connection between two Alveo cards.
+The following notebooks demonstrate how to use the benchmark example design to measure throughput and latency either point to point or with a switch connection between two Alveo cards.
 
 * [vnx-benchmark-throughput](Notebooks/vnx-benchmark-throughput.ipynb) 
 * [vnx-benchmark-throughput-switch](Notebooks/vnx-benchmark-throughput-switch.ipynb)
@@ -94,18 +94,22 @@ The following notebooks demonstrate how to use the benchmark design to measure t
 
 ### Tools
 
-| Vitis  | XRT       |
-|--------|-----------|
-| 2020.1 | 2.6.655   |
+In order to implement this design you need Vitis 2021.1 or newer and associated [XRT](https://github.com/Xilinx/XRT). Older version of the tools are discouraged and will not work.
+
+| Vitis  | XRT       | pynq |
+|--------|-----------|------|
+| 2021.1 | 2.11.634  | 2.7  |
+
+> **_NOTE:_** pynq 2.7 is not yet on PYPI, find out how to install it this version here [#34](https://github.com/Xilinx/xup_vitis_network_example/issues/34)
 
 ### Alveo Cards
 
-| Alveo | Development Target Platform(s) | Notes |
-|-------|----------|------|
-| U50   | xilinx_u50_gen3x16_xdma_201920_3 | |
-| U200  | xilinx_u200_gen3x16_xdma_1_202110_1  | See [#28](https://github.com/Xilinx/xup_vitis_network_example/issues/28) | 
-| U250  | xilinx_u250_gen3x16_xdma_3.1_202020_1  | See [#16](https://github.com/Xilinx/xup_vitis_network_example/issues/16) | 
-| U280  | xilinx_u280_xdma_201920_3 | |
+| Alveo | Development Target Platform(s)         | Notes |
+|-------|----------------------------------------|-------|
+| U50   | xilinx_u50_gen3x16_xdma_201920_3       |       |
+| U200  | xilinx_u200_gen3x16_xdma_1_202110_1    |       |
+| U250  | xilinx_u250_gen3x16_xdma_3.1_202020_1  |       |
+| U280  | xilinx_u280_xdma_201920_3              |       |
 
 ### Requirements
 
@@ -123,7 +127,7 @@ make all DEVICE=<full platform path> INTERFACE=<interface number> DESIGN=<design
 * `INTERFACE` defines which physical interface is going to be use. 0, 1 or 3 are supported. When `INTERFACE=3` the design will be replicated for each interface. Note that Alveo U50 only has one interface available (`INTERFACE=0`)
 * `DESIGN` only support the following strings `basic` and `benchmark`. If you use something different, an error will be reported
 * The basic configuration file is pulled from [config_files](config_files) folder and complete with `userPostSysLinkOverlayTcl` parameter before calling `v++`.
-* [post_sys_link.tcl](post_sys_link.tcl) is automatically called from `v++` after system link. It is used to connect the GT capable pins to the cmac kernel(s)
+* [Ethernet/post_sys_link.tcl](Ethernet/post_sys_link.tcl) is automatically called from `v++` after system link. It is used to connect the GT capable pins to the cmac kernel(s)
 * The `XCLBIN` will be generated in the folder \<DESIGN\>.intf_\<INTERFACE\>.\<(short)DEVICE\>
 
 

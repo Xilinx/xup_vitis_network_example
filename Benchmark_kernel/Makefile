@@ -47,7 +47,7 @@ distclean: clean
 
 $(TEMP_DIR)/${KRNL_NAME_HDL}.xo:
 	mkdir -p $(TEMP_DIR)
-	$(VIVADO) -mode batch -source gen_xo.tcl -notrace -tclargs $@ ${KRNL_NAME_HDL} $(XSA)
+	$(VIVADO) -mode batch -source gen_trafficgen.tcl -notrace -tclargs $@ ${KRNL_NAME_HDL} $(XSA)
 
 $(TEMP_DIR)/${KRNL_SWITCH}.xo:
 	mkdir -p $(TEMP_DIR)

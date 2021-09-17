@@ -34,27 +34,13 @@ set path_to_ip "${root_dir}/100G-fpga-network-stack-core"
 set path_to_packaged "./packaged_kernel_${suffix}"
 set path_to_tmp_project "./tmp_${suffix}"
 
-set words [split $device "_"]
-set board [lindex $words 1]
+#get projPart
+source platform.tcl
 
-if {[string first "u50" ${board}] != -1} {
-    set projPart "xcu50-fsvh2104-2L-e"
-    set path_to_ip ${path_to_ip}/synthesis_results_HMB
-} elseif {[string first "u55" ${board}] != -1} {
-    set projPart "xcu55c-fsvh2892-2L-e"
-    set path_to_ip ${path_to_ip}/synthesis_results_HMB
-} elseif {[string first "u200" ${board}] != -1} {
-    set projPart "xcu200-fsgd2104-2-e"
-    set path_to_ip ${path_to_ip}/synthesis_results_noHMB
-} elseif {[string first "u250" ${board}] != -1} {
-    set projPart "xcu250-figd2104-2L-e"
-    set path_to_ip ${path_to_ip}/synthesis_results_noHMB
-} elseif {[string first "u280" ${board}] != -1} {
-    set projPart xcu280-fsvh2892-2L-e
+if {[string first "fsvh" ${projPart}] != -1} {
     set path_to_ip ${path_to_ip}/synthesis_results_HMB
 } else {
-    puts "ERROR: unsupported $board"
-    exit
+    set path_to_ip ${path_to_ip}/synthesis_results_noHMB
 }
 
 

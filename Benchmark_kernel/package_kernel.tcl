@@ -34,23 +34,8 @@ set path_to_hdl_debug "${root_dir}/../NetLayers/src"
 set path_to_packaged "./packaged_kernel_${suffix}"
 set path_to_tmp_project "./tmp_${suffix}"
 
-set words [split $device "_"]
-set board [lindex $words 1]
-
-if {[string first "u50" ${board}] != -1} {
-    set projPart "xcu50-fsvh2104-2L-e"
-} elseif {[string first "u55" ${board}] != -1} {
-    set projPart "xcu55c-fsvh2892-2L-e"
-} elseif {[string first "u200" ${board}] != -1} {
-    set projPart "xcu200-fsgd2104-2-e"
-} elseif {[string first "u250" ${board}] != -1} {
-    set projPart "xcu250-figd2104-2L-e"
-} elseif {[string first "u280" ${board}] != -1} {
-    set projPart xcu280-fsvh2892-2L-e
-} else {
-    puts "ERROR: unsupported $board"
-    exit
-}
+#get projPart
+source platform.tcl
 
 
 create_project -force $projName $path_to_tmp_project -part $projPart

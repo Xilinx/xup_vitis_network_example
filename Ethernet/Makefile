@@ -48,7 +48,7 @@ distclean: clean
 
 
 $(TEMP_DIR)/${KRNL_NAME}%.xo: current_interface=$(subst $(TEMP_DIR)/${KRNL_NAME}_,,$(subst .xo,,$@))
-$(TEMP_DIR)/${KRNL_NAME}%.xo: template.xml package_kernel.tcl gen_xo.tcl src/*.v
+$(TEMP_DIR)/${KRNL_NAME}%.xo: template.xml package_kernel.tcl src/*.v
 	mkdir -p $(TEMP_DIR)
 	./duplicate_patch.sh
 	$(VIVADO) -mode batch -source package_cmac.tcl -notrace -tclargs $@ ${KRNL_NAME}_$(current_interface) $(XSA) $(current_interface)

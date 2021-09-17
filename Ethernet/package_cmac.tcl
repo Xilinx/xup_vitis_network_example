@@ -65,6 +65,7 @@ add_files -norecurse [glob ${root_dir}/src/cmac_top_${interface}.v]
 add_files -norecurse [glob ${root_dir}/src/cmac_0_axi4_lite_user_if.v]
 add_files -norecurse [glob ${root_dir}/src/cmac_sync.v]
 add_files -norecurse [glob ${root_dir}/src/rx_sync.v]
+add_files -norecurse [glob ${root_dir}/src/frame_padding.v]
 add_files -fileset constrs_1 -norecurse [glob ${root_dir}/src/cmac_synq_false_path.xdc]
 
 update_compile_order -fileset sources_1

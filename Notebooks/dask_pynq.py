@@ -137,7 +137,13 @@ class DaskDevice(pynq.Device):
         
     def get_bitfile_metadata(self, bitfile_name):
         return pynq.pl_server.xclbin_parser.XclBin(bitfile_name)
-    
+
+    def open_context(self, description, shared=True):
+        return pynq.Device.active_device.open_context(description, shared)
+
+    def close_context(self, cu_name):
+        pynq.Device.active_device.close_context(cu_name)
+
     def download(self, bitstream, parser=None):
         with open(bitstream.bitfile_name, 'rb') as f:
             bitstream_data = f.read()

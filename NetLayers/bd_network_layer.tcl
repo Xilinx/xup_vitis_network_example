@@ -239,7 +239,7 @@ proc create_hier_cell_icmp { parentCell nameHier } {
   create_bd_pin -dir I -type rst ap_rst_n
   create_bd_pin -dir O -from 191 -to 0 debug_slot_in
   create_bd_pin -dir O -from 191 -to 0 debug_slot_out
-  create_bd_pin -dir I -from 31 -to 0 -type data myIpAddress_V
+  create_bd_pin -dir I -from 31 -to 0 -type data myIpAddress
   create_bd_pin -dir I -type rst user_rst_n
 
   # Create instance: asr_icmp_in, and set properties
@@ -315,7 +315,7 @@ proc create_hier_cell_icmp { parentCell nameHier } {
   connect_bd_net -net bandwidth_eth_in_debug_slot [get_bd_pins user_rst_n] [get_bd_pins bandwidth_icmp_in/user_rst_n] [get_bd_pins bandwidth_icmp_out/user_rst_n]
   connect_bd_net -net bandwidth_icmp_in_debug_slot [get_bd_pins debug_slot_out] [get_bd_pins bandwidth_icmp_in/debug_slot]
   connect_bd_net -net bandwidth_icmp_out_debug_slot [get_bd_pins debug_slot_in] [get_bd_pins bandwidth_icmp_out/debug_slot]
-  connect_bd_net -net interface_settings_0_my_ip_address [get_bd_pins myIpAddress_V] [get_bd_pins icmp_server/myIpAddress]
+  connect_bd_net -net interface_settings_0_my_ip_address [get_bd_pins myIpAddress] [get_bd_pins icmp_server/myIpAddress]
   connect_bd_net -net s_aclk_0_1 [get_bd_pins ap_clk] [get_bd_pins asr_icmp_in/aclk] [get_bd_pins asr_icmp_out/aclk] [get_bd_pins bandwidth_icmp_in/S_AXI_ACLK] [get_bd_pins bandwidth_icmp_out/S_AXI_ACLK] [get_bd_pins icmp_server/ap_clk]
   connect_bd_net -net s_aresetn_0_1 [get_bd_pins ap_rst_n] [get_bd_pins asr_icmp_in/aresetn] [get_bd_pins asr_icmp_out/aresetn] [get_bd_pins bandwidth_icmp_in/S_AXI_ARESETN] [get_bd_pins bandwidth_icmp_out/S_AXI_ARESETN] [get_bd_pins icmp_server/ap_rst_n]
 
@@ -364,7 +364,7 @@ proc create_hier_cell_arp { parentCell nameHier } {
 
   create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 macIpEncode_req
 
-  create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 macIpEncode_rsp_V
+  create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 macIpEncode_rsp
 
   create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axilite
 
@@ -374,10 +374,10 @@ proc create_hier_cell_arp { parentCell nameHier } {
   create_bd_pin -dir I -type rst ap_rst_n
   create_bd_pin -dir O -from 191 -to 0 debug_slot_in
   create_bd_pin -dir O -from 191 -to 0 debug_slot_out
-  create_bd_pin -dir I -from 31 -to 0 -type data gatewayIP_V
-  create_bd_pin -dir I -from 31 -to 0 -type data myIpAddress_V
-  create_bd_pin -dir I -from 47 -to 0 -type data myMacAddress_V
-  create_bd_pin -dir I -from 31 -to 0 -type data networkMask_V
+  create_bd_pin -dir I -from 31 -to 0 -type data gatewayIP
+  create_bd_pin -dir I -from 31 -to 0 -type data myIpAddress
+  create_bd_pin -dir I -from 47 -to 0 -type data myMacAddress
+  create_bd_pin -dir I -from 31 -to 0 -type data networkMask
   create_bd_pin -dir I -type rst user_rst_n
 
   # Create instance: arp_server, and set properties
@@ -444,21 +444,21 @@ proc create_hier_cell_arp { parentCell nameHier } {
   # Create interface connections
   connect_bd_intf_net -intf_net Conn1 [get_bd_intf_pins s_axilite] [get_bd_intf_pins arp_server/s_axi_s_axilite]
   connect_bd_intf_net -intf_net arp_server_arpDataOut [get_bd_intf_pins arp_server/arpDataOut] [get_bd_intf_pins bandwidth_arp_out/IN_DBG]
-  connect_bd_intf_net -intf_net arp_server_macIpEncode_rsp_V [get_bd_intf_pins macIpEncode_rsp_V] [get_bd_intf_pins arp_server/macIpEncode_rsp_V]
+  connect_bd_intf_net -intf_net arp_server_macIpEncode_rsp [get_bd_intf_pins macIpEncode_rsp] [get_bd_intf_pins arp_server/macIpEncode_rsp*]
   connect_bd_intf_net -intf_net asr_arp_in1_M_AXIS [get_bd_intf_pins M_AXIS] [get_bd_intf_pins asr_arp_in1/M_AXIS]
   connect_bd_intf_net -intf_net asr_arp_in_M_AXIS [get_bd_intf_pins arp_server/arpDataIn] [get_bd_intf_pins asr_arp_in/M_AXIS]
   connect_bd_intf_net -intf_net axis_switch_0_M00_AXIS [get_bd_intf_pins IN_DBG] [get_bd_intf_pins bandwidth_arp_in/IN_DBG]
   connect_bd_intf_net -intf_net bandwidth_arp_in1_OUT_DBG [get_bd_intf_pins asr_arp_in1/S_AXIS] [get_bd_intf_pins bandwidth_arp_out/OUT_DBG]
   connect_bd_intf_net -intf_net bandwidth_arp_in_OUT_DBG [get_bd_intf_pins asr_arp_in/S_AXIS] [get_bd_intf_pins bandwidth_arp_in/OUT_DBG]
-  connect_bd_intf_net -intf_net ethh_inserter_arpTableRequest [get_bd_intf_pins macIpEncode_req] [get_bd_intf_pins arp_server/macIpEncode_req_V]
+  connect_bd_intf_net -intf_net ethh_inserter_arpTableRequest [get_bd_intf_pins macIpEncode_req] [get_bd_intf_pins arp_server/macIpEncode_req*]
 
   # Create port connections
   connect_bd_net -net bandwidth_arp_in_debug_slot [get_bd_pins debug_slot_in] [get_bd_pins bandwidth_arp_in/debug_slot]
   connect_bd_net -net bandwidth_arp_out_debug_slot [get_bd_pins debug_slot_out] [get_bd_pins bandwidth_arp_out/debug_slot]
-  connect_bd_net -net interface_settings_0_my_gateway [get_bd_pins gatewayIP_V] [get_bd_pins arp_server/gatewayIP]
-  connect_bd_net -net interface_settings_0_my_ip_address [get_bd_pins myIpAddress_V] [get_bd_pins arp_server/myIpAddress]
-  connect_bd_net -net interface_settings_0_my_ip_subnet_mask [get_bd_pins networkMask_V] [get_bd_pins arp_server/networkMask]
-  connect_bd_net -net interface_settings_0_my_mac [get_bd_pins myMacAddress_V] [get_bd_pins arp_server/myMacAddress]
+  connect_bd_net -net interface_settings_0_my_gateway [get_bd_pins gatewayIP] [get_bd_pins arp_server/gatewayIP]
+  connect_bd_net -net interface_settings_0_my_ip_address [get_bd_pins myIpAddress] [get_bd_pins arp_server/myIpAddress]
+  connect_bd_net -net interface_settings_0_my_ip_subnet_mask [get_bd_pins networkMask] [get_bd_pins arp_server/networkMask]
+  connect_bd_net -net interface_settings_0_my_mac [get_bd_pins myMacAddress] [get_bd_pins arp_server/myMacAddress]
   connect_bd_net -net performance_debug_reg_0_user_rst_n [get_bd_pins user_rst_n] [get_bd_pins bandwidth_arp_in/user_rst_n] [get_bd_pins bandwidth_arp_out/user_rst_n]
   connect_bd_net -net s_aclk_0_1 [get_bd_pins ap_clk] [get_bd_pins arp_server/ap_clk] [get_bd_pins asr_arp_in/aclk] [get_bd_pins asr_arp_in1/aclk] [get_bd_pins bandwidth_arp_in/S_AXI_ACLK] [get_bd_pins bandwidth_arp_out/S_AXI_ACLK]
   connect_bd_net -net s_aresetn_0_1 [get_bd_pins ap_rst_n] [get_bd_pins arp_server/ap_rst_n] [get_bd_pins asr_arp_in/aresetn] [get_bd_pins asr_arp_in1/aresetn] [get_bd_pins bandwidth_arp_in/S_AXI_ARESETN] [get_bd_pins bandwidth_arp_out/S_AXI_ARESETN]
@@ -907,7 +907,7 @@ proc create_root_design { parentCell } {
   connect_bd_intf_net -intf_net S_AXIL_nl_1 [get_bd_intf_ports S_AXIL_nl] [get_bd_intf_pins smartconnect/S00_AXI]
   connect_bd_intf_net -intf_net S_AXIS_eth2nl_1 [get_bd_intf_ports S_AXIS_eth2nl] [get_bd_intf_pins bandwidth_eth_in/IN_DBG]
   connect_bd_intf_net -intf_net S_AXIS_sk2nl_1 [get_bd_intf_ports S_AXIS_sk2nl] [get_bd_intf_pins bandwidth_app_in/IN_DBG]
-  connect_bd_intf_net -intf_net arp_server_macIpEncode_rsp_V [get_bd_intf_pins arp/macIpEncode_rsp_V] [get_bd_intf_pins ethh_inserter/arpTableReplay_V]
+  connect_bd_intf_net -intf_net arp_server_macIpEncode_rsp [get_bd_intf_pins arp/macIpEncode_rsp] [get_bd_intf_pins ethh_inserter/arpTableReplay*]
   connect_bd_intf_net -intf_net asr_arp_in1_M_AXIS [get_bd_intf_pins arp/M_AXIS] [get_bd_intf_pins eth_level_merger/S01_AXIS]
   connect_bd_intf_net -intf_net asr_eth_in1_M_AXIS [get_bd_intf_pins asr_pkth_out/M_AXIS] [get_bd_intf_pins axis_switch_0/S00_AXIS]
   connect_bd_intf_net -intf_net asr_eth_in1_M_AXIS1 [get_bd_intf_pins asr_headerin_out/M_AXIS] [get_bd_intf_pins eth_level_merger/S00_AXIS]
@@ -928,7 +928,7 @@ proc create_root_design { parentCell } {
   connect_bd_intf_net -intf_net bandwidth_udp_in_OUT_DBG [get_bd_intf_pins asr_udp_in/S_AXIS] [get_bd_intf_pins bandwidth_udp_in/OUT_DBG]
   connect_bd_intf_net -intf_net bandwidth_udp_out_OUT_DBG [get_bd_intf_pins asr_udp_out/S_AXIS] [get_bd_intf_pins bandwidth_udp_out/OUT_DBG]
   connect_bd_intf_net -intf_net eth_level_merger_M00_AXIS [get_bd_intf_pins bandwidth_eth_out/IN_DBG] [get_bd_intf_pins eth_level_merger/M00_AXIS]
-  connect_bd_intf_net -intf_net ethh_inserter_arpTableRequest [get_bd_intf_pins arp/macIpEncode_req] [get_bd_intf_pins ethh_inserter/arpTableRequest_V]
+  connect_bd_intf_net -intf_net ethh_inserter_arpTableRequest [get_bd_intf_pins arp/macIpEncode_req] [get_bd_intf_pins ethh_inserter/arpTableRequest*]
   connect_bd_intf_net -intf_net ethh_inserter_dataOut [get_bd_intf_pins bandwidth_headerin_out/IN_DBG] [get_bd_intf_pins ethh_inserter/dataOut]
   connect_bd_intf_net -intf_net icmp_M_AXIS [get_bd_intf_pins icmp/M_AXIS] [get_bd_intf_pins ip_level_merger/S01_AXIS]
   connect_bd_intf_net -intf_net ip_level_merger_M00_AXIS [get_bd_intf_pins ethh_inserter/dataIn] [get_bd_intf_pins ip_level_merger/M00_AXIS]
@@ -953,10 +953,10 @@ proc create_root_design { parentCell } {
   connect_bd_net -net bandwidth_pkth_out_debug_slot [get_bd_pins bandwidth_pkth_out/debug_slot] [get_bd_pins performance_debug_reg_0/PORT1]
   connect_bd_net -net bandwidth_udp_in_debug_slot [get_bd_pins bandwidth_udp_in/debug_slot] [get_bd_pins performance_debug_reg_0/PORT8]
   connect_bd_net -net bandwidth_udp_out_debug_slot [get_bd_pins bandwidth_udp_out/debug_slot] [get_bd_pins performance_debug_reg_0/PORT10]
-  connect_bd_net -net interface_settings_0_my_gateway [get_bd_pins arp/gatewayIP_V] [get_bd_pins ethh_inserter/regDefaultGateway] [get_bd_pins interface_settings_0/my_gateway]
-  connect_bd_net -net interface_settings_0_my_ip_address [get_bd_pins arp/myIpAddress_V] [get_bd_pins icmp/myIpAddress_V] [get_bd_pins interface_settings_0/my_ip_address] [get_bd_pins udp/myIpAddress]
-  connect_bd_net -net interface_settings_0_my_ip_subnet_mask [get_bd_pins arp/networkMask_V] [get_bd_pins ethh_inserter/regSubNetMask] [get_bd_pins interface_settings_0/my_ip_subnet_mask]
-  connect_bd_net -net interface_settings_0_my_mac [get_bd_pins arp/myMacAddress_V] [get_bd_pins ethh_inserter/myMacAddress] [get_bd_pins interface_settings_0/my_mac]
+  connect_bd_net -net interface_settings_0_my_gateway [get_bd_pins arp/gatewayIP] [get_bd_pins ethh_inserter/regDefaultGateway] [get_bd_pins interface_settings_0/my_gateway]
+  connect_bd_net -net interface_settings_0_my_ip_address [get_bd_pins arp/myIpAddress] [get_bd_pins icmp/myIpAddress] [get_bd_pins interface_settings_0/my_ip_address] [get_bd_pins udp/myIpAddress]
+  connect_bd_net -net interface_settings_0_my_ip_subnet_mask [get_bd_pins arp/networkMask] [get_bd_pins ethh_inserter/regSubNetMask] [get_bd_pins interface_settings_0/my_ip_subnet_mask]
+  connect_bd_net -net interface_settings_0_my_mac [get_bd_pins arp/myMacAddress] [get_bd_pins ethh_inserter/myMacAddress] [get_bd_pins interface_settings_0/my_mac]
   connect_bd_net -net performance_debug_reg_0_user_rst_n [get_bd_pins arp/user_rst_n] [get_bd_pins bandwidth_app_in/user_rst_n] [get_bd_pins bandwidth_app_out/user_rst_n] [get_bd_pins bandwidth_eth_in/user_rst_n] [get_bd_pins bandwidth_eth_out/user_rst_n] [get_bd_pins bandwidth_headerin_out/user_rst_n] [get_bd_pins bandwidth_pkth_out/user_rst_n] [get_bd_pins bandwidth_udp_in/user_rst_n] [get_bd_pins bandwidth_udp_out/user_rst_n] [get_bd_pins icmp/user_rst_n] [get_bd_pins performance_debug_reg_0/user_rst_n]
   connect_bd_net -net s_aclk_0_1 [get_bd_ports ap_clk] [get_bd_pins arp/ap_clk] [get_bd_pins asr_eth_in/aclk] [get_bd_pins asr_eth_out/aclk] [get_bd_pins asr_headerin_out/aclk] [get_bd_pins asr_pkth_out/aclk] [get_bd_pins asr_udp_in/aclk] [get_bd_pins asr_udp_out/aclk] [get_bd_pins axi4stream_sinker_0/CLK] [get_bd_pins axis_switch_0/aclk] [get_bd_pins bandwidth_app_in/S_AXI_ACLK] [get_bd_pins bandwidth_app_out/S_AXI_ACLK] [get_bd_pins bandwidth_eth_in/S_AXI_ACLK] [get_bd_pins bandwidth_eth_out/S_AXI_ACLK] [get_bd_pins bandwidth_headerin_out/S_AXI_ACLK] [get_bd_pins bandwidth_pkth_out/S_AXI_ACLK] [get_bd_pins bandwidth_udp_in/S_AXI_ACLK] [get_bd_pins bandwidth_udp_out/S_AXI_ACLK] [get_bd_pins eth_level_merger/aclk] [get_bd_pins ethh_inserter/ap_clk] [get_bd_pins icmp/ap_clk] [get_bd_pins interface_settings_0/S_AXI_ACLK] [get_bd_pins ip_level_merger/aclk] [get_bd_pins packet_handler/ap_clk] [get_bd_pins performance_debug_reg_0/S_AXI_ACLK] [get_bd_pins smartconnect/aclk] [get_bd_pins udp/ap_clk]
   connect_bd_net -net s_aresetn_0_1 [get_bd_ports ap_rst_n] [get_bd_pins arp/ap_rst_n] [get_bd_pins asr_eth_in/aresetn] [get_bd_pins asr_eth_out/aresetn] [get_bd_pins asr_headerin_out/aresetn] [get_bd_pins asr_pkth_out/aresetn] [get_bd_pins asr_udp_in/aresetn] [get_bd_pins asr_udp_out/aresetn] [get_bd_pins axi4stream_sinker_0/RST_N] [get_bd_pins axis_switch_0/aresetn] [get_bd_pins bandwidth_app_in/S_AXI_ARESETN] [get_bd_pins bandwidth_app_out/S_AXI_ARESETN] [get_bd_pins bandwidth_eth_in/S_AXI_ARESETN] [get_bd_pins bandwidth_eth_out/S_AXI_ARESETN] [get_bd_pins bandwidth_headerin_out/S_AXI_ARESETN] [get_bd_pins bandwidth_pkth_out/S_AXI_ARESETN] [get_bd_pins bandwidth_udp_in/S_AXI_ARESETN] [get_bd_pins bandwidth_udp_out/S_AXI_ARESETN] [get_bd_pins eth_level_merger/aresetn] [get_bd_pins ethh_inserter/ap_rst_n] [get_bd_pins icmp/ap_rst_n] [get_bd_pins interface_settings_0/S_AXI_ARESETN] [get_bd_pins ip_level_merger/aresetn] [get_bd_pins packet_handler/ap_rst_n] [get_bd_pins performance_debug_reg_0/S_AXI_ARESETN] [get_bd_pins smartconnect/aresetn] [get_bd_pins udp/ap_rst_n]

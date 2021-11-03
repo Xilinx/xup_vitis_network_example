@@ -379,3 +379,7 @@ validate_bd_design
 save_bd_design
 
 
+delete_bd_objs [get_bd_intf_nets S_AXIS_1] [get_bd_intf_nets frame_padding_M_AXIS] [get_bd_cells frame_padding]
+connect_bd_intf_net [get_bd_intf_ports S_AXIS] [get_bd_intf_pins acc_kernel_tx_cdc/S_AXIS]
+validate_bd_design
+save_bd_design

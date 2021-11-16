@@ -107,6 +107,7 @@ In order to implement this design you need Vitis 2021.1 or newer and associated 
 | Alveo | Development Target Platform(s)         | Notes |
 |-------|----------------------------------------|-------|
 | U50   | xilinx_u50_gen3x16_xdma_201920_3       |       |
+| U55C  | xilinx_u55c_gen3x16_xdma_2_202110_1    |       |
 | U200  | xilinx_u200_gen3x16_xdma_1_202110_1    |       |
 | U250  | xilinx_u250_gen3x16_xdma_3.1_202020_1  |       |
 | U280  | xilinx_u280_xdma_201920_3              |       |

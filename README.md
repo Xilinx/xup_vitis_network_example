@@ -100,7 +100,6 @@ In order to implement this design you need Vitis 2021.1 or newer and associated 
 |--------|-----------|------|
 | 2021.1 | 2.11.634  | 2.7  |
 
-> **_NOTE:_** pynq 2.7 is not yet on PYPI, find out how to install it this version here [#34](https://github.com/Xilinx/xup_vitis_network_example/issues/34)
 
 ### Alveo Cards
 

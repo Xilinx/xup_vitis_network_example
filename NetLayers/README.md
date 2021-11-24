@@ -71,7 +71,38 @@ struct udp_nl2app {
 }
 ```
 
+## Embedded Probes
 
+The network layer contains embedded probes at different points in order to facilitate debug and monitorization. These probes provide the following metrics: a) number of packets, b) number of bytes and c) active time (number of cycles), suffices `_packets`, `_bytes` and `_cycles` respectively.
+
+These metrics can can be clear by writing `0x1` to the register `debug_reset_counters`, be aware that this is global event and all probes are clear.
+
+The `NetworkLayer` class in the `[vnx_util.py](../Notebooks/vnx_utils.py)` file provides the `getDebugProbes` property that returns a dictionary with the current value of the probes.
+
+Below you can find the probes and their description. For more information about the offset address of each of them, please refer to [kernel.xml](kernel.xml) file.
+
+### Receiving Path
+
+| Name | Description |
+|--------|---------------------------------------------|
+| eth_in | Incoming packets from the Network interface |
+| pkth_in | Incoming packets after filtering |
+| arp_in | Incoming ARP packets |
+| icmp_in | Incoming ICMP packets |
+| udp_in | Incoming UDP packets |
+| udp_app_out | Outgoing UDP Segments to the application |
+
+
+### Transmitting Path
+
+| Name | Description |
+|--------|---------------------------------------------|
+| eth_out | Outgoing packets to the Network interface |
+| ethhi_out | Outgoing packets after Ethernet header insertion |
+| arp_out | Outgoing ARP packets |
+| icmp_out | Outgoing ICMP packets |
+| udp_out | Outgoing UDP packets |
+| udp_app_in | Incoming UDP Segments from the application |
 
 ------------------------------------------------------
 <p align="center">Copyright&copy; 2021 Xilinx</p>

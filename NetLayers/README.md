@@ -77,9 +77,9 @@ The network layer contains embedded probes at different points in order to facil
 
 These metrics can can be clear by writing `0x1` to the register `debug_reset_counters`, be aware that this is global event and all probes are clear.
 
-The `NetworkLayer` class in the `[vnx_util.py](../Notebooks/vnx_utils.py)` file provides the `getDebugProbes` property that returns a dictionary with the current value of the probes.
+The `NetworkLayer` class in the [vnx_util.py](../Notebooks/vnx_utils.py) file provides the `getDebugProbes` property that returns a dictionary with the current value of the probes.
 
-Below you can find the probes and their description. For more information about the offset address of each of them, please refer to [kernel.xml](kernel.xml) file.
+Below you can find the probes and their description. For more information about the offset address of each of them refer to the [kernel.xml](kernel.xml) file.
 
 ### Receiving Path
 

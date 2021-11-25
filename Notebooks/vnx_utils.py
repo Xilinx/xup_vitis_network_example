@@ -550,10 +550,10 @@ class NetworkLayer(DefaultIP):
                 "bytes": int(rmap.udp_in_bytes),
                 "cycles": int(rmap.udp_in_cycles)
             },
-            "udp_to_app": {
-                "packets": int(rmap.udp_app_out_packets),
-                "bytes": int(rmap.udp_app_out_bytes),
-                "cycles": int(rmap.udp_app_out_cycles)
+            "app": {
+                "packets": int(rmap.app_in_packets),
+                "bytes": int(rmap.app_in_bytes),
+                "cycles": int(rmap.app_in_cycles)
             }
         }
 
@@ -578,10 +578,10 @@ class NetworkLayer(DefaultIP):
                 "bytes": int(rmap.eth_out_bytes),
                 "cycles": int(rmap.eth_out_cycles)
             },
-            "udp_from_app": {
-                "packets": int(rmap.udp_app_in_packets),
-                "bytes": int(rmap.udp_app_in_bytes),
-                "cycles": int(rmap.udp_app_in_cycles)
+            "app": {
+                "packets": int(rmap.app_out_packets),
+                "bytes": int(rmap.app_out_bytes),
+                "cycles": int(rmap.app_out_cycles)
             },
             "udp": {
                 "packets": int(rmap.udp_out_packets),

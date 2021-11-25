@@ -90,7 +90,7 @@ Below you can find the probes and their description. For more information about 
 | arp_in | Incoming ARP packets |
 | icmp_in | Incoming ICMP packets |
 | udp_in | Incoming UDP packets |
-| udp_app_out | Outgoing UDP Segments to the application |
+| app_in | Incoming UDP Segments to the application |
 
 
 ### Transmitting Path
@@ -102,7 +102,7 @@ Below you can find the probes and their description. For more information about 
 | arp_out | Outgoing ARP packets |
 | icmp_out | Outgoing ICMP packets |
 | udp_out | Outgoing UDP packets |
-| udp_app_in | Incoming UDP Segments from the application |
+| app_out | Outgoing UDP Segments from the application |
 
 ------------------------------------------------------
 <p align="center">Copyright&copy; 2021 Xilinx</p>

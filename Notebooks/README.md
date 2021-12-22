@@ -13,7 +13,7 @@ If you have multiple Alveo cards in the same system you can still reuse the Note
 To begin with, we will use `pynq` to [identify how many Alveo cards are present in the system and their id](https://pynq.readthedocs.io/en/latest/pynq_alveo.html#multiple-cards).
 
 ```python
-from pynq import Device
+import pynq
 for i in range(len(pynq.Device.devices)):
     print("{} {}".format(i, pynq.Device.devices[i].name))
 ```

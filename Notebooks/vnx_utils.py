@@ -37,6 +37,7 @@ from pynq.utils import ReprDict
 import numpy as np
 import ipaddress
 from packaging import version
+from enum import Enum
 
 
 def _shiftedWord(value, index, width=1):
@@ -595,6 +596,13 @@ class NetworkLayer(DefaultIP):
 
 benchmark_mode = ["PRODUCER", "LATENCY", "LOOPBACK", "CONSUMER"]
 
+class tgmode(Enum):
+    """Supported Traffic generator Modes"""
+    PRODUCER = 0
+    LATENCY = 1
+    LOOPBACK = 2
+    CONSUMER = 3
+
 class TrafficGenerator(DefaultIP):
     """ This class wraps the common function of the Traffic Generator IP
     """
@@ -605,7 +613,51 @@ class TrafficGenerator(DefaultIP):
         super().__init__(description=description)
         self.freq = None
 
-    def computeThroughputApp(self, direction="rx"):
+    def start(self, mode: tg_mode, dest: int=0: None, packets: int=None,
+              beats: int=None, tbwp: int=None):
+        """Starts the Traffic generator
+
+        Parameters
+        ----------
+        mode: tgmode
+            Operation mode
+        dest: int
+            Index in the socket table
+
+        Optional
+        --------
+        packets: int
+            Number of packets
+        num_beats: int
+            Number of transactions per piece of payload
+        tbwp:
+            Clock ticks between two consecutive payload packets
+        """
+
+        if mode == tgmode.PRODUCER or mode == tgmode.LATENCY:
+            if not packets:
+                raise RuntimeError("packets must be specified when mode is {}"
+                                   .format(mode))
+            elif not beats:
+                raise RuntimeError("beats must be specified when mode is {}"
+                                   .format(mode))
+            elif not tbwp:
+                raise RuntimeError("tbwp must be specified when mode is {}"
+                                   .format(mode))
+
+            self.register_map.number_packets = packets
+            self.register_map.number_beats = beats
+            self.register_map.time_between_packets = tbwp
+
+        self.register_map.mode = int(mode.value)
+        self.register_map.dest_id = dest
+        self.register_map.CTRL.AP_START = 1
+
+    def reset_fsm(self):
+        """Reset internal FSM"""
+        self.register_map.reset_fsm = 1
+
+    def computeThroughputApp(self, direction: str="rx") -> float:
         """
         Read the application monitoring registers and compute
         throughput, it also returns other useful information

@@ -105,4 +105,4 @@ Below you can find the probes and their description. For more information about 
 | app_out | Outgoing UDP Segments from the application |
 
 ------------------------------------------------------
-<p align="center">Copyright&copy; 2021 Xilinx</p>
+<p align="center">Copyright&copy; 2022 Xilinx</p>

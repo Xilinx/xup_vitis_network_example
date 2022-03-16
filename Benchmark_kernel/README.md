@@ -85,4 +85,4 @@ From Software, users should retrieve the results from global memory and multiply
 > Note: The clock frequency can vary between implementations and even at runtime. For this reason the conversion from clock cycles to seconds is perform in software.
 
 ---------------------------------------
-<center> Copyright&copy; 2020-2021 Xilinx </center>
+<center> Copyright&copy; 2022 Xilinx </center>

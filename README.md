@@ -157,13 +157,23 @@ make all DEVICE=<full platform path> INTERFACE=<interface number> DESIGN=<design
 * NetLayers: this folder contains the logic to generate the *network\_layer* kernel, using the submodule `100G-fpga-network-stack-core`
 * Notebooks: this folder contains companion Jupyter notebooks to show how to run the different examples
 
-## Licenses
+## FAQ
 
-**Vitis Network Example (VNx)** License [BSD 3-Clause License](LICENSE.md)
+### How do I get support?
 
-**Ethernet/cmac** License: [BSD 3-Clause License](THIRD_PARTY_LIC.md)
+Open an issue with as much details as you can. Please, use the [issue template](https://github.com/Xilinx/xup_vitis_network_example/issues/new?assignees=&labels=&template=vnx-issue-template.md&title=) and fill in the appropriate fields.
 
-**NetLayers/100G-fpga-network-stack-core** License: [BSD 3-Clause License](THIRD_PARTY_LIC.md)
+### Alveo card connected to a 100G capable switch/NIC is not getting link.
+
+This design does **NOT** support **FEC neither auto-negotiation**. Therefore, make sure that your network equipment has these capabilities disabled. Please, refer to your network equipment manual to accomplish this.
+
+### C/C++ host code support?
+
+Python host code in combination with the `pynq` package and JupyterLab as well as DASK provide the right environment to demonstrate the capabilities of this project. There is no current plan to support C/C++ host code at this point. However, we welcome any contribution in this area. You can find (partial) support for some of the kernels [here](https://github.com/Xilinx/HPC/tree/master/xans/sw/src).
+
+### How Can I contribute?
+
+Please, follow the [contributing guidelines](CONTRIBUTING.md)
 
 ## Considerations
 
@@ -173,5 +183,13 @@ If you are interested in a NIC design, please check out [OpenNIC Platform](https
 
 VNx was originally developed within [Xilinx University Program](https://www.xilinx.com/support/university.html) to support compute application that need to scale out. It has now been open sourced by Xilinx as a community resource. VNx is not a **Xilinx product** and so does not have formal Xilinx support in place, [GitHub issues](https://github.com/Xilinx/xup_vitis_network_example/issues) is the best place to request support.
 
+## Licenses
+
+**Vitis Network Example (VNx)** License [BSD 3-Clause License](LICENSE.md)
+
+**Ethernet/cmac** License: [BSD 3-Clause License](THIRD_PARTY_LIC.md)
+
+**NetLayers/100G-fpga-network-stack-core** License: [BSD 3-Clause License](THIRD_PARTY_LIC.md)
+
 ------------------------------------------------------
-<p align="center">Copyright&copy; 2021 Xilinx</p>
+<p align="center">Copyright&copy; 2022 Xilinx</p>

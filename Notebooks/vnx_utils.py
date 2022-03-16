@@ -31,12 +31,10 @@ __author__ = "Mario Ruiz"
 __copyright__ = "Copyright 2020-2021, Xilinx Inc."
 __email__ = "xup@xilinx.com"
 
-import pynq
 from pynq import DefaultIP
 from pynq.utils import ReprDict
 import numpy as np
 import ipaddress
-from packaging import version
 from enum import Enum
 
 
@@ -72,6 +70,7 @@ def _shiftedWord(value, index, width=1):
 
     return (value >> index) & ((2 ** width) - 1)
 
+
 _cmac_modes = {
         0: 'CAUI10',
         1: 'CAUI4',
@@ -84,8 +83,8 @@ class CMAC(DefaultIP):
     """This class wrapps the common function of the CMAC IP
     """
 
-    bindto = ["xilinx.com:kernel:cmac_0:1.0", 
-        "xilinx.com:kernel:cmac_1:1.0"]
+    bindto = ["xilinx.com:kernel:cmac_0:1.0",
+              "xilinx.com:kernel:cmac_1:1.0"]
 
     def __init__(self, description):
         super().__init__(description=description)
@@ -95,14 +94,14 @@ class CMAC(DefaultIP):
 
     def _setup_packet_prototype(self):
         pass
-    
-    def call(self, *args, **kwargs):
-        raise RuntimeError("{} is a free running kernel and cannot be " 
-            "starter or called".format(self._fullpath))
 
-    def linkStatus(self, debug:bool=False) -> dict:
+    def call(self, *args, **kwargs):
+        raise RuntimeError("{} is a free running kernel and cannot be "
+                           "starter or called".format(self._fullpath))
+
+    def linkStatus(self, debug: bool=False) -> dict:
         """Current CMAC link status
-        
+
         Parameters
         ----------
         debug: bool
@@ -117,8 +116,8 @@ class CMAC(DefaultIP):
         if not isinstance(debug, bool):
             raise ValueError("debug must be a bool type")
 
-        #The first time these registers are not populated properly,
-        #read them twice to get real value
+        # The first time these registers are not populated properly,
+        # read them twice to get real value
         for _ in range(2):
             rx_status = int(self.register_map.stat_rx_status)
             tx_status = int(self.register_map.stat_tx_status)
@@ -147,8 +146,8 @@ class CMAC(DefaultIP):
 
         self.register_map.stat_pm_tick = 1
 
-    def getStats(self, update_reg:bool=True) -> dict:
-        """ Return a dictionary with the CMAC stats 
+    def getStats(self, update_reg: bool=True) -> dict:
+        """ Return a dictionary with the CMAC stats
 
         Parameters
         ----------
@@ -224,20 +223,21 @@ class CMAC(DefaultIP):
         }
 
         return stats_dict
+
     @property
     def version(self):
         """Returns the CMAC Core version
         """
 
-        version =  int(self.register_map.version)
+        version = int(self.register_map.version)
         return str(_shiftedWord(version, 8, 8)) + '.' \
             + str(_shiftedWord(version, 0, 8))
-    
+
     @property
     def mode(self):
         """Returns the CMAC Core mode
         """
-        mode =  int(self.register_map.core_mode) & 0x3
+        mode = int(self.register_map.core_mode) & 0x3
         return _cmac_modes[mode]
 
 
@@ -275,7 +275,7 @@ def _byteOrderingEndianess(num, length=4):
 
 class NetworkLayer(DefaultIP):
     """This class wraps the common function of the Network Layer IP
-    
+
     """
 
     bindto = ["xilinx.com:kernel:networklayer:1.0"]
@@ -299,11 +299,11 @@ class NetworkLayer(DefaultIP):
 
     def _setup_packet_prototype(self):
         pass
-    
+
     def call(self, *args, **kwargs):
-        raise RuntimeError("{} is a free running kernel and cannot be " 
-            "starter or called".format(self._fullpath))        
-        
+        raise RuntimeError("{} is a free running kernel and cannot be "
+                           "starter or called".format(self._fullpath))
+
     def populateSocketTable(self, debug=False):
         """
         Populate a socket table
@@ -342,8 +342,8 @@ class NetworkLayer(DefaultIP):
 
             theirIP = 0
             if self.sockets[i]["theirIP"]:
-                theirIP = int(ipaddress.IPv4Address(self.sockets[i]\
-                    ["theirIP"]))
+                theirIP = int(ipaddress.IPv4Address(self.sockets[i]
+                                                    ["theirIP"]))
 
             self.write(ti_offset, theirIP)
             self.write(tp_offset, int(self.sockets[i]["theirPort"]))
@@ -366,7 +366,8 @@ class NetworkLayer(DefaultIP):
                     tp = self.read(tp_offset)
                     mp = self.read(mp_offset)
                     socket_dict['socket'][i] = dict()
-                    socket_dict['socket'][i]['theirIP'] = str(ipaddress.IPv4Address(ti))
+                    socket_dict['socket'][i]['theirIP'] = \
+                        str(ipaddress.IPv4Address(ti))
                     socket_dict['socket'][i]['theirPort'] = tp
                     socket_dict['socket'][i]['myPort'] = mp
 
@@ -402,9 +403,9 @@ class NetworkLayer(DefaultIP):
 
         valid_entry = None
         for i in range(num_entries):
-            if (i%4) == 0:
+            if (i % 4) == 0:
                 valid_entry = self.read(valid_addr_offset + (i // 4) * 4)
-            
+
             isvalid = (valid_entry >> ((i % 4) * 8)) & 0x1
             if isvalid:
                 mac_lsb = self.read(mac_addr_offset + (i * 2 * 4))
@@ -413,7 +414,7 @@ class NetworkLayer(DefaultIP):
                 mac_addr = (2 ** 32) * mac_msb + mac_lsb
                 mac_hex = "{:012x}".format(_byteOrderingEndianess(mac_addr, 6))
                 mac_str = ":".join(
-                    mac_hex[i : i + 2] for i in range(0, len(mac_hex), 2)
+                    mac_hex[i: i + 2] for i in range(0, len(mac_hex), 2)
                 )
                 ip_addr_print = _byteOrderingEndianess(ip_addr)
                 table[i] = {
@@ -452,12 +453,11 @@ class NetworkLayer(DefaultIP):
         ip_mask = int(self.register_map.ip_mask)
 
         mac_hex = "{:012x}".format(mac_addr)
-        mac_str = ":".join(mac_hex[i : i + 2] \
-            for i in range(0, len(mac_hex), 2))
+        mac_str = ":".join(mac_hex[i: i + 2]
+                           for i in range(0, len(mac_hex), 2))
 
         config = {
-            "HWaddr": ":".join(mac_hex[i : i + 2] \
-                for i in range(0, len(mac_hex), 2)),
+            "HWaddr": mac_str,
             "inet addr": str(ipaddress.IPv4Address(ip_addr)),
             "gateway addr": str(ipaddress.IPv4Address(ip_gw)),
             "Mask": str(ipaddress.IPv4Address(ip_mask)),
@@ -596,12 +596,14 @@ class NetworkLayer(DefaultIP):
 
 benchmark_mode = ["PRODUCER", "LATENCY", "LOOPBACK", "CONSUMER"]
 
+
 class tgmode(Enum):
     """Supported Traffic generator Modes"""
     PRODUCER = 0
     LATENCY = 1
     LOOPBACK = 2
     CONSUMER = 3
+
 
 class TrafficGenerator(DefaultIP):
     """ This class wraps the common function of the Traffic Generator IP
@@ -613,7 +615,7 @@ class TrafficGenerator(DefaultIP):
         super().__init__(description=description)
         self.freq = None
 
-    def start(self, mode: tg_mode, dest: int=0: None, packets: int=None,
+    def start(self, mode: tgmode, dest: int=0, packets: int=None,
               beats: int=None, tbwp: int=None):
         """Starts the Traffic generator
 
@@ -692,12 +694,12 @@ class TrafficGenerator(DefaultIP):
         thr_bs = (tot_bytes * 8) / tot_time
 
         return tot_pkts, thr_bs / (10 ** 9), tot_time
-    
+
     def resetProbes(self):
         """
         Reset embedded probes
         """
-        self.register_map.debug_reset = 1 
+        self.register_map.debug_reset = 1
 
 
 class DataMover(DefaultIP):
@@ -711,7 +713,7 @@ class DataMover(DefaultIP):
 
     def __init__(self, description):
         super().__init__(description=description)
-    
+
     def start(self, *args, **kwargs):
         """Start the accelerator
         This function will configure the accelerator with the provided
@@ -722,7 +724,7 @@ class DataMover(DefaultIP):
         For details on the function's signature use the `signature` property.
         The type annotations provide the C types that the accelerator
         operates on. Any pointer types should be passed as `ContiguousArray`
-        objects created from the `pynq.allocate` class. Scalars should be 
+        objects created from the `pynq.allocate` class. Scalars should be
         passed as a compatible python type as used by the `struct` library.
         """
 
@@ -750,10 +752,10 @@ class CounterIP(DefaultIP):
 
     def _setup_packet_prototype(self):
         pass
-    
+
     def call(self, *args, **kwargs):
-        raise RuntimeError("{} is a free running kernel and cannot be " 
-            "starter or called".format(self._fullpath))
+        raise RuntimeError("{} is a free running kernel and cannot be "
+                           "starter or called".format(self._fullpath))
 
     @property
     def counters(self):
@@ -762,16 +764,16 @@ class CounterIP(DefaultIP):
         """
 
         counters = {
-            'packets' : int(self.register_map.packets),
-            'beats' : int(self.register_map.beats),
-            'bytes' : int(self.register_map.bytes),
+            'packets': int(self.register_map.packets),
+            'beats': int(self.register_map.beats),
+            'bytes': int(self.register_map.bytes),
         }
 
         return counters
 
     def reset_counters(self):
         """ Reset internal counters
-        
+
         """
 
         self.register_map.reset = 0
@@ -793,7 +795,7 @@ class CollectorIP(DefaultIP):
     def received_packets(self):
         # When a register is written by the kernel for non free running kernels
         # the default offset refers to the value that the kernel reads
-        # the actual register where the kernel writes is not exposed in the 
+        # the actual register where the kernel writes is not exposed in the
         # signature, so we need to compute the offset and use mmio to read it
 
         rx_pkts_offset = self.register_map.received_packets.address + \

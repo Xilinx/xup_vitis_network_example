@@ -1,4 +1,4 @@
-#   Copyright (c) 2020-2021, Xilinx, Inc.
+#   Copyright (c) 2020-2022, Xilinx, Inc.
 #   All rights reserved.
 #
 #   Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
 #   ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 __author__ = "Mario Ruiz"
-__copyright__ = "Copyright 2020-2021, Xilinx Inc."
+__copyright__ = "Copyright 2020-2022, Xilinx Inc."
 __email__ = "xup@xilinx.com"
 
 from pynq import DefaultIP
@@ -239,6 +239,21 @@ class CMAC(DefaultIP):
         """
         mode = int(self.register_map.core_mode) & 0x3
         return _cmac_modes[mode]
+
+    @property
+    def loopback(self):
+        """ GT Loopback
+
+        False: normal operation
+        True: GT internal loopback
+        """
+        return bool(int(self.register_map.gt_loopback) & 0x1)
+
+    @loopback.setter
+    def loopback(self, operation):
+        if not isinstance(operation, (int, bool)):
+            raise ValueError("operation must be int or bool")
+        self.register_map.gt_loopback = int(bool(operation))
 
 
 def _byteOrderingEndianess(num, length=4):

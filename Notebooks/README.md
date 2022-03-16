@@ -1,5 +1,11 @@
 # Companion Notebooks
 
+## Environment
+
+To run these Jupyter notebooks, you will need an environment with JupyterLab and `pynq` installed, the best way to accomplish this is to create a [Python virtual environment](https://docs.python.org/3/library/venv.html#module-venv) or to create a [Conda environment]https://docs.conda.io/projects/conda/en/latest/user-guide/concepts/environments.html#conda-environments).
+
+The steps to Install Conda and get the environment setup are [here](https://pynq.readthedocs.io/en/latest/getting_started/alveo_getting_started.html#install-conda).
+
 ## Distributed Alveo cards
 
 The Dask class and Notebooks that use such class are only intended for systems where the Alveo cards are located in different systems, either different servers or different VMs.

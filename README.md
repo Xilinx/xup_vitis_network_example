@@ -100,6 +100,7 @@ In order to implement this design you need Vitis 2021.1 or newer and associated 
 |--------|-----------|------|
 | 2021.1 | 2.11.634  | 2.7  |
 
+> **_NOTE:_** for XRT version 2.12 or newer please apply this patch in the pynq package [PYNQ#1343](https://github.com/Xilinx/PYNQ/pull/1343/files).
 
 ### Alveo Cards
 
@@ -108,7 +109,7 @@ In order to implement this design you need Vitis 2021.1 or newer and associated 
 | U50   | xilinx_u50_gen3x16_xdma_201920_3       |       |
 | U55C  | xilinx_u55c_gen3x16_xdma_2_202110_1    |       |
 | U200  | xilinx_u200_gen3x16_xdma_1_202110_1    |       |
-| U250  | xilinx_u250_gen3x16_xdma_3.1_202020_1  |       |
+| U250  | xilinx_u250_gen3x16_xdma_3_1_202020_1  | [DFX two-stage platform](https://support.xilinx.com/s/article/75975?language=en_US) |
 | U280  | xilinx_u280_xdma_201920_3              |       |
 
 ### Requirements

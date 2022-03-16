@@ -100,7 +100,7 @@ In order to implement this design you need Vitis 2021.1 or newer and associated 
 |--------|-----------|------|
 | 2021.1 | 2.11.634  | 2.7  |
 
-To install `pynq` and JupyterLab follow the steps [here](otebooks/README.md#environment).
+To install `pynq` and JupyterLab follow the steps [here](Notebooks/README.md#environment).
 
 > **_NOTE:_** for XRT version 2.12 or newer please apply this patch in the pynq package [PYNQ#1343](https://github.com/Xilinx/PYNQ/pull/1343/files).
 

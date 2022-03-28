@@ -1,4 +1,4 @@
-#   Copyright (c) 2021, Xilinx, Inc.
+#   Copyright (c) 2022, Xilinx, Inc.
 #   All rights reserved.
 #
 #   Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
 #   ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 __author__ = "Peter Ogden, Mario Ruiz"
-__copyright__ = "Copyright 2021, Xilinx Inc."
+__copyright__ = "Copyright 2022, Xilinx Inc."
 __email__ = "pynq_support@xilinx.com"
 
 import pynq
@@ -44,6 +44,7 @@ from pynq.pl_server.xrt_device import XrtStream
 # let workers hold on to local references
 buffers = []
 
+
 # Functions that will be called in the context of dask
 def _invalidate(bo, offset, size):
     buf = bytearray(size)
@@ -51,21 +52,26 @@ def _invalidate(bo, offset, size):
     pynq.Device.active_device.buffer_read(bo, offset, buf)
     return bytes(buf)
 
+
 def _flush(bo, offset, size, data):
     pynq.Device.active_device.buffer_write(bo, offset, bytearray(data))
     pynq.Device.active_device.flush(bo, offset, 0, size)
-    
+
+
 def _read_registers(address, length):
     return pynq.Device.active_device.read_registers(address, length)
 
+
 def _write_registers(address, data):
     pynq.Device.active_device.write_registers(address, data)
-    
+
+
 def _download(bitstream_data):
     with tempfile.NamedTemporaryFile() as f:
         f.write(bitstream_data)
         f.flush()
         ol = pynq.Overlay(f.name)
+
 
 def _alloc(size, memdesc):
     mem = pynq.Device.active_device.get_memory(memdesc)
@@ -73,14 +79,15 @@ def _alloc(size, memdesc):
     buffers.append(buf)
     return buf.bo, buf.device_address
 
+
 class DaskMemory:
     """Memory object proxied over dask
-    
+
     """
     def __init__(self, device, desc):
         self._desc = desc
         self._device = device
-    
+
     def allocate(self, shape, dtype):
         from pynq.buffer import PynqBuffer
         buf = PynqBuffer(shape, dtype, device_address=0,
@@ -90,13 +97,14 @@ class DaskMemory:
         buf.device_address = addr
         return buf
 
+
 class DaskDevice(pynq.Device):
     """PYNQ Proxy device for using PYNQ via dask
-    
+
     """
     def __init__(self, client, worker):
         """The worker ID should be unique
-        
+
         """
         super().__init__("dask-" + re.sub(r'[^\w]', '_', worker))
         self._dask_client = client
@@ -108,9 +116,10 @@ class DaskDevice(pynq.Device):
         self._streams = {}
         self.sync_to_device = self.flush
         self.sync_from_device = self.invalidate
-        
+
     def _call_dask(self, func, *args):
-        future = self._dask_client.submit(func, *args, workers=self._worker, pure=False)
+        future = self._dask_client.submit(func, *args, workers=self._worker,
+                                          pure=False)
         return future.result()
 
     def invalidate(self, bo, offset, ptr, size):
@@ -120,7 +129,7 @@ class DaskDevice(pynq.Device):
         ctype = ctypes.c_uint8 * size
         target = ctype.from_address(ptr)
         target[:] = self._call_dask(_invalidate, bo, offset, size)
-        
+
     def flush(self, bo, offset, ptr, size):
         """Copy buffer from the host to the device
         """
@@ -128,13 +137,13 @@ class DaskDevice(pynq.Device):
         ctype = ctypes.c_uint8 * size
         target = ctype.from_address(ptr)
         self._call_dask(_flush, bo, offset, size, bytes(target))
-        
+
     def read_registers(self, address, length):
         return self._call_dask(_read_registers, address, length)
-    
+
     def write_registers(self, address, data):
         self._call_dask(_write_registers, address, bytes(data))
-        
+
     def get_bitfile_metadata(self, bitfile_name):
         return pynq.pl_server.xclbin_parser.XclBin(bitfile_name)
 
@@ -149,7 +158,7 @@ class DaskDevice(pynq.Device):
             bitstream_data = f.read()
         self._call_dask(_download, bitstream_data)
         super().post_download(bitstream, parser)
-    
+
     def get_memory(self, desc):
         if desc['streaming']:
             if desc['idx'] not in self._streams:
@@ -157,7 +166,7 @@ class DaskDevice(pynq.Device):
             return self._streams[desc['idx']]
         else:
             return DaskMemory(self, desc)
-    
+
     def get_memory_by_idx(self, idx):
         for m in self.mem_dict.values():
             if m['idx'] == idx:

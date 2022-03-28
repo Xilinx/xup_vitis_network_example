@@ -744,7 +744,7 @@ class DataMover(DefaultIP):
         """
 
         for idx, i in enumerate(self.signature.parameters.items()):
-            if i[0] == 'size'and args[idx] < 64:
+            if i[0] == 'size' and args[idx] < 64:
                 raise ValueError("size must be at least 64-Byte")
             elif i[0] == 'dest' and args[idx] > 15:
                 raise ValueError("dest cannot be bigger than 15")

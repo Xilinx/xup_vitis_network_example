@@ -1,6 +1,6 @@
 # ALVEO VNx C++ Host Code #
 
-The project allows to access HW kernel and IPs included in XUP VNx (http://github.com/Xilinx/xup_vitis_network_example) from any C++ application.
+The project allows to access HW kernel and IPs included in this repository from any C++ application.
 It runs on Xilinx Runtime Native APIs and gives the user a simplified interface to access and configure the FPGA, read and write IP registers, control kernels execution and access HBM memory buffers. To be used with Xilinx Alveo U280 accelerator cards.
 
 # Classes composition #
@@ -23,11 +23,19 @@ It runs on Xilinx Runtime Native APIs and gives the user a simplified interface 
 
 # Compilation #
 
-* Make sure the XRT environment setting are set and XRT is installed in /opt/Xilinx/xrt
+* Make sure the XRT is installed in /opt/xilinx/xrt and the XRT environment settings are set:
 
-* Create and enter build directory
+```
+source /opt/xilinx/xrt/setup.sh
+```
 
-* run cmake ../ and cmake --build .
+* Create build directory and compile:
+
+```
+mkdir build; cd build
+cmake ..
+cmake --build .
+```
 
 # Example applications #
 
@@ -35,7 +43,7 @@ There are two example applications included:
 
 * alveo_rx.cpp: listens on Alveo link 1 for incoming transcation and stores received payload in a binary file
 
-* alveo_tx.cpp: connectes to Alveo link 0 and transfers a provided file content
+* alveo_tx.cpp: connectes to Alveo link 0 and transfers the provided file content
 
 # Requirements #
 
@@ -43,6 +51,6 @@ There are two example applications included:
 
 * FPGA bitfile (tested with vnx_basic_if3.xclbin)
 
-# Contact #
+# Support #
 
-grzegorz.korcyl@uj.edu.pl
+This driver has been contributed by The FPGA-FAIS group from Jagiellonian University in Cracow, for support create an issue and assign to fpgafais 

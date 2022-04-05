@@ -1,3 +1,9 @@
+// Copyright (C) FPGA-FAIS at Jagiellonian University Cracow
+//
+// SPDX-License-Identifier: BSD-3-Clause
+
+
+
 #include "alveo_vnx_cmac.h"
 
 /**

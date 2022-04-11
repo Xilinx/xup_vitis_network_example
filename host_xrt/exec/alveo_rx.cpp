@@ -13,10 +13,43 @@
 
 int main(int argc, char *argv[]) {
 
-    auto u280 = FpgaDevice(0);
+    std::string xclbin;
+    int alveo_id;
+
+
+    if (argc != 3) {
+        std::cout << "Usage: ./rx <xclbin_file> <alveo_id>" << std::endl;
+        return EXIT_FAILURE;
+    }
+    else {
+        std::ifstream f(argv[1]);
+        if (f.good() == false) {
+            std::cout << "Make sure the path to the bitfile <xclbin_file> is correct" << std::endl;
+            return EXIT_FAILURE;
+        }
+        f.close();
+        xclbin = std::string(argv[1]);            
+
+        alveo_id = atoi(argv[2]);
+        if ( alveo_id < 0 || alveo_id > 15 ) {
+            std::cout << "Make sure Alveo ID is a correct number" << std::endl;
+            return EXIT_FAILURE;
+        }
+    }
+
+    auto u280 = FpgaDevice(alveo_id);
+
+    // fetch the string with the card name and compare to the target
+    std::string name = u280.getName();
+    if ( name.compare(ALVEO_DEVICE) != 0) {
+        std::cerr << "ERR: FpgaDevice: could not connect to the target accelerator card" << std::endl;
+        return EINVAL;
+    }
+
     std::cout << "Device created: " << u280.getName()<<std::endl;
 
-    auto uuid = u280.loadBitfile("vnx_basic_if3.xclbin");
+
+    auto uuid = u280.loadBitfile(xclbin);
     std::cout << "Bitfile loaded " << uuid << std::endl;
     
     
@@ -30,7 +63,7 @@ int main(int argc, char *argv[]) {
 
     std::cout << "Packet received " << size << " bytes" << std::endl;
 
-    std::ofstream outfile("a.bin", std::ios::binary | std::ios::ate);
+    std::ofstream outfile("out.bin", std::ios::binary | std::ios::ate);
     outfile.write(rx_buf, size);
     outfile.close();
 

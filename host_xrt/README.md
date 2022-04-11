@@ -33,8 +33,14 @@ source /opt/xilinx/xrt/setup.sh
 
 ```
 mkdir build; cd build
-cmake ..
+cmake ../
 cmake --build .
+```
+
+* Default target device is xilinx_u280_xdma_201920_3, to change the device use:
+
+```
+cmake -DALVEO_DEVICE=<target_device> ../
 ```
 
 # Example applications #

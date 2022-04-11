@@ -19,12 +19,6 @@ FpgaDevice::FpgaDevice(uint32_t device_idx) {
 
     // create object and connect to the device
     this->device = xrt::device(device_idx);
-
-    // fetch the string with the card name and compare to the target
-    std::string name = this->getName();
-    if ( name.compare(ALVEO_DEVICE) != 0) {
-        std::cerr << "ERR: FpgaDevice: could not connect to the target accelerator card" << std::endl;
-    }
 }
 
 

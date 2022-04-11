@@ -122,8 +122,7 @@ int AlveoVnxLink::sendTo(const std::string &dest_ip, uint16_t dest_udp, char *bu
 
         // payload size
         header = header | size_to_transfer;
-        std::cout << "header " << std::hex << header << std::dec << std::endl;
-        std::cout << "size left: " << size_left << " total_transferred_size " << total_transferred_size << std::endl;
+        std::cout << "l0 header " << std::hex << header << std::dec << std::endl;
 
         *(uint32_t *) pkt_buffer = header;
         memcpy(pkt_buffer + 4, buffer + total_transferred_size, size_to_transfer);
@@ -132,6 +131,7 @@ int AlveoVnxLink::sendTo(const std::string &dest_ip, uint16_t dest_udp, char *bu
 
         this->tx->transferDataToKrnl(pkt_buffer, MAX_UDP_BUFFER_SIZE + 4);
         std::cout << "l0 data transfered " << size_to_transfer << " bytes" << std::endl;
+        std::cout << "l0 size left: " << size_left << " total_transferred_size " << total_transferred_size << std::endl;
 
         this->tx->sendPacket(0);
         std::cout << "l0 packet sent" << std::endl;

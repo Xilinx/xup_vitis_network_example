@@ -44,6 +44,8 @@ public:
 
     std::string getUUIDString() { return this->uuid.to_string(); }
 
-    std::string getName() { return this->device.get_info<xrt::info::device::name>(); };
+    std::string getName() { return this->device.get_info<xrt::info::device::name>(); }; 
+
+    // std::string getMAC()  { return this->device.get_info<xrt::info::device::platform>(); } ;
 
 };

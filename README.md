@@ -103,6 +103,7 @@ In order to implement this design you need Vitis 2021.1 or newer and associated 
 To install `pynq` and JupyterLab follow the steps [here](Notebooks/README.md#environment).
 
 > **_NOTE:_** for XRT version 2.12 or newer please apply this patch in the pynq package [PYNQ#1343](https://github.com/Xilinx/PYNQ/pull/1343/files).
+> **_NOTE:_** for Vitis version 2021.2 or older, make sure [the Y2K22 patch is applied](https://support.xilinx.com/s/article/76960?language=en_US).
 
 ### Alveo Cards
 
@@ -171,7 +172,7 @@ This design does **NOT** support **FEC neither auto-negotiation**. Therefore, ma
 
 ### C/C++ host code support?
 
-Python host code in combination with the `pynq` package and JupyterLab as well as DASK provide the right environment to demonstrate the capabilities of this project. There is no current plan to support C/C++ host code at this point. However, we welcome any contribution in this area. You can find (partial) support for some of the kernels [here](https://github.com/Xilinx/HPC/tree/master/xans/sw/src).
+Python host code in combination with the `pynq` package and JupyterLab as well as DASK provide the right environment to demonstrate the capabilities of this project. A minimalist C/C++ driver contributed from the community is available in the [host_xrt branch](https://github.com/Xilinx/xup_vitis_network_example/tree/host_xrt/host_xrt). We welcome any [contribution](https://github.com/Xilinx/xup_vitis_network_example/blob/host_xrt/CONTRIBUTING.md) to enhance the driver. You can also find (partial) support for some of the kernels [here](https://github.com/Xilinx/HPC/tree/master/xans/sw/src).
 
 ### How Can I contribute?
 

@@ -10,6 +10,20 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 
+if(NOT DEFINED ENV{XILINX_XRT})
+        message(FATAL_ERROR "XRT is not sourced")
+else()
+        file(READ  $ENV{XILINX_XRT}/version.json XRT_JSON)
+        string(REGEX MATCH "[0-9]+\\.[0-9]+\\.[0-9]+" XRT_VERSION ${XRT_JSON})
+endif()
+
+if ( ${XRT_VERSION} VERSION_GREATER_EQUAL 2.12.0)
+        set(INFO_PLATFORM "XRT_PLATFORM")
+else()
+        set(INFO_PLATFORM "")
+endif()
+
+
 #____________________________________________________________
 
 add_executable(rx exec/alveo_rx.cpp)
@@ -27,10 +41,10 @@ add_library(alveo_vnx SHARED ${ALL_SOURCES} ${ALL_HEADERS})
 
 target_include_directories(alveo_vnx
         PUBLIC include
-        PUBLIC "/opt/xilinx/xrt/include"
+        PUBLIC $ENV{XILINX_XRT}/include
         )
 target_link_directories(alveo_vnx
-        PUBLIC "/opt/xilinx/xrt/lib"
+        PUBLIC $ENV{XILINX_XRT}/lib
         )
 target_link_libraries(alveo_vnx
         PUBLIC xrt_coreutil
@@ -44,8 +58,13 @@ if(NOT ALVEO_DEVICE)
 endif()
 
 message(STATUS ${ALVEO_DEVICE})
+message(STATUS "XRT Version: ${XRT_VERSION}")
+message(STATUS "XRT PLATFORM: ${INFO_PLATFORM}")
 
 target_compile_definitions(rx PRIVATE "ALVEO_DEVICE=\"${ALVEO_DEVICE}\"")
+target_compile_definitions(rx PRIVATE "INFO_PLATFORM=\"${INFO_PLATFORM}\"")
 target_compile_definitions(tx PRIVATE "ALVEO_DEVICE=\"${ALVEO_DEVICE}\"")
+target_compile_definitions(tx PRIVATE "INFO_PLATFORM=\"${INFO_PLATFORM}\"")
 
 unset(ALVEO_DEVICE CACHE)
+unset(INFO_PLATFORM CACHE)

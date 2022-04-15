@@ -10,6 +10,10 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 
+if(NOT DEFINED ENV{XILINX_XRT})
+    message(FATAL_ERROR "XRT is not sourced")
+endif()
+
 #____________________________________________________________
 
 add_executable(rx exec/alveo_rx.cpp)
@@ -27,10 +31,10 @@ add_library(alveo_vnx SHARED ${ALL_SOURCES} ${ALL_HEADERS})
 
 target_include_directories(alveo_vnx
         PUBLIC include
-        PUBLIC "/opt/xilinx/xrt/include"
+        PUBLIC $ENV{XILINX_XRT}/include
         )
 target_link_directories(alveo_vnx
-        PUBLIC "/opt/xilinx/xrt/lib"
+        PUBLIC $ENV{XILINX_XRT}/lib
         )
 target_link_libraries(alveo_vnx
         PUBLIC xrt_coreutil

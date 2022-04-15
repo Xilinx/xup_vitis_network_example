@@ -12,7 +12,17 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 if(NOT DEFINED ENV{XILINX_XRT})
         message(FATAL_ERROR "XRT is not sourced")
+else()
+        file(READ  $ENV{XILINX_XRT}/version.json XRT_JSON)
+        string(REGEX MATCH "[0-9]+\\.[0-9]+\\.[0-9]+" XRT_VERSION ${XRT_JSON})
 endif()
+
+if ( ${XRT_VERSION} VERSION_GREATER_EQUAL 2.12.0)
+        set(INFO_PLATFORM "XRT_PLATFORM")
+else()
+        set(INFO_PLATFORM "")
+endif()
+
 
 #____________________________________________________________
 

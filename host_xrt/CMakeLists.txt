@@ -58,8 +58,13 @@ if(NOT ALVEO_DEVICE)
 endif()
 
 message(STATUS ${ALVEO_DEVICE})
+message(STATUS "XRT Version: ${XRT_VERSION}")
+message(STATUS "XRT PLATFORM: ${INFO_PLATFORM}")
 
 target_compile_definitions(rx PRIVATE "ALVEO_DEVICE=\"${ALVEO_DEVICE}\"")
+target_compile_definitions(rx PRIVATE "INFO_PLATFORM=\"${INFO_PLATFORM}\"")
 target_compile_definitions(tx PRIVATE "ALVEO_DEVICE=\"${ALVEO_DEVICE}\"")
+target_compile_definitions(tx PRIVATE "INFO_PLATFORM=\"${INFO_PLATFORM}\"")
 
 unset(ALVEO_DEVICE CACHE)
+unset(INFO_PLATFORM CACHE)

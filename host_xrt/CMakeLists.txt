@@ -11,7 +11,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 
 if(NOT DEFINED ENV{XILINX_XRT})
-    message(FATAL_ERROR "XRT is not sourced")
+        message(FATAL_ERROR "XRT is not sourced")
 endif()
 
 #____________________________________________________________

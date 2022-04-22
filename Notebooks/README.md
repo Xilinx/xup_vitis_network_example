@@ -64,7 +64,7 @@ jupyter lab
 
 This will launch a JupyterLab on a web browser.
 
-![](jupyterlab.png)
+![](../img/jupyterlab.png)
 
 Double click in any of the notebooks you want to use --- files with extension `*.ipynb`. Learn more about JupyterLab [here](https://jupyterlab.readthedocs.io/en/stable/user/interface.html).
 

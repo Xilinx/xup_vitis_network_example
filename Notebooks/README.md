@@ -48,5 +48,25 @@ ol_w1 = pynq.Overlay(xclbin, device=pynq.Device.devices[2])
 
 You can reuse the rest of the Notebook after this point.
 
+## Getting Started with these Notebooks
+
+To use these notebooks you need `pynq` installed in your system. `pynq` is available in [PYPI](https://pypi.org/project/pynq/), hence you can install it using `pip install pynq`. However, for a smoother and more iterative experience, we recommend to use [JupyterLab](https://jupyterlab.readthedocs.io/en/stable/). As described in the [Environment](#environment) section, the easiest way to accomplish this is to use a [Conda environment](https://docs.conda.io/projects/conda/en/latest/user-guide/concepts/environments.html#conda-environments).
+
+Once `pynq` and `JupyterLab` are installed you can start using these notebooks.
+
+### Launch JupyterLab
+
+It is recommended to launch `JupyterLab` directly from the `Notebooks` directory.
+
+```sh
+jupyter lab
+```
+
+This will launch a JupyterLab on a web browser.
+
+![](jupyterlab.png)
+
+Double click in any of the notebooks you want to use --- files with extension `*.ipynb`. Learn more about JupyterLab [here](https://jupyterlab.readthedocs.io/en/stable/user/interface.html).
+
 ------------------------------------------------------
 <p align="center">Copyright&copy; 2022 Xilinx</p>

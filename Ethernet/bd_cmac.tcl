@@ -158,7 +158,7 @@ set_property -dict [ list \
 
 set S_AXILITE [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 S_AXILITE ]
 set_property -dict [ list \
-  CONFIG.ADDR_WIDTH {12} \
+  CONFIG.ADDR_WIDTH {13} \
   CONFIG.ARUSER_WIDTH {0} \
   CONFIG.AWUSER_WIDTH {0} \
   CONFIG.BUSER_WIDTH {0} \

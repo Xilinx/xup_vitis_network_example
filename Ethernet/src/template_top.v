@@ -33,7 +33,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 `timescale 1 ns / 1 ps
 // Top level of the kernel. Do not modify module name, parameters or ports.
 module placeholder #(
-  parameter integer AXIL_CTRL_ADDR_WIDTH  =  12,
+  parameter integer AXIL_CTRL_ADDR_WIDTH  =  13,
   parameter integer AXIL_CTRL_DATA_WIDTH  =  32,
   parameter integer AXIS_TDATA_WIDTH      = 512
 )
@@ -92,7 +92,7 @@ module placeholder #(
   cmac_bd placeholder  (
     .ap_clk               (              ap_clk),
     .ap_rst_n             (            ap_rst_n),
-    
+
     .clk_gt_freerun       (      clk_gt_freerun),
 
     .gt_ref_clk_clk_n     (        gt_placeholder_clk_n),
@@ -101,19 +101,19 @@ module placeholder #(
     .gt_serial_port_grx_p (           gt_rxp_in),
     .gt_serial_port_gtx_n (          gt_txn_out),
     .gt_serial_port_gtx_p (          gt_txp_out),
-    
+
     .S_AXIS_tdata         (        S_AXIS_tdata),
     .S_AXIS_tkeep         (        S_AXIS_tkeep),
     .S_AXIS_tlast         (        S_AXIS_tlast),
     .S_AXIS_tready        (       S_AXIS_tready),
     .S_AXIS_tvalid        (       S_AXIS_tvalid),
-    
+
     .M_AXIS_tdata         (        M_AXIS_tdata),
     .M_AXIS_tkeep         (        M_AXIS_tkeep),
     .M_AXIS_tlast         (        M_AXIS_tlast),
     .M_AXIS_tready        (       M_AXIS_tready),
     .M_AXIS_tvalid        (       M_AXIS_tvalid),
-    
+
     .S_AXILITE_awvalid    (   S_AXILITE_awvalid),
     .S_AXILITE_awready    (   S_AXILITE_awready),
     .S_AXILITE_awaddr     (    S_AXILITE_awaddr),

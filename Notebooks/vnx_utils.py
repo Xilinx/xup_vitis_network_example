@@ -439,6 +439,44 @@ class NetworkLayer(DefaultIP):
 
         return table
 
+    def writeARPEntry(self, mac, ip):
+        """Add an entry to the ARP table
+
+        Parameters
+        ----------
+        mac: str
+            MAC address in the format XX:XX:XX:XX:XX:XX
+        ip: str
+            IP address in the format XXX.XXX.XXX.XXX
+        """
+
+        if not isinstance(mac, str):
+            raise ValueError("MAC address must be a string.")
+        elif not isinstance(ip, str):
+            raise ValueError("IP address must be a string.")
+
+        mac_int = int("0x{}".format(mac.replace(":", "")), 16)
+        little_mac_int = _byteOrderingEndianess(mac_int, 6)
+        mac_msb = little_mac_int // (2 ** 32)
+        mac_lsb = little_mac_int % (2 ** 32)
+
+        ip_int = int(ipaddress.IPv4Address(ip))
+        little_ip_int = _byteOrderingEndianess(ip_int, 4)
+
+        mac_addr_offset = self.register_map.arp_mac_addr_offset.address
+        ip_addr_offset = self.register_map.arp_ip_addr_offset.address
+        valid_addr_offset = self.register_map.arp_valid_offset.address
+
+        i = ip_int % 256
+        self.write(ip_addr_offset + (i * 4), little_ip_int)
+        self.write(mac_addr_offset + (i * 2 * 4), mac_lsb)
+        self.write(mac_addr_offset + ((i * 2 + 1) * 4), mac_msb)
+
+        # Valid
+        old_valid_entry = self.read(valid_addr_offset + (i // 4) * 4)
+        this_valid = 1 << ((i % 4) * 8)
+        self.write(valid_addr_offset + (i // 4) * 4, old_valid_entry | this_valid)
+
     def invalidateARPTable(self):
         """
         Clear the ARP table
@@ -512,7 +550,7 @@ class NetworkLayer(DefaultIP):
 
         ipaddr = int(ipaddress.IPv4Address(ipaddrsrt))
         self.register_map.ip_address = ipaddr
-        if gwaddr is "None":
+        if gwaddr == "None":
             self.register_map.gateway = (ipaddr & 0xFFFFFF00) + 1
         else:
             self.register_map.gateway = int(ipaddress.IPv4Address(gwaddr))
@@ -696,7 +734,7 @@ class TrafficGenerator(DefaultIP):
                 on direction argument"
             )
 
-        if direction is "rx":
+        if direction == "rx":
             tot_bytes = int(self.register_map.in_traffic_bytes)
             tot_cycles = int(self.register_map.in_traffic_cycles)
             tot_pkts = int(self.register_map.in_traffic_packets)

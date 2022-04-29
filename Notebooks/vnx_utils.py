@@ -464,19 +464,19 @@ class NetworkLayer(DefaultIP):
             raise ValueError("IP address must be a string.")
 
         mac_int = int("0x{}".format(mac.replace(":", "")), 16)
-        little_mac_int = _byteOrderingEndianess(mac_int, 6)
-        mac_msb = (little_mac_int >> 32) & 0xFFFFFFFF
-        mac_lsb = little_mac_int & 0xFFFFFFFF
+        big_mac_int = _byteOrderingEndianess(mac_int, 6)
+        mac_msb = (big_mac_int >> 32) & 0xFFFFFFFF
+        mac_lsb = big_mac_int & 0xFFFFFFFF
 
         ip_int = int(ipaddress.IPv4Address(ip))
-        little_ip_int = _byteOrderingEndianess(ip_int, 4)
+        big_ip_int = _byteOrderingEndianess(ip_int, 4)
 
         mac_addr_offset = self.register_map.arp_mac_addr_offset.address
         ip_addr_offset = self.register_map.arp_ip_addr_offset.address
         valid_addr_offset = self.register_map.arp_valid_offset.address
 
         i = ip_int % 256
-        self.write(ip_addr_offset + (i * 4), little_ip_int)
+        self.write(ip_addr_offset + (i * 4), big_ip_int)
         self.write(mac_addr_offset + (i * 2 * 4), mac_lsb)
         self.write(mac_addr_offset + ((i * 2 + 1) * 4), mac_msb)
 

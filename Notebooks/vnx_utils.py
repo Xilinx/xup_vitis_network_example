@@ -439,8 +439,9 @@ class NetworkLayer(DefaultIP):
 
         return table
 
-    def writeARPEntry(self, mac, ip):
-        """Add an entry to the ARP table
+    def write_arp_entry(self, mac, ip):
+        """
+        Add an entry to the ARP table
 
         Parameters
         ----------
@@ -448,6 +449,13 @@ class NetworkLayer(DefaultIP):
             MAC address in the format XX:XX:XX:XX:XX:XX
         ip: str
             IP address in the format XXX.XXX.XXX.XXX
+
+        Note, VNx requires all IPs in the ARP table to be in the same
+        /24 subnet (mask 255.255.255.0) as the IP assigned to the FPGA port.
+
+        There are 256 entries in the ARP table, one for each possible IP
+        in the subnet, the least significant 8 bits of the IP are used to
+        index into the ARP table.
         """
 
         if not isinstance(mac, str):
@@ -457,8 +465,8 @@ class NetworkLayer(DefaultIP):
 
         mac_int = int("0x{}".format(mac.replace(":", "")), 16)
         little_mac_int = _byteOrderingEndianess(mac_int, 6)
-        mac_msb = little_mac_int // (2 ** 32)
-        mac_lsb = little_mac_int % (2 ** 32)
+        mac_msb = (little_mac_int >> 32) & 0xFFFFFFFF
+        mac_lsb = little_mac_int & 0xFFFFFFFF
 
         ip_int = int(ipaddress.IPv4Address(ip))
         little_ip_int = _byteOrderingEndianess(ip_int, 4)

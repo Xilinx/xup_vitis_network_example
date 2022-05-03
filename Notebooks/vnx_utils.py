@@ -38,7 +38,7 @@ import ipaddress
 from enum import Enum
 
 
-def _shiftedWord(value, index, width=1):
+def _slice_word(value, index, width=1):
     """
     Slices a width-word from an integer
 
@@ -99,7 +99,7 @@ class CMAC(DefaultIP):
         raise RuntimeError("{} is a free running kernel and cannot be "
                            "starter or called".format(self._fullpath))
 
-    def linkStatus(self, debug: bool=False) -> dict:
+    def link_status(self, debug: bool=False) -> dict:
         """Current CMAC link status
 
         Parameters
@@ -123,21 +123,21 @@ class CMAC(DefaultIP):
             tx_status = int(self.register_map.stat_tx_status)
 
         status_dict = {}
-        status_dict["cmac_link"] = bool(_shiftedWord(rx_status, 0))
+        status_dict["cmac_link"] = bool(_slice_word(rx_status, 0))
         if debug:
-            status_dict["rx_status"] = bool(_shiftedWord(rx_status, 0))
-            status_dict["rx_aligned"] = bool(_shiftedWord(rx_status, 1))
-            status_dict["rx_misaligned"] = bool(_shiftedWord(rx_status, 2))
-            status_dict["rx_aligned_err"] = bool(_shiftedWord(rx_status, 3))
-            status_dict["rx_hi_ber"] = bool(_shiftedWord(rx_status, 4))
-            status_dict["rx_remote_fault"] = bool(_shiftedWord(rx_status, 5))
-            status_dict["rx_local_fault"] = bool(_shiftedWord(rx_status, 6))
-            status_dict["rx_got_signal_os"] = bool(_shiftedWord(rx_status, 14))
-            status_dict["tx_local_fault"] = bool(_shiftedWord(tx_status, 0))
+            status_dict["rx_status"] = bool(_slice_word(rx_status, 0))
+            status_dict["rx_aligned"] = bool(_slice_word(rx_status, 1))
+            status_dict["rx_misaligned"] = bool(_slice_word(rx_status, 2))
+            status_dict["rx_aligned_err"] = bool(_slice_word(rx_status, 3))
+            status_dict["rx_hi_ber"] = bool(_slice_word(rx_status, 4))
+            status_dict["rx_remote_fault"] = bool(_slice_word(rx_status, 5))
+            status_dict["rx_local_fault"] = bool(_slice_word(rx_status, 6))
+            status_dict["rx_got_signal_os"] = bool(_slice_word(rx_status, 14))
+            status_dict["tx_local_fault"] = bool(_slice_word(tx_status, 0))
 
         return status_dict
 
-    def copyStats(self) -> None:
+    def copy_stats(self) -> None:
         """Triggers a snapshot of CMAC Statistics
 
         Triggers a snapshot of all the Statistics counters into their
@@ -146,7 +146,7 @@ class CMAC(DefaultIP):
 
         self.register_map.stat_pm_tick = 1
 
-    def getStats(self, update_reg: bool=True) -> dict:
+    def get_stats(self, update_reg: bool=True) -> dict:
         """ Return a dictionary with the CMAC stats
 
         Parameters
@@ -159,7 +159,7 @@ class CMAC(DefaultIP):
         A dictionary with the CMAC statistics
         """
         if update_reg:
-            self.copyStats()
+            self.copy_stats()
 
         rmap = self.register_map
         stats_dict = dict()
@@ -230,8 +230,8 @@ class CMAC(DefaultIP):
         """
 
         version = int(self.register_map.version)
-        return str(_shiftedWord(version, 8, 8)) + '.' \
-            + str(_shiftedWord(version, 0, 8))
+        return str(_slice_word(version, 8, 8)) + '.' \
+            + str(_slice_word(version, 0, 8))
 
     @property
     def mode(self):
@@ -256,7 +256,7 @@ class CMAC(DefaultIP):
         self.register_map.gt_loopback = int(bool(operation))
 
 
-def _byteOrderingEndianess(num, length=4):
+def _byte_ordering_endianess(num, length=4):
     """
     Convert from little endian to big endian and vice versa
 
@@ -319,7 +319,7 @@ class NetworkLayer(DefaultIP):
         raise RuntimeError("{} is a free running kernel and cannot be "
                            "starter or called".format(self._fullpath))
 
-    def populateSocketTable(self, debug=False):
+    def populate_socket_table(self, debug=False):
         """
         Populate a socket table
 
@@ -388,7 +388,7 @@ class NetworkLayer(DefaultIP):
 
             return socket_dict
 
-    def readARPTable(self, num_entries=256) -> dict:
+    def read_arp_table(self, num_entries=256) -> dict:
         """Read the ARP table from the FPGA return a dict
 
         Parameters
@@ -427,11 +427,12 @@ class NetworkLayer(DefaultIP):
                 mac_msb = self.read(mac_addr_offset + ((i * 2 + 1) * 4))
                 ip_addr = self.read(ip_addr_offset + (i * 4))
                 mac_addr = (2 ** 32) * mac_msb + mac_lsb
-                mac_hex = "{:012x}".format(_byteOrderingEndianess(mac_addr, 6))
+                mac_hex = "{:012x}".format(
+                    _byte_ordering_endianess(mac_addr, 6))
                 mac_str = ":".join(
                     mac_hex[i: i + 2] for i in range(0, len(mac_hex), 2)
                 )
-                ip_addr_print = _byteOrderingEndianess(ip_addr)
+                ip_addr_print = _byte_ordering_endianess(ip_addr)
                 table[i] = {
                     "MAC address": mac_str,
                     "IP address": str(ipaddress.IPv4Address(ip_addr_print))
@@ -464,12 +465,12 @@ class NetworkLayer(DefaultIP):
             raise ValueError("IP address must be a string.")
 
         mac_int = int("0x{}".format(mac.replace(":", "")), 16)
-        big_mac_int = _byteOrderingEndianess(mac_int, 6)
+        big_mac_int = _byte_ordering_endianess(mac_int, 6)
         mac_msb = (big_mac_int >> 32) & 0xFFFFFFFF
         mac_lsb = big_mac_int & 0xFFFFFFFF
 
         ip_int = int(ipaddress.IPv4Address(ip))
-        big_ip_int = _byteOrderingEndianess(ip_int, 4)
+        big_ip_int = _byte_ordering_endianess(ip_int, 4)
 
         mac_addr_offset = self.register_map.arp_mac_addr_offset.address
         ip_addr_offset = self.register_map.arp_ip_addr_offset.address
@@ -483,18 +484,19 @@ class NetworkLayer(DefaultIP):
         # Valid
         old_valid_entry = self.read(valid_addr_offset + (i // 4) * 4)
         this_valid = 1 << ((i % 4) * 8)
-        self.write(valid_addr_offset + (i // 4) * 4, old_valid_entry | this_valid)
+        self.write(valid_addr_offset + (i // 4) * 4,
+                   old_valid_entry | this_valid)
 
-    def invalidateARPTable(self):
+    def invalidate_arp_table(self):
         """
         Clear the ARP table
         """
         valid_addr_offset = self.register_map.arp_valid_offset.address
 
-        for i in range(256):
-            self.write(valid_addr_offset + (i // 4) * 4, 0)
+        for i in range(0, 256//4, 4):
+            self.write(valid_addr_offset + i, 0)
 
-    def arpDiscovery(self):
+    def arp_discovery(self):
         """
         Launch ARP discovery
         """
@@ -504,7 +506,7 @@ class NetworkLayer(DefaultIP):
         self.register_map.arp_discovery = 1
         self.register_map.arp_discovery = 0
 
-    def getNetworkInfo(self):
+    def get_network_info(self):
         """
         Returns a dictionary with the current configuration
         """
@@ -526,7 +528,7 @@ class NetworkLayer(DefaultIP):
 
         return config
 
-    def updateIPAddress(self, ipaddrsrt, gwaddr="None", debug=False):
+    def set_ip_address(self, ipaddrsrt, gwaddr="None", debug=False):
         """
         Update IP address as well as least significant octet of the
         MAC address with the least significant octet of the IP address
@@ -568,16 +570,16 @@ class NetworkLayer(DefaultIP):
         self.register_map.mac_address = newMAC
 
         if debug:
-            return self.getNetworkInfo()
+            return self.get_network_info()
 
-    def resetDebugProbes(self) -> None:
+    def reset_debug_stats(self) -> None:
         """Reset debug probes
         """
 
         self.register_map.debug_reset_counters = 1
 
     @property
-    def getDebugProbes(self) -> dict:
+    def get_debug_stats(self) -> dict:
         """ Return a dictionary with the value of the Network Layer probes
         """
 
@@ -720,7 +722,7 @@ class TrafficGenerator(DefaultIP):
         """Reset internal FSM"""
         self.register_map.reset_fsm = 1
 
-    def computeThroughputApp(self, direction: str="rx") -> float:
+    def compute_app_throughput(self, direction: str="rx") -> float:
         """
         Read the application monitoring registers and compute
         throughput, it also returns other useful information
@@ -756,7 +758,7 @@ class TrafficGenerator(DefaultIP):
 
         return tot_pkts, thr_bs / (10 ** 9), tot_time
 
-    def resetProbes(self):
+    def reset_stats(self):
         """
         Reset embedded probes
         """

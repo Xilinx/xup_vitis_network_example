@@ -26,6 +26,10 @@ endif()
 
 #____________________________________________________________
 
+link_directories($ENV{XILINX_XRT}/lib)
+
+#____________________________________________________________
+
 add_executable(rx exec/alveo_rx.cpp)
 target_link_libraries(rx PRIVATE alveo_vnx)
 
@@ -43,9 +47,7 @@ target_include_directories(alveo_vnx
         PUBLIC include
         PUBLIC $ENV{XILINX_XRT}/include
         )
-target_link_directories(alveo_vnx
-        PUBLIC $ENV{XILINX_XRT}/lib
-        )
+
 target_link_libraries(alveo_vnx
         PUBLIC xrt_coreutil
         PUBLIC uuid

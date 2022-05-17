@@ -63,5 +63,9 @@ To generate the an xclbin file that uses the [UltraScale+ Integrated 100G Ethern
 
 > **Note:** To enable Auto-Negotiation/Link Training you would need a separate license. Check the documentation for more information.
 
+## Enabling RS-FEC
+
+To enable RS-FEC, you need to modify the [bd_cmac.tcl](bd_cmac.tcl#147) file and set the `CONFIG.INCLUDE_RS_FEC` to 1. There are also some steps required at runtime, please refer to the [UltraScale+ Integrated 100G Ethernet Subsystem](https://www.xilinx.com/products/intellectual-property/cmac_usplus.html) documentation for more details.
+
 ------------------------------------------------------
 <p align="center">Copyright&copy; 2022 Xilinx</p>

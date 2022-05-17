@@ -172,7 +172,9 @@ Open an issue with as much details as you can. Please, use the [issue template](
 
 ### Alveo card connected to a 100G capable switch/NIC is not getting link.
 
-This design does **NOT** support **FEC neither auto-negotiation**. Therefore, make sure that your network equipment has these capabilities disabled. Please, refer to your network equipment manual to accomplish this.
+This design does **NOT** support **FEC neither auto-negotiation** by default. Therefore, make sure that your network equipment has these capabilities disabled. Please, refer to your network equipment manual to accomplish this.
+
+Partial steps to enable RS-FEC are provided [here](Ethernet/README.md#enabling-rs-fec).
 
 ### C/C++ host code support?
 
@@ -188,7 +190,7 @@ VXx **IS NOT** a Network Interface Card (NIC). VNx main goal is to provide netwo
 
 If you are interested in a NIC design, please check out [OpenNIC Platform](https://github.com/Xilinx/open-nic)
 
-VNx was originally developed within [Xilinx University Program](https://www.xilinx.com/support/university.html) to support compute application that need to scale out. It has now been open sourced by Xilinx as a community resource. VNx is not a **Xilinx product** and so does not have formal Xilinx support in place, [GitHub issues](https://github.com/Xilinx/xup_vitis_network_example/issues) is the best place to request support.
+VNx was originally developed within [Xilinx University Program](https://www.xilinx.com/support/university.html) to support compute intensive applications that need to scale out. It has now been open sourced by Xilinx as a community resource. VNx is not a **Xilinx product** and so does not have formal Xilinx support in place, [GitHub issues](https://github.com/Xilinx/xup_vitis_network_example/issues) is the best place to request support.
 
 ## Licenses
 

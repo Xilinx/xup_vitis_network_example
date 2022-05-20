@@ -19,15 +19,19 @@ https://forums.xilinx.com/t5/Alveo-Accelerator-Cards/bd-p/alveo)**
 **For pynq questions, please use [the PYNQ discussion forum](
 https://discuss.pynq.io/).**
 
-If you still want to raise an issue here, please give us as much detail as 
+**Usign Vitis 2021.2 or older? Make sure the [Y2K22 patch is applied](
+https://support.xilinx.com/s/article/76960?language=en_US)**
+
+If you still want to raise an issue here, please give us as much detail as
 possible to the issue you are seeing. We have listed some helpful fields below.
 
 - Please, use [code snippets](https://docs.github.com/en/github/writing-on-github/creating-and-highlighting-code-blocks) to provide textual content instead of images.
 
 ### Build Issues
 
-1. OS version `lsb_release -a`
-1. Vivado version `vivado -version`
+1. OS version, e.g. `lsb_release -a`
+1. Vitis version `vitis -version`
+   1. If Vitis is 2021.2 or older. Is the [Y2K22 patch applied](https://support.xilinx.com/s/article/76960?language=en_US)?
 1. XRT version `xbutil version`
 
 ### Run Time Issues
@@ -35,4 +39,4 @@ possible to the issue you are seeing. We have listed some helpful fields below.
 1. OS version `lsb_release -a`
 1. XRT version `xbutil version`
 1. pynq version `pynq version`
-1. Jupyter Lab and Dask version if applicable
+1. JupyterLab and Dask version if applicable

@@ -454,9 +454,9 @@ class NetworkLayer(DefaultIP):
                     "IP address": str(ipaddress.IPv4Address(ip_addr_print))
                 }
 
-        return table
+        return ReprDict(table, rootname='ARP Table')
 
-    def write_arp_entry(self, mac, ip):
+    def write_arp_entry(self, mac: str, ip: str):
         """
         Add an entry to the ARP table
 
@@ -522,9 +522,8 @@ class NetworkLayer(DefaultIP):
         self.register_map.arp_discovery = 1
         self.register_map.arp_discovery = 0
 
-    def get_network_info(self):
-        """
-        Returns a dictionary with the current configuration
+    def get_network_info(self) -> dict:
+        """Returns a dictionary with the current configuration
         """
         mac_addr = int(self.register_map.mac_address)
         ip_addr = int(self.register_map.ip_address)
@@ -542,7 +541,7 @@ class NetworkLayer(DefaultIP):
             "Mask": str(ipaddress.IPv4Address(ip_mask)),
         }
 
-        return config
+        return ReprDict(config, rootname='Network Information')
 
     def set_ip_address(self, ipaddrsrt, gwaddr="None", debug=False):
         """

@@ -114,11 +114,14 @@ To install `pynq` and JupyterLab follow the steps [here](Notebooks/README.md#env
 
 | Alveo | Development Target Platform(s)         | Notes |
 |-------|----------------------------------------|-------|
-| U50   | xilinx_u50_gen3x16_xdma_201920_3       |       |
+| U50   | xilinx_u50_gen3x16_xdma_201920_3       | [Supported only until 2021.2](https://support.xilinx.com/s/article/33838?language=en_US) |
+| U50   | xilinx_u50_gen3x16_xdma_5_202210_1     |       |
 | U55C  | xilinx_u55c_gen3x16_xdma_2_202110_1    |       |
+| U55C  | xilinx_u55c_gen3x16_xdma_3_202210_1    |       |
 | U200  | xilinx_u200_gen3x16_xdma_1_202110_1    |       |
 | U250  | xilinx_u250_gen3x16_xdma_3_1_202020_1  | [DFX two-stage platform](https://support.xilinx.com/s/article/75975?language=en_US) |
-| U280  | xilinx_u280_xdma_201920_3              |       |
+| U250  | xilinx_u250_gen3x16_xdma_4_1_202210_1  | [DFX two-stage platform](https://support.xilinx.com/s/article/75975?language=en_US) |
+| U280  | xilinx_u280_xdma_201920_3              | [Supported only until 2021.2](https://support.xilinx.com/s/article/33838?language=en_US) |
 
 ### Requirements
 

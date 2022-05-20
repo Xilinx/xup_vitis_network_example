@@ -121,7 +121,7 @@ To install `pynq` and JupyterLab follow the steps [here](Notebooks/README.md#env
 
 In order to generate this design you will need a valid [UltraScale+ Integrated 100G Ethernet Subsystem](https://www.xilinx.com/products/intellectual-property/cmac_usplus.html) license set up in Vivado.
 
-You also need at least 32GB of free memory available for implementation. Check Vivado memory requirements [here](https://www.xilinx.com/products/design-tools/vivado/vivado-ml.html#memory).
+You also need at least 32GB of RAM available for the implementation. Check Vivado memory requirements [here](https://www.xilinx.com/products/design-tools/vivado/vivado-ml.html#memory).
 
 ## Generate XCLBIN
 

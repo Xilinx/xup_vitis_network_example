@@ -572,6 +572,20 @@ class NetworkLayer(DefaultIP):
         if debug:
             return self.get_network_info()
 
+    def set_mac_address(self, mac_addr: str):
+        """ Update the MAC address of the interface
+
+        Parameters
+        ----------
+        mac_addr : str
+            MAC address in the format XX:XX:XX:XX:XX:XX
+        """
+        if not isinstance(mac_addr, str):
+            raise ValueError("MAC address must be a string.")
+
+        mac_int = int("0x{}".format(mac_addr.replace(":", "")), 16)
+        self.register_map.mac_address = mac_int
+
     def reset_debug_stats(self) -> None:
         """Reset debug probes
         """

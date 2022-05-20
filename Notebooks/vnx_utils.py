@@ -366,27 +366,43 @@ class NetworkLayer(DefaultIP):
             self.write(v_offset, int(self.sockets[i]["valid"]))
 
         if debug:
-            socket_dict = dict()
-            socket_dict['Number of Sockets'] = numSocketsHW
-            socket_dict['socket'] = dict()
-            # Iterate over all the UDP table
-            for i in range(numSocketsHW):
-                ti_offset = theirIP_offset + i * 8
-                tp_offset = theirPort_offset + i * 8
-                mp_offset = udp_myPort_offset + i * 8
-                v_offset = udp_valid_offset + i * 8
-                isvalid = ti = self.read(v_offset)
-                if isvalid:
-                    ti = self.read(ti_offset)
-                    tp = self.read(tp_offset)
-                    mp = self.read(mp_offset)
-                    socket_dict['socket'][i] = dict()
-                    socket_dict['socket'][i]['theirIP'] = \
-                        str(ipaddress.IPv4Address(ti))
-                    socket_dict['socket'][i]['theirPort'] = tp
-                    socket_dict['socket'][i]['myPort'] = mp
+            self.read_socket_table()
 
-            return socket_dict
+    def read_socket_table(self) -> dict:
+        """ Reads the socket table
+
+        Returns
+        -------
+        Returns socket table
+        """
+
+        theirIP_offset = self.register_map.udp_theirIP_offset.address
+        theirPort_offset = self.register_map.udp_theirPort_offset.address
+        udp_myPort_offset = self.register_map.udp_myPort_offset.address
+        udp_valid_offset = self.register_map.udp_valid_offset.address
+        numSocketsHW = int(self.register_map.udp_number_sockets)
+
+        socket_dict = dict()
+        socket_dict['Number of Sockets'] = numSocketsHW
+        socket_dict['socket'] = dict()
+        # Iterate over all the UDP table
+        for i in range(numSocketsHW):
+            ti_offset = theirIP_offset + i * 8
+            tp_offset = theirPort_offset + i * 8
+            mp_offset = udp_myPort_offset + i * 8
+            v_offset = udp_valid_offset + i * 8
+            isvalid = ti = self.read(v_offset)
+            if isvalid:
+                ti = self.read(ti_offset)
+                tp = self.read(tp_offset)
+                mp = self.read(mp_offset)
+                socket_dict['socket'][i] = dict()
+                socket_dict['socket'][i]['theirIP'] = \
+                    str(ipaddress.IPv4Address(ti))
+                socket_dict['socket'][i]['theirPort'] = tp
+                socket_dict['socket'][i]['myPort'] = mp
+
+            return ReprDict(socket_dict, rootname='socket_table')
 
     def read_arp_table(self, num_entries=256) -> dict:
         """Read the ARP table from the FPGA return a dict

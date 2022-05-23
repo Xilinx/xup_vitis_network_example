@@ -47,7 +47,8 @@ SWITCH_IP_FOLDER ?= $(shell readlink -f ./$(BENCHMARDIR)/packaged_kernel_switch_
 
 LIST_XO = $(NETLAYERDIR)$(TEMP_DIR)/networklayer.xo
 
-CONFIGFLAGS := --config configuration_$(DESIGN)_if$(INTERFACE).tmp.ini
+CONFIGFLAGS = --config configuration_$(DESIGN)_if$(INTERFACE).tmp.ini
+#CONFIGFLAGS += --kernel_frequency 280
 
 # Include cmac kernel depending on the interface
 ifeq (3,$(INTERFACE))

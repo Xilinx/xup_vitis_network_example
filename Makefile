@@ -98,13 +98,13 @@ distclean: clean
 	rm -rf _x* *.tmp.ini .Xil benchmark*/ basic*/ .ipcache/
 
 distcleanall: distclean
-	make -C $(NETLAYERDIR) distclean
+	make -C $(NETLAYERDIR) distcleanall
 	make -C $(CMACDIR) distclean
 	make -C $(BASICDIR) distclean
 	make -C $(BENCHMARDIR) distclean
 
 
-# Building kernel
+# Building xclbin
 $(BUILD_DIR)/${XCLBIN_NAME}.xclbin: $(LIST_XO)
 	mkdir -p $(BUILD_DIR)
 	$(VPP) $(CLFLAGS) $(CONFIGFLAGS) --temp_dir $(BUILD_DIR) -l -o'$@' $^ $(LIST_REPOS) -j 8

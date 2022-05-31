@@ -366,9 +366,9 @@ class NetworkLayer(DefaultIP):
             self.write(v_offset, int(self.sockets[i]["valid"]))
 
         if debug:
-            self.read_socket_table()
+            self.get_socket_table()
 
-    def read_socket_table(self) -> dict:
+    def get_socket_table(self) -> dict:
         """ Reads the socket table
 
         Returns
@@ -404,7 +404,7 @@ class NetworkLayer(DefaultIP):
 
             return ReprDict(socket_dict, rootname='socket_table')
 
-    def read_arp_table(self, num_entries=256) -> dict:
+    def get_arp_table(self, num_entries=256) -> dict:
         """Read the ARP table from the FPGA return a dict
 
         Parameters

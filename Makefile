@@ -170,4 +170,5 @@ create-conf-file:
 	echo "prop=run.impl_1.strategy=Performance_NetDelay_low" >> configuration_$(DESIGN)_if$(INTERFACE).tmp.ini
 	@if [[ $(DEVICE) = *"u5"* ]]; then\
 		sed -i 's/SLR2/SLR1/g' configuration_$(DESIGN)_if$(INTERFACE).tmp.ini;\
+		sed -i 's/DDR\[1\]/HBM\[0\]/g' configuration_$(DESIGN)_if$(INTERFACE).tmp.ini;\
 	fi

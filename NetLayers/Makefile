@@ -12,7 +12,7 @@ help:
 	@echo "  make distclean"
 	@echo "      Command to remove all the generated files."
 	@echo "  make distcleanall"
-	@echo "      Command to remove all the generated in the current directory and one level down"	
+	@echo "      Command to remove all the generated in the current directory and one level down"
 	@echo ""
 
 
@@ -24,7 +24,7 @@ XSA := $(strip $(patsubst %.xpfm, % , $(shell basename $(DEVICE))))
 TEMP_DIR := ./_x.$(XSA)
 VIVADO := $(XILINX_VIVADO)/bin/vivado
 
-BINARY_CMAC_OBJS = $(TEMP_DIR)/${KRNL_NAME}.xo
+NETLAYER_OBJS = $(TEMP_DIR)/${KRNL_NAME}.xo
 
 ifeq (u5,$(findstring u5, $(DEVICE)))
 	SUBMODULETARGET = hbm
@@ -36,8 +36,8 @@ else ifeq (vck5000,$(findstring vck5000, $(DEVICE)))
 	SUBMODULETARGET = versalaicore
 endif
 
-.PHONY: all clean cleanall 
-all: check-devices check-vivado $(BINARY_CMAC_OBJS)  
+.PHONY: all clean cleanall
+all: check-devices check-vivado $(NETLAYER_OBJS)
 
 
 # Cleaning stuff
@@ -46,7 +46,7 @@ clean:
 
 distclean: clean
 	rm -rf build_dir*
-	rm -rf ./tmp_$(KRNL_NAME)* ./packaged_kernel* 
+	rm -rf ./tmp_$(KRNL_NAME)* ./packaged_kernel*
 	rm -rf _x.* *.str
 	rm -rf .Xil
 

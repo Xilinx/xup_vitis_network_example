@@ -28,18 +28,12 @@ BINARY_CMAC_OBJS = $(TEMP_DIR)/${KRNL_NAME}.xo
 
 ifeq (u5,$(findstring u5, $(DEVICE)))
 	SUBMODULETARGET = hbm
-endif
-
-ifeq (u200,$(findstring u200, $(DEVICE)))
-	SUBMODULETARGET = all
-endif
-
-ifeq (u250,$(findstring u250, $(DEVICE)))
-	SUBMODULETARGET = all
-endif
-
-ifeq (u280,$(findstring u280, $(DEVICE)))
+else ifeq (u280,$(findstring u280, $(DEVICE)))
 	SUBMODULETARGET = hbm
+else ifeq (u2,$(findstring u2, $(DEVICE)))
+	SUBMODULETARGET = nohbm
+else ifeq (vck5000,$(findstring vck5000, $(DEVICE)))
+	SUBMODULETARGET = versalaicore
 endif
 
 .PHONY: all clean cleanall 

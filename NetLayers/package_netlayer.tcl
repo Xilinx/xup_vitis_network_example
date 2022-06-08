@@ -51,9 +51,11 @@ set path_to_tmp_project "./tmp_${suffix}"
 source platform.tcl
 
 if {[string first "fsvh" ${projPart}] != -1} {
-    set path_to_ip ${path_to_ip}/synthesis_results_HMB
+    set path_to_ip ${path_to_ip}/synthesis_results_HBM
+} elseif {[string first "vsva" ${projPart}] != -1} {
+    set path_to_ip ${path_to_ip}/synthesis_results_versalaicore
 } else {
-    set path_to_ip ${path_to_ip}/synthesis_results_noHMB
+    set path_to_ip ${path_to_ip}/synthesis_results_noHBM
 }
 
 ## Create Vivado project and add IP cores

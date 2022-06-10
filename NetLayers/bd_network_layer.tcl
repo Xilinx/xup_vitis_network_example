@@ -967,7 +967,7 @@ proc create_root_design { parentCell } {
   set_property range 128 [get_bd_addr_segs {S_AXIL_nl/SEG_interface_settings_0_reg0}]
   assign_bd_address -offset 0x00000400 -range 0x00000400 -target_address_space [get_bd_addr_spaces S_AXIL_nl] [get_bd_addr_segs performance_debug_reg_0/S_AXI/reg0] -force
   set_property range 1K [get_bd_addr_segs {S_AXIL_nl/SEG_performance_debug_reg_0_reg0}]
-  assign_bd_address -offset 0x00008000 -range 0x00000400 -target_address_space [get_bd_addr_spaces S_AXIL_nl] [get_bd_addr_segs udp/s_axi_s_axilite/Reg] -force
+  assign_bd_address -offset 0x00000800 -range 0x00000400 -target_address_space [get_bd_addr_spaces S_AXIL_nl] [get_bd_addr_segs udp/s_axi_s_axilite/Reg] -force
   set_property range 1K [get_bd_addr_segs {S_AXIL_nl/SEG_udp_Reg}]
   assign_bd_address -offset 0x00001000 -range 0x00001000 -target_address_space [get_bd_addr_spaces S_AXIL_nl] [get_bd_addr_segs arp/arp_server/s_axi_s_axilite/Reg] -force
   set_property range 4K [get_bd_addr_segs {S_AXIL_nl/SEG_arp_server_Reg}]

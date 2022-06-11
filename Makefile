@@ -74,16 +74,11 @@ endif
 # Linker parameters
 # Linker userPostSysLinkTcl param
 ifeq (u5,$(findstring u5, $(DEVICE)))
-	HLS_IP_FOLDER  = $(shell readlink -f ./$(NETLAYERDIR)$(NETLAYERHLS)/synthesis_results_HMB)
-endif
-ifeq (u200,$(findstring u200, $(DEVICE)))
-	HLS_IP_FOLDER  = $(shell readlink -f ./$(NETLAYERDIR)$(NETLAYERHLS)/synthesis_results_noHMB)
-endif
-ifeq (u250,$(findstring u250, $(DEVICE)))
-	HLS_IP_FOLDER  = $(shell readlink -f ./$(NETLAYERDIR)$(NETLAYERHLS)/synthesis_results_noHMB)
-endif
-ifeq (u280,$(findstring u280, $(DEVICE)))
-	HLS_IP_FOLDER  = $(shell readlink -f ./$(NETLAYERDIR)$(NETLAYERHLS)/synthesis_results_HMB)
+	HLS_IP_FOLDER  = $(shell readlink -f ./$(NETLAYERDIR)$(NETLAYERHLS)/synthesis_results_HBM)
+else ifeq (u280,$(findstring u280, $(DEVICE)))
+	HLS_IP_FOLDER  = $(shell readlink -f ./$(NETLAYERDIR)$(NETLAYERHLS)/synthesis_results_HBM)
+else ifeq (u2,$(findstring u2, $(DEVICE)))
+	HLS_IP_FOLDER  = $(shell readlink -f ./$(NETLAYERDIR)$(NETLAYERHLS)/synthesis_results_noHBM)
 endif
 
 LIST_REPOS += --user_ip_repo_paths $(HLS_IP_FOLDER)

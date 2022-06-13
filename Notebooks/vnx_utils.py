@@ -222,7 +222,7 @@ class CMAC(DefaultIP):
             "user_pause": int(rmap.stat_rx_user_pause),
         }
 
-        return stats_dict
+        return ReprDict(stats_dict, rootname='cmac_stats')
 
     @property
     def version(self):
@@ -366,7 +366,7 @@ class NetworkLayer(DefaultIP):
             self.write(v_offset, int(self.sockets[i]["valid"]))
 
         if debug:
-            self.get_socket_table()
+            return self.get_socket_table()
 
     def get_socket_table(self) -> dict:
         """ Reads the socket table
@@ -391,7 +391,7 @@ class NetworkLayer(DefaultIP):
             tp_offset = theirPort_offset + i * 8
             mp_offset = udp_myPort_offset + i * 8
             v_offset = udp_valid_offset + i * 8
-            isvalid = ti = self.read(v_offset)
+            isvalid = self.read(v_offset)
             if isvalid:
                 ti = self.read(ti_offset)
                 tp = self.read(tp_offset)
@@ -402,7 +402,15 @@ class NetworkLayer(DefaultIP):
                 socket_dict['socket'][i]['theirPort'] = tp
                 socket_dict['socket'][i]['myPort'] = mp
 
-            return ReprDict(socket_dict, rootname='socket_table')
+        return ReprDict(socket_dict, rootname='socket_table')
+
+    def invalidate_socket_table(self):
+        """ Clear the Socket table """
+
+        udp_valid_offset = self.register_map.udp_valid_offset.address
+        numSocketsHW = int(self.register_map.udp_number_sockets)
+        for i in range(numSocketsHW):
+            self.write(int(udp_valid_offset + i * 8), 0)
 
     def get_arp_table(self, num_entries=256) -> dict:
         """Read the ARP table from the FPGA return a dict

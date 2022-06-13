@@ -679,25 +679,22 @@ class NetworkLayer(DefaultIP):
                 "bytes": int(rmap.eth_out_bytes),
                 "cycles": int(rmap.eth_out_cycles)
             },
-            "app": {
-                "packets": int(rmap.app_out_packets),
-                "bytes": int(rmap.app_out_bytes),
-                "cycles": int(rmap.app_out_cycles)
-            },
             "udp": {
                 "packets": int(rmap.udp_out_packets),
                 "bytes": int(rmap.udp_out_bytes),
                 "cycles": int(rmap.udp_out_cycles)
+            },
+            "app": {
+                "packets": int(rmap.app_out_packets),
+                "bytes": int(rmap.app_out_bytes),
+                "cycles": int(rmap.app_out_cycles)
             }
         }
 
         return ReprDict(probes, rootname='debug_probes')
 
 
-benchmark_mode = ["PRODUCER", "LATENCY", "LOOPBACK", "CONSUMER"]
-
-
-class tgmode(Enum):
+class TgMode(Enum):
     """Supported Traffic generator Modes"""
     PRODUCER = 0
     LATENCY = 1
@@ -715,13 +712,13 @@ class TrafficGenerator(DefaultIP):
         super().__init__(description=description)
         self.freq = None
 
-    def start(self, mode: tgmode, dest: int=0, packets: int=None,
+    def start(self, mode: TgMode, dest: int=0, packets: int=None,
               beats: int=None, tbwp: int=None):
         """Starts the Traffic generator
 
         Parameters
         ----------
-        mode: tgmode
+        mode: TgMode
             Operation mode
         dest: int
             Index in the socket table
@@ -736,7 +733,7 @@ class TrafficGenerator(DefaultIP):
             Clock ticks between two consecutive payload packets
         """
 
-        if mode == tgmode.PRODUCER or mode == tgmode.LATENCY:
+        if mode == TgMode.PRODUCER or mode == TgMode.LATENCY:
             if not packets:
                 raise RuntimeError("packets must be specified when mode is {}"
                                    .format(mode))

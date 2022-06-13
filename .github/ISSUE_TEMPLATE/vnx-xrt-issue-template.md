@@ -3,8 +3,7 @@ name: XRT issues
 about: Please only open issues that pertain to the XRT host application
 title: '[XRT] '
 labels: ''
-assignees: 
-   - fpgafais
+assignees: ''
 ---
 
 <!-- please remove what does not apply -->

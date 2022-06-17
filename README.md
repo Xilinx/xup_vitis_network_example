@@ -98,17 +98,13 @@ The following notebooks demonstrate how to use the benchmark example design to m
 
 In order to implement this design you need Vitis 2021.1 or newer and associated [XRT](https://github.com/Xilinx/XRT). Older version of the tools are discouraged and will not work.
 
-| Vitis  | XRT       | pynq  |
-|--------|-----------|-------|
-| 2021.1 | 2.11.634  | 2.7   |
-| 2021.2 | 2.12.427  | 2.7   |
-| 2022.1 | 2.13.466  | 2.7   |
+| Vitis  | XRT       | pynq    | Notes |
+|--------|-----------|---------|-------|
+| 2021.1 | 2.11.634  | >=2.7   | Apply Y2K22 patch](https://support.xilinx.com/s/article/76960?language=en_US) |
+| 2021.2 | 2.12.427  | >=2.8.0.dev0 | Apply Y2K22 patch](https://support.xilinx.com/s/article/76960?language=en_US), `pip install pynq==2.8.0.dev0` |
+| 2022.1 | 2.13.466  | >=2.8.0.dev0 |  `pip install pynq==2.8.0.dev0`   |
 
 To install `pynq` and JupyterLab follow the steps [here](Notebooks/README.md#environment).
-
-> **_NOTE:_** for XRT version 2.12 or newer please apply this patch in the pynq package [PYNQ#1343](https://github.com/Xilinx/PYNQ/pull/1343/files).
-
-> **_NOTE:_** for Vitis version 2021.2 or older, make sure [the Y2K22 patch is applied](https://support.xilinx.com/s/article/76960?language=en_US).
 
 ### Alveo Cards
 

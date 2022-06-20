@@ -710,9 +710,13 @@ class TrafficGenerator(DefaultIP):
 
     def __init__(self, description):
         super().__init__(description=description)
+        self.start = self._call = self._start_sw = self.start_sw = self.call = self._start_ert
         self.freq = None
 
-    def start(self, mode: TgMode, dest: int=0, packets: int=None,
+    def _setup_packet_prototype(self):
+        pass
+
+    def _start_ert(self, mode: TgMode, dest: int=0, packets: int=None,
               beats: int=None, tbwp: int=None):
         """Starts the Traffic generator
 
@@ -732,15 +736,14 @@ class TrafficGenerator(DefaultIP):
         tbwp:
             Clock ticks between two consecutive payload packets
         """
-
         if mode == TgMode.PRODUCER or mode == TgMode.LATENCY:
-            if not packets:
+            if packets is None:
                 raise RuntimeError("packets must be specified when mode is {}"
                                    .format(mode))
-            elif not beats:
+            elif beats is None:
                 raise RuntimeError("beats must be specified when mode is {}"
                                    .format(mode))
-            elif not tbwp:
+            elif tbwp is None:
                 raise RuntimeError("tbwp must be specified when mode is {}"
                                    .format(mode))
 

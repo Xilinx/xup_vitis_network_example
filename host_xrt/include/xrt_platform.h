@@ -7,8 +7,6 @@
 #ifndef _XRT_PLATFORM_
 #define _XRT_PLATFORM_
 
-//#ifdef INFO_PLATFORM
-
 #include <boost/property_tree/json_parser.hpp>
 #include "experimental/xrt_device.h"
 #include <string>
@@ -45,4 +43,3 @@ public:
 };
 
 #endif
-//#endif

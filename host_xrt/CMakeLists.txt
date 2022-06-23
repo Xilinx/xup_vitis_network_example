@@ -17,13 +17,6 @@ else()
         string(REGEX MATCH "[0-9]+\\.[0-9]+\\.[0-9]+" XRT_VERSION ${XRT_JSON})
 endif()
 
-if ( ${XRT_VERSION} VERSION_GREATER_EQUAL 2.12.0)
-        set(INFO_PLATFORM "XRT_PLATFORM")
-else()
-        set(INFO_PLATFORM "")
-endif()
-
-
 #____________________________________________________________
 
 add_executable(rx exec/alveo_rx.cpp)
@@ -50,7 +43,6 @@ target_link_libraries(alveo_vnx
         PUBLIC xrt_coreutil
         PUBLIC uuid
         )
-
 #____________________________________________________________
 
 if(NOT ALVEO_DEVICE)
@@ -59,12 +51,12 @@ endif()
 
 message(STATUS ${ALVEO_DEVICE})
 message(STATUS "XRT Version: ${XRT_VERSION}")
-message(STATUS "XRT PLATFORM: ${INFO_PLATFORM}")
 
 target_compile_definitions(rx PRIVATE "ALVEO_DEVICE=\"${ALVEO_DEVICE}\"")
-target_compile_definitions(rx PRIVATE "INFO_PLATFORM=\"${INFO_PLATFORM}\"")
 target_compile_definitions(tx PRIVATE "ALVEO_DEVICE=\"${ALVEO_DEVICE}\"")
-target_compile_definitions(tx PRIVATE "INFO_PLATFORM=\"${INFO_PLATFORM}\"")
+
+if ( ${XRT_VERSION} VERSION_GREATER_EQUAL 2.12.0)
+    target_compile_definitions(alveo_vnx PUBLIC "INFO_PLATFORM")
+endif()
 
 unset(ALVEO_DEVICE CACHE)
-unset(INFO_PLATFORM CACHE)

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "xrt_platform.h"
-//#ifdef INFO_PLATFORM
+#ifdef INFO_PLATFORM
 
 /**
 * XrtPlatform::XrtPlatform() - class constructor
@@ -96,4 +96,4 @@ uint32_t XrtPlatform::getClock(std::string clock_id) {
     return clock_freq[clock_id];
 }
 
-//#endif
+#endif

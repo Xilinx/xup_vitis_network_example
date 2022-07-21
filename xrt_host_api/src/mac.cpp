@@ -28,31 +28,45 @@
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "vnx/cmac.hpp"
-#include <bitset>
-#include <map>
-#include <string>
+#include "vnx/mac.hpp"
+#include <json/json.h>
+
+namespace {
+const std::string default_mac = std::string("FF:FF:FF:FF:FF:FF");
+
+std::string get_mac_address_from_json(Json::Value &json, std::size_t index) {
+  Json::Value &macs = json["platforms"][0u]["macs"];
+  Json::ArrayIndex array_index = index;
+  if (!macs.isValidIndex(array_index)) {
+    std::cerr << "Error finding mac address: index out of range" << std::endl;
+    return default_mac;
+  }
+
+  return macs[array_index]["address"].asString();
+}
+} // namespace
 
 namespace vnx {
-CMAC::CMAC(xrt::ip &cmac) : cmac(cmac) {}
-CMAC::CMAC(xrt::ip &&cmac) : cmac(cmac) {}
+std::string get_mac_address(xrt::device &device, std::size_t index) {
+  Json::Reader reader;
+  Json::Value json;
+  std::string platform = device.get_info<xrt::info::device::platform>();
 
-std::map<std::string, bool> CMAC::link_status() {
-  std::map<std::string, bool> status_dict;
+  bool status = reader.parse(platform, json);
+  if (!status) {
+    std::cerr << "Error finding mac address: failed to parse json" << std::endl;
+    return default_mac;
+  }
 
-  uint32_t l_rxStatus = cmac.read_register(stat_rx_status);
-  std::bitset<32> l_rxBits(l_rxStatus);
-  uint32_t l_txStatus = cmac.read_register(stat_tx_status);
-  std::bitset<32> l_txBits(l_txStatus);
-  status_dict.insert({"rx_status", l_rxBits.test(0)});
-  status_dict.insert({"rx_aligned", l_rxBits.test(1)});
-  status_dict.insert({"rx_misaligned", l_rxBits.test(2)});
-  status_dict.insert({"rx_aligned_err", l_rxBits.test(3)});
-  status_dict.insert({"rx_hi_ber", l_rxBits.test(4)});
-  status_dict.insert({"rx_remote_fault", l_rxBits.test(5)});
-  status_dict.insert({"rx_local_fault", l_rxBits.test(6)});
-  status_dict.insert({"rx_got_signal_os", l_rxBits.test(14)});
-  status_dict.insert({"tx_local_fault", l_txBits.test(0)});
-  return status_dict;
+  std::string mac;
+
+  try {
+    mac = get_mac_address_from_json(json, index);
+  } catch (const Json::Exception &e) {
+    std::cerr << "Error finding mac address: " << e.what() << std::endl;
+    return default_mac;
+  }
+
+  return mac;
 }
 } // namespace vnx

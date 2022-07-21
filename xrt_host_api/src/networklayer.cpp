@@ -28,7 +28,7 @@
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "networklayer.hpp"
+#include "vnx/networklayer.hpp"
 #include <cmath>
 #include <iostream>
 #include <sstream>

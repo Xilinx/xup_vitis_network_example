@@ -30,6 +30,7 @@
 
 #include <chrono>
 #include <experimental/xrt_ip.h>
+#include <filesystem>
 #include <json/json.h>
 #include <limits.h>
 #include <map>
@@ -40,20 +41,28 @@
 #include <vnx/cmac.hpp>
 #include <vnx/networklayer.hpp>
 #include <xrt/xrt_device.h>
+namespace fs = std::filesystem;
 
 /***************
  *    CONFIG   *
  ***************/
-const char *u280_if3 = "PATH_TO_U280_XCLBIN/vnx_basic_if3.xclbin";
-const char *u55c_if0 = "PATH_TO_U55c_XCLBIN/vnx_basic_if0.xclbin";
-const char *u55c_if1 = "PATH_TO_U55c_XCLBIN/vnx_basic_if1.xclbin";
-const char *u55c_if3 = "PATH_TO_U55c_XCLBIN/vnx_basic_if3.xclbin";
+enum xclbin_types { u280_if3, u55c_if0, u55c_if1, u55c_if3 };
+
+struct xclbin_path {
+  std::string path;
+  xclbin_types type;
+};
 
 const char *hostname1 = "hostname1";
 const char *hostname2 = "hostname2";
 const char *hostname3 = "hostname3";
 
-const std::map<const char *,
+const std::map<std::string, const std::vector<std::string>> ip_addresses = {
+    {hostname1, {"10.1.212.101", "10.1.212.102"}},
+    {hostname2, {"10.1.212.103", "10.1.212.104"}},
+    {hostname3, {"10.1.212.105", "10.1.212.106"}}};
+
+const std::map<xclbin_types,
                const std::vector<std::pair<const char *, const char *>>>
     kernels = {{u280_if3,
                 {{"cmac_0", "networklayer_0"}, {"cmac_1", "networklayer_1"}}},
@@ -62,18 +71,47 @@ const std::map<const char *,
                {u55c_if3,
                 {{"cmac_0", "networklayer_0"}, {"cmac_1", "networklayer_1"}}}};
 
-const std::map<std::string, const std::vector<const char *>> bitstreams = {
-    {"xilinx_u280_xdma_201920_3", {u280_if3}},
-    /* Use u55c_if0 and u55c_if1 when using XRT 2.13 */
-    {"xilinx_u55c_gen3x16_xdma_base_3", {u55c_if0, u55c_if1}}};
-
-const std::map<std::string, const std::vector<std::string>> ip_addresses = {
-    {hostname1, {"10.1.212.101", "10.1.212.102"}},
-    {hostname2, {"10.1.212.103", "10.1.212.104"}},
-    {hostname3, {"10.1.212.105", "10.1.212.106"}}};
 /***************
  * END CONFIG  *
  ***************/
+
+std::vector<xclbin_path> parse_xclbins(const std::string &platform,
+                                       std::vector<const char *> &args) {
+  std::vector<xclbin_path> xclbins{};
+  for (const auto &arg : args) {
+    xclbin_path xclbin;
+    xclbin.path = arg;
+    std::string filename = fs::path(arg).filename();
+
+    bool found = false;
+    if (platform == "xilinx_u280_xdma_201920_3") {
+      if (filename == "vnx_basic_if3.xclbin") {
+        xclbin.type = u280_if3;
+        found = true;
+      }
+    } else if (platform == "xilinx_u55c_gen3x16_xdma_base_3") {
+      if (filename == "vnx_basic_if0.xclbin") {
+        xclbin.type = u55c_if0;
+        found = true;
+      } else if (filename == "vnx_basic_if1.xclbin") {
+        xclbin.type = u55c_if1;
+        found = true;
+      } else if (filename == "vnx_basic_if3.xclbin") {
+        xclbin.type = u55c_if3;
+        found = true;
+      }
+    }
+
+    if (!found) {
+      throw std::runtime_error("Unexpected xclbin file " + filename +
+                               " with platform " + platform);
+    }
+
+    xclbins.push_back(xclbin);
+  }
+
+  return xclbins;
+}
 
 Json::Value parse_json(const std::string &string) {
   Json::Reader reader;
@@ -82,7 +120,7 @@ Json::Value parse_json(const std::string &string) {
   return json;
 }
 
-int main() {
+int main(int argc, char *argv[]) {
   char hostname[HOST_NAME_MAX];
   gethostname(hostname, HOST_NAME_MAX);
   xrt::device device = xrt::device(0);
@@ -92,14 +130,17 @@ int main() {
   const std::string platform =
       platform_dict["platforms"][0]["static_region"]["vbnv"].asString();
   std::cout << "FPGA platform: " << platform << std::endl;
-  const auto paths = bitstreams.at(platform);
+  std::vector<const char *> args(argv + 1, argv + argc);
+  const std::vector<xclbin_path> xclbins = parse_xclbins(platform, args);
   std::size_t ip_index = 0;
-  for (const auto &path : paths) {
+  for (const xclbin_path &xclbin : xclbins) {
+    const std::string &path = xclbin.path;
+    const xclbin_types type = xclbin.type;
     auto xclbin_uuid = device.load_xclbin(path);
     std::cout << "Loaded " << path << " onto FPGA on " << hostname << std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
-    for (const auto &cus : kernels.at(path)) {
+    for (const auto &cus : kernels.at(type)) {
       auto cmac = vnx::CMAC(xrt::ip(device, xclbin_uuid,
                                     std::string(cus.first) + ":{" +
                                         std::string(cus.first) + "}"));
@@ -120,6 +161,11 @@ int main() {
 
       if (!link_status) {
         continue;
+      }
+
+      if (ip_addresses.count(hostname) < 1) {
+        throw std::runtime_error("Couldn't find ip address for host " +
+                                 std::string(hostname));
       }
 
       std::string ip = ip_addresses.at(hostname)[ip_index];

@@ -35,6 +35,7 @@ namespace {
 const std::string default_mac = std::string("FF:FF:FF:FF:FF:FF");
 
 std::string get_mac_address_from_json(Json::Value &json, std::size_t index) {
+  // Read mac addresses from first platform
   Json::Value &macs = json["platforms"][0u]["macs"];
   Json::ArrayIndex array_index = index;
   if (!macs.isValidIndex(array_index)) {
@@ -42,6 +43,7 @@ std::string get_mac_address_from_json(Json::Value &json, std::size_t index) {
     return default_mac;
   }
 
+  // Return mac address at correct index.
   return macs[array_index]["address"].asString();
 }
 } // namespace
@@ -52,6 +54,7 @@ std::string get_mac_address(xrt::device &device, std::size_t index) {
   Json::Value json;
   std::string platform = device.get_info<xrt::info::device::platform>();
 
+  // Parse platform string as JSON.
   bool status = reader.parse(platform, json);
   if (!status) {
     std::cerr << "Error finding mac address: failed to parse json" << std::endl;

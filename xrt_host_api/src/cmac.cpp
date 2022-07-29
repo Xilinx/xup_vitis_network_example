@@ -55,4 +55,12 @@ std::map<std::string, bool> CMAC::link_status() {
   status_dict.insert({"tx_local_fault", l_txBits.test(0)});
   return status_dict;
 }
+
+stats_t CMAC::statistics() {
+  stats_t stats{};
+
+  // TODO: implement function
+
+  return stats;
+}
 } // namespace vnx

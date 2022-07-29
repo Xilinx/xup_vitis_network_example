@@ -34,5 +34,8 @@
 #include <xrt/xrt_device.h>
 
 namespace vnx {
+/**
+ * Get the mac address of the FPGA. Retrieves the first mac address by default.
+ */
 std::string get_mac_address(xrt::device &device, std::size_t index = 0);
 } // namespace vnx

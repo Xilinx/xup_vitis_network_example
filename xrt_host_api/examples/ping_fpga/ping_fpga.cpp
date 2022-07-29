@@ -62,6 +62,7 @@ const std::map<std::string, const std::vector<std::string>> ip_addresses = {
     {hostname2, {"10.1.212.103", "10.1.212.104"}},
     {hostname3, {"10.1.212.105", "10.1.212.106"}}};
 
+// Map type of xclbin to contained kernels
 const std::map<xclbin_types,
                const std::vector<std::pair<const char *, const char *>>>
     kernels = {{u280_if3,
@@ -70,13 +71,13 @@ const std::map<xclbin_types,
                {u55c_if1, {{"cmac_1", "networklayer_1"}}},
                {u55c_if3,
                 {{"cmac_0", "networklayer_0"}, {"cmac_1", "networklayer_1"}}}};
-
 /***************
  * END CONFIG  *
  ***************/
 
 std::vector<xclbin_path> parse_xclbins(const std::string &platform,
                                        std::vector<const char *> &args) {
+  // Determine content of xclbin based on filename and platform.
   std::vector<xclbin_path> xclbins{};
   for (const auto &arg : args) {
     xclbin_path xclbin;
@@ -121,25 +122,34 @@ Json::Value parse_json(const std::string &string) {
 }
 
 int main(int argc, char *argv[]) {
+  // Retrieve host and device information
   char hostname[HOST_NAME_MAX];
   gethostname(hostname, HOST_NAME_MAX);
   xrt::device device = xrt::device(0);
+  // Collect platform info from xclbin
   const std::string platform_json =
       device.get_info<xrt::info::device::platform>();
   const Json::Value platform_dict = parse_json(platform_json);
   const std::string platform =
       platform_dict["platforms"][0]["static_region"]["vbnv"].asString();
   std::cout << "FPGA platform: " << platform << std::endl;
+
+  // Read xclbin files from commandline
   std::vector<const char *> args(argv + 1, argv + argc);
   const std::vector<xclbin_path> xclbins = parse_xclbins(platform, args);
   std::size_t ip_index = 0;
+
+  // Loop over xclbins
   for (const xclbin_path &xclbin : xclbins) {
     const std::string &path = xclbin.path;
     const xclbin_types type = xclbin.type;
     auto xclbin_uuid = device.load_xclbin(path);
     std::cout << "Loaded " << path << " onto FPGA on " << hostname << std::endl;
+    // Give time for xclbin to be loaded completely before attempting to read
+    // the link status.
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
+    // Loop over compute units in xclbin
     for (const auto &cus : kernels.at(type)) {
       auto cmac = vnx::CMAC(xrt::ip(device, xclbin_uuid,
                                     std::string(cus.first) + ":{" +
@@ -148,6 +158,8 @@ int main(int argc, char *argv[]) {
           xrt::ip(device, xclbin_uuid,
                   "networklayer:{" + std::string(cus.second) + "}"));
       bool link_status;
+
+      // Can take a few tries before link is ready.
       for (std::size_t i = 0; i < 5; ++i) {
         auto status = cmac.link_status();
         link_status = status["rx_status"];
@@ -159,6 +171,7 @@ int main(int argc, char *argv[]) {
       std::cout << "Link interface " << cus.first << ": "
                 << (link_status ? "true" : "false") << std::endl;
 
+      // Continue to next xclbin if no link is found.
       if (!link_status) {
         continue;
       }
@@ -176,6 +189,7 @@ int main(int argc, char *argv[]) {
       networklayer.update_ip_address(ip);
       std::this_thread::sleep_for(std::chrono::seconds(1));
 
+      // Create fork to run ping
       pid_t pid = fork();
 
       if (pid == 0) {
@@ -187,6 +201,7 @@ int main(int argc, char *argv[]) {
       } else {
         std::cout << "Pinging the Alveo card on interface " << cus.first
                   << ", this takes 4s..." << std::endl;
+        // Wait for child process to finish
         int status;
         wait(&status);
         status = WEXITSTATUS(status);

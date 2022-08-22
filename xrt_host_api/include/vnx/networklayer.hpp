@@ -43,27 +43,27 @@ constexpr std::size_t max_sockets_size = 16;
 constexpr std::size_t mac_address_offset = 0x0010;
 constexpr std::size_t ip_address_offset = 0x0018;
 constexpr std::size_t gateway_offset = 0x001C;
-constexpr std::size_t arp_discovery_offset = 0x3010;
-constexpr std::size_t arp_mac_addr_offset = 0x3800;
-constexpr std::size_t arp_ip_addr_offset = 0x3400;
-constexpr std::size_t arp_valid_offset = 0x3100;
-constexpr std::size_t udp_theirIP_offset = 0x2010;
-constexpr std::size_t udp_theirPort_offset = 0x2090;
-constexpr std::size_t udp_myPort_offset = 0x2110;
-constexpr std::size_t udp_valid_offset = 0x2190;
-constexpr std::size_t udp_number_sockets = 0x2210;
-constexpr std::size_t udp_in_packets = 0x10D0;
-constexpr std::size_t udp_out_packets = 0x1100;
-constexpr std::size_t udp_app_in_packets = 0x10E8;
-constexpr std::size_t udp_app_out_packets = 0x1118;
+constexpr std::size_t arp_discovery_offset = 0x1010;
+constexpr std::size_t arp_mac_addr_offset = 0x1800;
+constexpr std::size_t arp_ip_addr_offset = 0x1400;
+constexpr std::size_t arp_valid_offset = 0x1100;
+constexpr std::size_t udp_theirIP_offset = 0x810;
+constexpr std::size_t udp_theirPort_offset = 0x890;
+constexpr std::size_t udp_myPort_offset = 0x910;
+constexpr std::size_t udp_valid_offset = 0x990;
+constexpr std::size_t udp_number_sockets = 0xa10;
+constexpr std::size_t udp_in_packets = 0x4D0;
+constexpr std::size_t udp_out_packets = 0x500;
+constexpr std::size_t udp_app_in_packets = 0x518;
+constexpr std::size_t udp_app_out_packets = 0x4E8;
 
-constexpr std::size_t udp_in_bytes = 0x10C8;
-constexpr std::size_t udp_out_bytes = 0x10F8;
-constexpr std::size_t udp_app_in_bytes = 0x10E0;
-constexpr std::size_t udp_app_out_bytes = 0x1110;
+constexpr std::size_t udp_in_bytes = 0x4C8;
+constexpr std::size_t udp_out_bytes = 0x4F8;
+constexpr std::size_t udp_app_in_bytes = 0x510;
+constexpr std::size_t udp_app_out_bytes = 0x4E0;
 
-constexpr std::size_t ethhi_out_bytes = 0x1098;
-constexpr std::size_t eth_out_bytes = 0x10b0;
+constexpr std::size_t ethhi_out_bytes = 0x498;
+constexpr std::size_t eth_out_bytes = 0x4b0;
 
 struct socket_t {
   std::string theirIP;

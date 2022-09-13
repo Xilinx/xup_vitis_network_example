@@ -13,8 +13,9 @@ cd build
 cmake ..
 cmake --build .
 # Running the program
-# Can use multiple xclbins, e.g.
+# You can use multiple xclbins, e.g.
 # ./ping_fpga vnx_basic_if0.xclbin vnx_basic_if1.xclbin
+# Set XRT_DEVICE environment variable to use another device than device 0
 ./ping_fpga <XCLBINS>
 ```
 

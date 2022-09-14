@@ -21,23 +21,23 @@ constexpr std::size_t arp_discovery_offset = 0x1010;
 constexpr std::size_t arp_mac_addr_offset = 0x1800;
 constexpr std::size_t arp_ip_addr_offset = 0x1400;
 constexpr std::size_t arp_valid_offset = 0x1100;
-constexpr std::size_t udp_theirIP_offset = 0x810;
-constexpr std::size_t udp_theirPort_offset = 0x890;
-constexpr std::size_t udp_myPort_offset = 0x910;
-constexpr std::size_t udp_valid_offset = 0x990;
-constexpr std::size_t udp_number_sockets = 0xa10;
-constexpr std::size_t udp_in_packets = 0x4D0;
-constexpr std::size_t udp_out_packets = 0x500;
-constexpr std::size_t udp_app_in_packets = 0x518;
-constexpr std::size_t udp_app_out_packets = 0x4E8;
+constexpr std::size_t udp_theirIP_offset = 0x0810;
+constexpr std::size_t udp_theirPort_offset = 0x0890;
+constexpr std::size_t udp_myPort_offset = 0x0910;
+constexpr std::size_t udp_valid_offset = 0x0990;
+constexpr std::size_t udp_number_sockets = 0x0A10;
+constexpr std::size_t udp_in_packets = 0x04D0;
+constexpr std::size_t udp_out_packets = 0x0500;
+constexpr std::size_t udp_app_in_packets = 0x0518;
+constexpr std::size_t udp_app_out_packets = 0x04E8;
 
-constexpr std::size_t udp_in_bytes = 0x4C8;
-constexpr std::size_t udp_out_bytes = 0x4F8;
-constexpr std::size_t udp_app_in_bytes = 0x510;
-constexpr std::size_t udp_app_out_bytes = 0x4E0;
+constexpr std::size_t udp_in_bytes = 0x04C8;
+constexpr std::size_t udp_out_bytes = 0x04F8;
+constexpr std::size_t udp_app_in_bytes = 0x0510;
+constexpr std::size_t udp_app_out_bytes = 0x04E0;
 
-constexpr std::size_t ethhi_out_bytes = 0x498;
-constexpr std::size_t eth_out_bytes = 0x4b0;
+constexpr std::size_t ethhi_out_bytes = 0x0498;
+constexpr std::size_t eth_out_bytes = 0x04B0;
 
 struct socket_t {
   std::string theirIP;

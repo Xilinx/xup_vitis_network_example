@@ -162,7 +162,7 @@ std::map<int, socket_t> Networklayer::populate_socket_table() {
 
   int num_sockets_hw = networklayer.read_register(udp_number_sockets);
 
-  if (num_sockets_hw < max_sockets_size) {
+  if (static_cast<std::size_t>(num_sockets_hw) < max_sockets_size) {
     std::string errMsg = "Socket list length " +
                          std::to_string(max_sockets_size) +
                          " is bigger than the number of sockets in hardware " +

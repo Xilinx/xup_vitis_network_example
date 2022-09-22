@@ -4,6 +4,10 @@
 cmake_minimum_required(VERSION 3.5)
 project(setup_link CXX)
 
+# Set useful compile warnings
+add_compile_options(-Wall -Wextra -Wno-unused-variable
+                    -Wno-unused-but-set-variable -Wno-unused-parameter)
+
 add_subdirectory(../../ "CMakeFiles/xrt_host_api")
 find_package(jsoncpp REQUIRED)
 get_target_property(JSON_INC_PATH jsoncpp_lib INTERFACE_INCLUDE_DIRECTORIES)

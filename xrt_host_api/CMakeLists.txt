@@ -1,7 +1,7 @@
 # Copyright (C) 2022 Xilinx, Inc
 # SPDX-License-Identifier: BSD-3-Clause
 
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.12)
 
 # Consider switching to PROJECT_IS_TOP_LEVEL from CMake 3.21 (2021)
 # (https://cmake.org/cmake/help/latest/variable/PROJECT_IS_TOP_LEVEL.html)

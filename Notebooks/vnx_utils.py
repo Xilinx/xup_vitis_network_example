@@ -813,8 +813,9 @@ class DataMover(DefaultIP):
 
     def __init__(self, description):
         super().__init__(description=description)
+        self.start = self._start
 
-    def start(self, *args, **kwargs):
+    def _start(self, *args, **kwargs):
         """Start the accelerator
         This function will configure the accelerator with the provided
         arguments and start the accelerator. Use the `wait` function to
@@ -834,7 +835,10 @@ class DataMover(DefaultIP):
             elif i[0] == 'dest' and args[idx] > 15:
                 raise ValueError("dest cannot be bigger than 15")
 
-        return self._start(*args, **kwargs)
+        if self.device.has_capability("ERT"):
+            return self._start_ert(*args, **kwargs)
+        else:
+            return self._start_sw(*args, **kwargs)
 
 
 class CounterIP(DefaultIP):

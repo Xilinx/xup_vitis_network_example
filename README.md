@@ -155,7 +155,10 @@ make all DEVICE=<full platform path> INTERFACE=<interface number> DESIGN=<design
 ├── NetLayers
 │   ├── 100G-fpga-network-stack-core
 │   └── src
-└── Notebooks
+├── Notebooks
+└── xrt_host_api
+    ├── examples
+    ├── include
 ~~~
 
 * Basic_kernels: this folder contains the code for the basic application (*mm2s* and *s2mm*)
@@ -165,6 +168,7 @@ make all DEVICE=<full platform path> INTERFACE=<interface number> DESIGN=<design
 * img: this folder contains images 
 * NetLayers: this folder contains the logic to generate the *network\_layer* kernel, using the submodule `100G-fpga-network-stack-core`
 * Notebooks: this folder contains companion Jupyter notebooks to show how to run the different examples
+* xrt_host_api: C++ driver and examples
 
 ## FAQ
 
@@ -180,7 +184,7 @@ Partial steps to enable RS-FEC are provided [here](Ethernet/README.md#enabling-r
 
 ### C/C++ host code support?
 
-Python host code in combination with the `pynq` package and JupyterLab as well as DASK provide the right environment to demonstrate the capabilities of this project. A minimalist C/C++ driver contributed from the community is available in the [host_xrt branch](https://github.com/Xilinx/xup_vitis_network_example/tree/host_xrt/host_xrt). We welcome any [contribution](https://github.com/Xilinx/xup_vitis_network_example/blob/host_xrt/CONTRIBUTING.md) to enhance the driver. You can also find (partial) support for some of the kernels [here](https://github.com/Xilinx/HPC/tree/master/xans/sw/src).
+Python host code in combination with the `pynq` package and JupyterLab as well as DASK provide the right environment to demonstrate the capabilities of this project. [ACCL](https://github.com/Xilinx/ACCL) developers contributed a C++ driver, please check the [xrt_host_api](xrt_host_api/README.md) folder. We welcome [contributions](CONTRIBUTING.md) to enhance this driver. Also, a minimalist C/C++ driver contributed from the community is available in the [host_xrt branch](https://github.com/Xilinx/xup_vitis_network_example/tree/host_xrt/host_xrt), this code and branch is not longer maintained.
 
 ### How Can I contribute?
 

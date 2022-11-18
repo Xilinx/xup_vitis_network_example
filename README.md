@@ -1,3 +1,5 @@
+# This branch is not longer maintained.
+
 # XUP Vitis Network Example (VNx)
 
 This repository contains IP that you can use to add 100 Gbit/s networking to your Vitis designs. UDP is used as the transport protocol, and allows you to connect your Alveo card to other network equipment or Alveo cards. 

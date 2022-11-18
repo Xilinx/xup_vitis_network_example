@@ -100,9 +100,10 @@ In order to implement this design you need Vitis 2021.1 or newer and associated 
 
 | Vitis  | XRT       | pynq    | Notes |
 |--------|-----------|---------|-------|
-| 2021.1 | 2.11.634  | >=2.7   | [Apply Y2K22 patch](https://support.xilinx.com/s/article/76960?language=en_US) |
-| 2021.2 | 2.12.427  | >=2.8.0.dev0 | [Apply Y2K22 patch](https://support.xilinx.com/s/article/76960?language=en_US), `pip install pynq==2.8.0.dev0` |
-| 2022.1 | 2.13.466  | >=2.8.0.dev0 |  `pip install pynq==2.8.0.dev0`   |
+| 2021.1 | 2.11.634  | >=2.7   | [Apply Y2K22 patch](https://support.xilinx.com/s/article/76960?language=en_US), consider using a newer Vitis version |
+| 2021.2 | 2.12.427  | >=3.0.1 | [Apply Y2K22 patch](https://support.xilinx.com/s/article/76960?language=en_US), consider using a newer Vitis version |
+| 2022.1 | 2.13.466  | >=3.0.1 |  |
+| 2022.2 | 2.14.354  | >=3.0.1 |  |
 
 To install `pynq` and JupyterLab follow the steps [here](Notebooks/README.md#environment).
 

@@ -45,6 +45,11 @@ public:
   /* Get GT loopback */
   bool get_loopback();
 
+  /* Set RS FEC */
+  void set_rs_fec(bool rs_fec);
+
+  /* Get RS FEC */
+  bool get_rs_fec();
 private:
   xrt::ip cmac;
 
@@ -123,4 +128,6 @@ constexpr std::size_t stat_rx_packets_bad_fcs = 0x06C8;
 constexpr std::size_t stat_rx_stomped_fcs = 0x06D0;
 constexpr std::size_t stat_rx_pause = 0x06F8;
 constexpr std::size_t stat_rx_user_pause = 0x0700;
+
+constexpr std::size_t rsfec_config_enable = 0x107C;
 } // namespace vnx

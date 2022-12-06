@@ -252,7 +252,7 @@ class CMAC(DefaultIP):
     @loopback.setter
     def loopback(self, operation):
         if not isinstance(operation, (int, bool)):
-            raise ValueError("operation must be int or bool")
+            raise ValueError("Operation must be int or bool")
         self.register_map.gt_loopback = int(bool(operation))
 
     @property

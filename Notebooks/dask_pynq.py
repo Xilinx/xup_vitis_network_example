@@ -172,3 +172,9 @@ class DaskDevice(pynq.Device):
             if m['idx'] == idx:
                 return self.get_memory(m)
         raise RuntimeError("Could not find memory")
+
+    def get_memory_by_name(self, name):
+        for m in self.mem_dict.values():
+            if m["tag"] == name:
+                return self.get_memory(m)
+        raise RuntimeError("Could not find memory")

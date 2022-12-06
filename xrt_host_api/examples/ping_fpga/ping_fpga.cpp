@@ -129,6 +129,9 @@ int main(int argc, char *argv[]) {
     auto cmac = vnx::CMAC(xrt::ip(device, xclbin_uuid,
                                   std::string(cus.first) + ":{" +
                                       std::string(cus.first) + "}"));
+    // Enable rsfec if necessary
+    cmac.set_rs_fec(false);
+
     auto networklayer = vnx::Networklayer(
         xrt::ip(device, xclbin_uuid,
                 "networklayer:{" + std::string(cus.second) + "}"));
@@ -145,6 +148,8 @@ int main(int argc, char *argv[]) {
     }
     std::cout << "Link interface " << cus.first << ": "
               << (link_status ? "true" : "false") << std::endl;
+    std::cout << "RS-FEC enabled: " << (cmac.get_rs_fec() ? "true" : "false")
+              << std::endl;
 
     // Continue to next xclbin if no link is found.
     if (!link_status) {

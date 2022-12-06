@@ -144,7 +144,7 @@ set_property -dict [ list \
   CONFIG.PTP_TRANSPCLK_MODE          {0} \
   CONFIG.TX_PTP_LATENCY_ADJUST       {0} \
   CONFIG.ENABLE_PIPELINE_REG         {1} \
-  CONFIG.INCLUDE_RS_FEC              {0} \
+  CONFIG.INCLUDE_RS_FEC              {1} \
 ] $cmac_ip
 
 ###### Create interface ports ######

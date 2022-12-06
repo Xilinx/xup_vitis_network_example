@@ -100,6 +100,14 @@ bool CMAC::get_loopback() {
   return cmac.read_register(gt_loopback) == 0x1;
 }
 
+void CMAC::set_rs_fec(bool rs_fec) {
+  cmac.write_register(rsfec_config_enable, rs_fec ? 0x3 : 0x0);
+}
+
+bool CMAC::get_rs_fec() {
+  return cmac.read_register(rsfec_config_enable) == 0x3;
+}
+
 void CMAC::update_statistics_registers() {
   cmac.write_register(stat_pm_tick, 0x1);
 }

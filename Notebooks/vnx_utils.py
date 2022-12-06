@@ -252,8 +252,23 @@ class CMAC(DefaultIP):
     @loopback.setter
     def loopback(self, operation):
         if not isinstance(operation, (int, bool)):
-            raise ValueError("operation must be int or bool")
+            raise ValueError("Operation must be int or bool")
         self.register_map.gt_loopback = int(bool(operation))
+
+    @property
+    def rsfec(self):
+        """ RS-FEC
+
+        False: RS-FEC disabled
+        True: RS-FEC enabled
+        """
+        return int(self.register_map.rsfec_config_enable) == 0x3
+
+    @rsfec.setter
+    def rsfec(self, operation):
+        if not isinstance(operation, (int, bool)):
+            raise ValueError("Operation must be int or bool")
+        self.register_map.rsfec_config_enable = 0x3 if operation else 0x0
 
 
 def _byte_ordering_endianess(num, length=4):

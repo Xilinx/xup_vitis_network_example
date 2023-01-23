@@ -72,7 +72,7 @@ module frame_padding (
 
     // Flag when a new frame starts
     always @(posedge S_AXI_ACLK) begin
-        if (S_AXI_ARESETN) begin
+        if (~S_AXI_ARESETN) begin
             new_frame = 1'b1;
         end
         else begin

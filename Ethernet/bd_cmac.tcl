@@ -340,6 +340,14 @@ set_property -dict [list \
 # Create instance: frame_padding, and set properties
 set frame_padding [ create_bd_cell -type module -reference frame_padding frame_padding ]
 
+create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice:1.0 slice_fp_60b_en
+connect_bd_net [get_bd_pins slice_fp_60b_en/Dout] [get_bd_pins frame_padding/pad60b_en]
+connect_bd_net [get_bd_pins ${cmac_name}/user_reg0] [get_bd_pins slice_fp_60b_en/Din]
+create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice:1.0 slice_fp_64b_en
+set_property -dict [list CONFIG.DIN_TO {1} CONFIG.DIN_FROM {1} CONFIG.DOUT_WIDTH {1}] [get_bd_cells slice_fp_64b_en]
+connect_bd_net [get_bd_pins slice_fp_64b_en/Dout] [get_bd_pins frame_padding/pad64b_en]
+connect_bd_net [get_bd_pins ${cmac_name}/user_reg0] [get_bd_pins slice_fp_64b_en/Din]
+
 # Create interface connections
 connect_bd_intf_net -intf_net S_AXILITE_1 -boundary_type lower [get_bd_intf_ports S_AXILITE] [get_bd_intf_pins smartconnect/S00_AXI]
 connect_bd_intf_net -intf_net smartconnect_M00_AXI -boundary_type lower [get_bd_intf_pins smartconnect/M00_AXI] [get_bd_intf_pins ${cmac_name}/s_axi]

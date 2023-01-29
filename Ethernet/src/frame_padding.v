@@ -62,7 +62,10 @@ module frame_padding (
     (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 M_AXIS TREADY" *)
     input wire                      M_AXIS_TREADY,
     (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 M_AXIS TLAST" *)
-    output wire                     M_AXIS_TLAST
+    output wire                     M_AXIS_TLAST,
+
+    input wire pad60b_en,
+    input wire pad64b_en
 );
     
     reg [511:0] data;
@@ -84,9 +87,13 @@ module frame_padding (
 
     always @(*) begin
         // If keep[59] is 0, the frame is shorter than 60-Byte
-        if (new_frame && (S_AXIS_TKEEP[59] == 0)) begin
-            // Force frame to be 60-Byte
-            keep = {4'h0,{60{1'b1}}};
+        if ((pad60b_en | pad64b_en) & new_frame && (S_AXIS_TKEEP[59] == 0)) begin
+            // Force frame to be 60-Byte or 64-Byte
+            if(pad64b_en) begin
+                keep = {64{1'b1}};
+            end else begin
+                keep = {4'h0,{60{1'b1}}};
+            end
             data[511:480] = 32'h0;
             // Pad remaining bytes with zeros
             for (i = 0; i < 60; i = i+1) begin

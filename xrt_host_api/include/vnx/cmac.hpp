@@ -14,6 +14,13 @@ struct stats_t {
   std::uint32_t cycle_count;
 };
 
+// Frame Padding Modes
+enum class frame_padding_mode {
+  NONE = 0, /**< No frame padding (default) */
+  B60  = 1,  /**< Pad to 60 bytes (typical) */
+  B64  = 2  /**< Pad to 64 bytes */
+};
+
 class CMAC {
 public:
   CMAC(xrt::ip &cmac);
@@ -50,17 +57,17 @@ public:
 
   /* Get RS FEC */
   bool get_rs_fec();
+
+  /* Set Padding Mode */
+  void set_padding_mode(frame_padding_mode m);
+
+  /* Get Padding Mode */
+  frame_padding_mode get_padding_mode();
+
 private:
   xrt::ip cmac;
 
   void update_statistics_registers();
-};
-
-// Frame Padding Modes
-enum class frame_padding_mode {
-  NONE = 0, /**< No frame padding (default) */
-  B60  = 1,  /**< Pad to 60 bytes (typical) */
-  B64  = 2,  /**< Pad to 64 bytes */
 };
 
 // Register Map

@@ -110,15 +110,31 @@ bool CMAC::get_rs_fec() {
 
 void CMAC::set_padding_mode(frame_padding_mode m) {
   switch(m){
-    case frame_padding_mode.NONE:
+    case frame_padding_mode::NONE:
       cmac.write_register(user_reg0, 0); 
       break;
-    case frame_padding_mode.B60:
+    case frame_padding_mode::B60:
       cmac.write_register(user_reg0, 1); 
       break;
-    case frame_padding_mode.B64:
+    case frame_padding_mode::B64:
       cmac.write_register(user_reg0, 2); 
       break;
+  }
+}
+
+frame_padding_mode CMAC::get_padding_mode() {
+  switch(cmac.read_register(user_reg0 & 0x3)){
+    case 0:
+      return frame_padding_mode::NONE;
+      break;
+    case 1:
+      return frame_padding_mode::B60;
+      break;
+    case 2:
+      return frame_padding_mode::B64;
+      break;
+    default:
+      return frame_padding_mode::NONE;
   }
 }
 

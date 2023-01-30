@@ -108,6 +108,20 @@ bool CMAC::get_rs_fec() {
   return cmac.read_register(rsfec_config_enable) == 0x3;
 }
 
+void CMAC::set_padding_mode(frame_padding_mode m) {
+  switch(m){
+    case frame_padding_mode.NONE:
+      cmac.write_register(user_reg0, 0); 
+      break;
+    case frame_padding_mode.B60:
+      cmac.write_register(user_reg0, 1); 
+      break;
+    case frame_padding_mode.B64:
+      cmac.write_register(user_reg0, 2); 
+      break;
+  }
+}
+
 void CMAC::update_statistics_registers() {
   cmac.write_register(stat_pm_tick, 0x1);
 }

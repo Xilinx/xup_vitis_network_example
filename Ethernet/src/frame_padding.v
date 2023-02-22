@@ -73,6 +73,13 @@ module frame_padding (
     reg         new_frame = 1'b1;
     integer i;
 
+    // Sync flags into our clock domain
+    reg pad60b_en_reg, pad64b_en_reg;
+    always @(posedge S_AXI_ACLK) begin
+       pad60b_en_reg <= pad60b_en;
+       pad64b_en_reg <= pad64b_en;
+    end
+
     // Flag when a new frame starts
     always @(posedge S_AXI_ACLK) begin
         if (~S_AXI_ARESETN) begin
@@ -87,9 +94,9 @@ module frame_padding (
 
     always @(*) begin
         // If keep[59] is 0, the frame is shorter than 60-Byte
-        if ((pad60b_en | pad64b_en) & new_frame && (S_AXIS_TKEEP[59] == 0)) begin
+        if ((pad60b_en_reg | pad64b_en_reg) && new_frame && (S_AXIS_TKEEP[59] == 0)) begin
             // Force frame to be 60-Byte or 64-Byte
-            if(pad64b_en) begin
+            if(pad64b_en_reg) begin
                 keep = {64{1'b1}};
             end else begin
                 keep = {4'h0,{60{1'b1}}};

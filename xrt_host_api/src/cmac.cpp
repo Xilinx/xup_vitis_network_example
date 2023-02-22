@@ -102,6 +102,9 @@ bool CMAC::get_loopback() {
 
 void CMAC::set_rs_fec(bool rs_fec) {
   cmac.write_register(rsfec_config_enable, rs_fec ? 0x3 : 0x0);
+  cmac.write_register(rsfec_config_ind_corr, rs_fec ? 0x7 : 0x0);
+  cmac.write_register(reset_reg, 0xC0000000);
+  cmac.write_register(reset_reg, 0);
 }
 
 bool CMAC::get_rs_fec() {

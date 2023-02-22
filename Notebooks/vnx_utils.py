@@ -35,7 +35,7 @@ from pynq import DefaultIP
 from pynq.utils import ReprDict
 import numpy as np
 import ipaddress
-from enum import Enum
+from enum import Enum, IntEnum
 
 
 def _slice_word(value, index, width=1):
@@ -268,7 +268,7 @@ class CMAC(DefaultIP):
         1: Padding to 60B
         2: Padding to 64B
         """
-        val = self.register_map.user_reg0 & 0x3
+        val = int(self.register_map.user_reg0) & 0x3
         if val == 0:
             return PaddingMode.DISABLED
         elif val == 1:

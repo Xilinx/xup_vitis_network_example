@@ -35,7 +35,7 @@ from pynq import DefaultIP
 from pynq.utils import ReprDict
 import numpy as np
 import ipaddress
-from enum import Enum, IntEnum
+from enum import Enum
 
 
 def _slice_word(value, index, width=1):

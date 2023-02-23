@@ -18,7 +18,7 @@ help:
 DEVICE ?= xilinx_u280_xdma_201920_3
 INTERFACE ?= 0
 KRNL_NAME = cmac
-PADDING_MODE ?= 0
+PADDING_MODE ?= 1
 
 XSA := $(strip $(patsubst %.xpfm, % , $(shell basename $(DEVICE))))
 TEMP_DIR := _x.$(XSA)

@@ -33,7 +33,11 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * minimum frame length, which is 60-Byte (without FCS)
  */
 
-module frame_padding (
+module frame_padding
+#(
+    parameter PADDING_MODE = 0 //0 = no padding; 1 = 60B padding; 2 = 64B padding
+)
+(
     (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 S_AXI_ACLK CLK" *)
     (* X_INTERFACE_PARAMETER = "ASSOCIATED_BUSIF S_AXIS:M_AXIS, ASSOCIATED_RESET S_AXI_ARESETN" *)
     input wire  S_AXI_ACLK,
@@ -62,23 +66,13 @@ module frame_padding (
     (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 M_AXIS TREADY" *)
     input wire                      M_AXIS_TREADY,
     (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 M_AXIS TLAST" *)
-    output wire                     M_AXIS_TLAST,
-
-    input wire pad60b_en,
-    input wire pad64b_en
+    output wire                     M_AXIS_TLAST
 );
     
     reg [511:0] data;
     reg [ 63:0] keep;
     reg         new_frame = 1'b1;
     integer i;
-
-    // Sync flags into our clock domain
-    reg pad60b_en_reg, pad64b_en_reg;
-    always @(posedge S_AXI_ACLK) begin
-       pad60b_en_reg <= pad60b_en;
-       pad64b_en_reg <= pad64b_en;
-    end
 
     // Flag when a new frame starts
     always @(posedge S_AXI_ACLK) begin
@@ -94,9 +88,9 @@ module frame_padding (
 
     always @(*) begin
         // If keep[59] is 0, the frame is shorter than 60-Byte
-        if ((pad60b_en_reg | pad64b_en_reg) && new_frame && (S_AXIS_TKEEP[59] == 0)) begin
+        if ((PADDING_MODE > 0) && new_frame && (S_AXIS_TKEEP[59] == 0)) begin
             // Force frame to be 60-Byte or 64-Byte
-            if(pad64b_en_reg) begin
+            if(PADDING_MODE == 2) begin
                 keep = {64{1'b1}};
             end else begin
                 keep = {4'h0,{60{1'b1}}};

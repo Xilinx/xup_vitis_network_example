@@ -18,6 +18,7 @@ help:
 DEVICE ?= xilinx_u280_xdma_201920_3
 INTERFACE ?= 0
 KRNL_NAME = cmac
+PADDING_MODE ?= 0
 
 XSA := $(strip $(patsubst %.xpfm, % , $(shell basename $(DEVICE))))
 TEMP_DIR := _x.$(XSA)
@@ -51,7 +52,7 @@ $(TEMP_DIR)/${KRNL_NAME}%.xo: current_interface=$(subst $(TEMP_DIR)/${KRNL_NAME}
 $(TEMP_DIR)/${KRNL_NAME}%.xo: template.xml package_cmac.tcl bd_cmac.tcl src/*.v
 	mkdir -p $(TEMP_DIR)
 	./duplicate_patch.sh
-	$(VIVADO) -mode batch -source package_cmac.tcl -notrace -tclargs $@ ${KRNL_NAME}_$(current_interface) $(XSA) $(current_interface)
+	$(VIVADO) -mode batch -source package_cmac.tcl -notrace -tclargs $@ ${KRNL_NAME}_$(current_interface) $(XSA) $(current_interface) $(PADDING_MODE)
 
 
 check-devices:

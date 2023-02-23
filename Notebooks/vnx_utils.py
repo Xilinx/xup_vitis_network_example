@@ -78,12 +78,6 @@ _cmac_modes = {
         3: 'Runtime Switchable CAUI4'
     }
 
-class PaddingMode(IntEnum):
-    """Supported frame padding modes"""
-    DISABLED = 0
-    B60 = 1
-    B64 = 2
-
 class CMAC(DefaultIP):
     """This class wrapps the common function of the CMAC IP
     """
@@ -259,35 +253,6 @@ class CMAC(DefaultIP):
         if not isinstance(operation, (int, bool)):
             raise ValueError("Operation must be int or bool")
         self.register_map.gt_loopback = int(bool(operation))
-
-    @property
-    def padding(self):
-        """ Frame Padding mode
-
-        0: Frame padding disabled
-        1: Padding to 60B
-        2: Padding to 64B
-        """
-        val = int(self.register_map.user_reg0) & 0x3
-        if val == 0:
-            return PaddingMode.DISABLED
-        elif val == 1:
-            return PaddingMode.B60
-        elif val == 2:
-            return PaddingMode.B64
-
-    @padding.setter
-    def padding(self, mode):
-        if not isinstance(mode, int):
-            raise ValueError("Mode must be int or equivalent")
-        if mode == PaddingMode.DISABLED:
-            self.register_map.user_reg0 = 0
-        elif mode == PaddingMode.B60:
-            self.register_map.user_reg0 = 1
-        elif mode == PaddingMode.B64:
-            self.register_map.user_reg0 = 2
-        else:
-            raise ValueError("Invalid mode")
 
     @property
     def rsfec(self):

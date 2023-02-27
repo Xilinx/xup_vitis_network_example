@@ -6,7 +6,7 @@ This documents provides an overview of the cmac kernel.
 
 The `cmac` kernel is an RTL free running kernel which encapsulates the [UltraScale+ Integrated 100G Ethernet Subsystem](https://www.xilinx.com/products/intellectual-property/cmac_usplus.html). The kernel uses `ap_ctrl_none` as hardware control protocol. 
 
-This kernel is configured according to the `INTERFACE` and `DEVICE` arguments passed to make. It exposes two 512-bit AXI4-Stream interfaces (S_AXIS and M_AXIS) to the user logic, which run at the same frequency as the kernel, internally it has CDC (clock domain crossing) logic to convert from kernel clock to the 100G Ethernet Subsystem clock. It also provides and AXI4-Lite interface to check the UltraScale+ Integrated 100G Ethernet Subsystem register map.
+This kernel is configured according to the `INTERFACE`, `DEVICE`, and `PADDING_MODE` arguments passed to make. It exposes two 512-bit AXI4-Stream interfaces (S_AXIS and M_AXIS) to the user logic, which run at the same frequency as the kernel, internally it has CDC (clock domain crossing) logic to convert from kernel clock to the 100G Ethernet Subsystem clock. It also provides and AXI4-Lite interface to check the UltraScale+ Integrated 100G Ethernet Subsystem register map.
 
 ![](../img/cmac_kernel.png)
 
@@ -14,11 +14,15 @@ This kernel is configured according to the `INTERFACE` and `DEVICE` arguments pa
 
 The 100G Ethernet Subsystem offers an integrated 100 Gigabit per second (Gbps) Ethernet Media Access Controller (MAC), Physical Coding Sublayer (PCS), IEEE 802.3bj Reed-Solomon Forward Error Correction (RS-FEC), and 100GE Auto-Negotiation/Link Training (AN/LT) IP to enable solutions such as KR4, CR4, SR4, CWDM4, PSM4, or ER4f for high performance applications.
 
-> **Note:** RS-FEC and Auto-Negotiation/Link Training are not enabled in this kernel.
+> **Note:** Auto-Negotiation/Link Training is not enabled in this kernel.
 
 ### cmac_sync
 
 This IP implements the Core Bring Up Sequence described in the [PG203](https://docs.xilinx.com/v/u/en-US/pg203-cmac-usplus)
+
+### frame_padding
+
+This IP implements optional frame padding to 60 or 64 bytes. The padding mode is set at compile-time by the `PADDING_MODE` parameter as follows: mode `0` indicates no padding, mode `1` (default) pads to 60 bytes, and mode `2` pads to 64 bytes. 
 
 ### Clock Domain Crossing
 
@@ -63,9 +67,10 @@ To generate the an xclbin file that uses the [UltraScale+ Integrated 100G Ethern
 
 > **Note:** To enable Auto-Negotiation/Link Training you would need a separate license. Check the documentation for more information.
 
-## Enabling RS-FEC
+## Changing RS-FEC
 
-To enable RS-FEC, you need to modify the [bd_cmac.tcl](bd_cmac.tcl#147) file and set the `CONFIG.INCLUDE_RS_FEC` to 1. There are also some steps required at runtime, please refer to the [UltraScale+ Integrated 100G Ethernet Subsystem](https://www.xilinx.com/products/intellectual-property/cmac_usplus.html) documentation for more details.
+RS-FEC is enabled by default in the CMAC instance. At runtime RS-FEC is deactivated by default and can be activated by calling the corresponding functions in the Pynq and C++ drivers. When active, the RS-FEC is set to sub-mode 1 (both correction and indication active). Please refer to the [UltraScale+ Integrated 100G Ethernet Subsystem](https://www.xilinx.com/products/intellectual-property/cmac_usplus.html) documentation for more details. 
 
+> **Note:** When active, RS-FEC increases latency.
 ------------------------------------------------------
 <p align="center">Copyright&copy; 2022 Xilinx</p>

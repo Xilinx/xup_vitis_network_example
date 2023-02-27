@@ -339,6 +339,7 @@ set_property -dict [list \
 
 # Create instance: frame_padding, and set properties
 set frame_padding [ create_bd_cell -type module -reference frame_padding frame_padding ]
+set_property -dict [list CONFIG.PADDING_MODE ${padding_mode}] $frame_padding
 
 # Create interface connections
 connect_bd_intf_net -intf_net S_AXILITE_1 -boundary_type lower [get_bd_intf_ports S_AXILITE] [get_bd_intf_pins smartconnect/S00_AXI]

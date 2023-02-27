@@ -27,9 +27,9 @@
 #   OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 #   ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-if { $::argc != 4 } {
-    puts "ERROR: Program \"$::argv0\" requires 4 arguments!, (${argc} given)\n"
-    puts "Usage: $::argv0 <xoname> <krnl_name> <device> <interface>\n"
+if { $::argc != 5 } {
+    puts "ERROR: Program \"$::argv0\" requires 5 arguments!, (${argc} given)\n"
+    puts "Usage: $::argv0 <xoname> <krnl_name> <device> <interface> <padding_mode>\n"
     exit
 }
 
@@ -37,10 +37,11 @@ set xoname  [lindex $::argv 0]
 set krnl_name [lindex $::argv 1]
 set device    [lindex $::argv 2]
 set interface [lindex $::argv 3]
+set padding_mode [lindex $::argv 4]
 
 set suffix "${krnl_name}_${device}"
 
-puts "INFO: xoname-> ${xoname}\n      krnl_name-> ${krnl_name}\n      device-> ${device}\n      interface-> ${interface}"
+puts "INFO: xoname-> ${xoname}\n      krnl_name-> ${krnl_name}\n      device-> ${device}\n      interface-> ${interface}\n      padding_mode-> ${padding_mode}"
 
 set projName kernel_pack
 set bd_name cmac_bd

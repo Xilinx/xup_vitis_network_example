@@ -33,7 +33,11 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * minimum frame length, which is 60-Byte (without FCS)
  */
 
-module frame_padding (
+module frame_padding
+#(
+    parameter PADDING_MODE = 0 //0 = no padding; 1 = 60B padding; 2 = 64B padding
+)
+(
     (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 S_AXI_ACLK CLK" *)
     (* X_INTERFACE_PARAMETER = "ASSOCIATED_BUSIF S_AXIS:M_AXIS, ASSOCIATED_RESET S_AXI_ARESETN" *)
     input wire  S_AXI_ACLK,
@@ -84,9 +88,13 @@ module frame_padding (
 
     always @(*) begin
         // If keep[59] is 0, the frame is shorter than 60-Byte
-        if (new_frame && (S_AXIS_TKEEP[59] == 0)) begin
-            // Force frame to be 60-Byte
-            keep = {4'h0,{60{1'b1}}};
+        if ((PADDING_MODE > 0) && new_frame && (S_AXIS_TKEEP[59] == 0)) begin
+            // Force frame to be 60-Byte or 64-Byte
+            if(PADDING_MODE == 2) begin
+                keep = {64{1'b1}};
+            end else begin
+                keep = {4'h0,{60{1'b1}}};
+            end
             data[511:480] = 32'h0;
             // Pad remaining bytes with zeros
             for (i = 0; i < 60; i = i+1) begin

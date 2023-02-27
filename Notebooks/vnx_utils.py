@@ -78,7 +78,6 @@ _cmac_modes = {
         3: 'Runtime Switchable CAUI4'
     }
 
-
 class CMAC(DefaultIP):
     """This class wrapps the common function of the CMAC IP
     """
@@ -268,8 +267,17 @@ class CMAC(DefaultIP):
     def rsfec(self, operation):
         if not isinstance(operation, (int, bool)):
             raise ValueError("Operation must be int or bool")
-        self.register_map.rsfec_config_enable = 0x3 if operation else 0x0
-
+        # set RSFEC sub-mode 1 (correction and indication)
+        if operation:
+            self.register_map.rsfec_config_enable = 0x3
+            self.register_map.rsfec_config_ind_corr = 7
+            self.register_map.reset_reg = 0xC0000000
+            self.register_map.reset_reg = 0
+        else:
+            self.register_map.rsfec_config_enable = 0
+            self.register_map.rsfec_config_ind_corr = 0
+            self.register_map.reset_reg = 0xC0000000
+            self.register_map.reset_reg = 0
 
 def _byte_ordering_endianess(num, length=4):
     """

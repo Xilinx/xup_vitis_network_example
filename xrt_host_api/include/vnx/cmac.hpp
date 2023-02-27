@@ -50,6 +50,7 @@ public:
 
   /* Get RS FEC */
   bool get_rs_fec();
+
 private:
   xrt::ip cmac;
 
@@ -67,6 +68,7 @@ constexpr std::size_t conf_rx = 0x0014;
 constexpr std::size_t core_mode = 0x0020;
 constexpr std::size_t version = 0x0024;
 constexpr std::size_t gt_loopback = 0x0090;
+constexpr std::size_t user_reg0 = 0x00CC;
 constexpr std::size_t stat_tx_status = 0x0200;
 constexpr std::size_t stat_rx_status = 0x0204;
 constexpr std::size_t stat_status = 0x0208;
@@ -128,6 +130,7 @@ constexpr std::size_t stat_rx_packets_bad_fcs = 0x06C8;
 constexpr std::size_t stat_rx_stomped_fcs = 0x06D0;
 constexpr std::size_t stat_rx_pause = 0x06F8;
 constexpr std::size_t stat_rx_user_pause = 0x0700;
-
+// FEC
+constexpr std::size_t rsfec_config_ind_corr = 0x1000;
 constexpr std::size_t rsfec_config_enable = 0x107C;
 } // namespace vnx

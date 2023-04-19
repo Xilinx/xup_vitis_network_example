@@ -127,6 +127,16 @@ set_property physical_name ${refclkIntfName}_p [ipx::get_port_maps CLK_P -of_obj
 ipx::add_port_map CLK_N [ipx::get_bus_interfaces ${refclkIntfName} -of_objects [ipx::current_core]]
 set_property physical_name ${refclkIntfName}_n [ipx::get_port_maps CLK_N -of_objects [ipx::get_bus_interfaces ${refclkIntfName} -of_objects [ipx::current_core]]]
 
+# TLM stuff
+source $::env(XILINX_VITIS)/data/emulation/scripts/tlm_package_util.tcl
+tlm_package::add_xtlm_aximm_slave "S_AXILITE" 64 32 lite [ipx::current_core]
+tlm_package::add_xtlm_axis_master "M_AXIS" 64 [ipx::current_core]
+tlm_package::add_xtlm_axis_slave "S_AXIS" 64 [ipx::current_core]
+tlm_package::add_ap_reset ap_rst_n [ipx::current_core]
+tlm_package::add_ap_clock ap_clk [ipx::current_core]
+tlm_package::add_sc_files $krnl_name { cmac.h } { cmac.cpp } [ipx::current_core]
+tlm_package::add_sc_dependent_libs $krnl_name { xtlm xtlm_ap_ctrl_v1_0 } [ipx::current_core]
+
 
 set_property xpm_libraries {XPM_CDC XPM_MEMORY XPM_FIFO} [ipx::current_core]
 set_property supported_families { } [ipx::current_core]
@@ -139,5 +149,8 @@ close_project -delete
 if {[file exists "${xoname}"]} {
     file delete -force "${xoname}"
 }
+file copy -force ./src/sysc ./packaged_kernel_${suffix}
 
 package_xo -xo_path ${xoname} -kernel_name ${krnl_name} -ip_directory ./packaged_kernel_${suffix} -kernel_xml ./kernel_${interface}.xml
+
+

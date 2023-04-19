@@ -1,3 +1,6 @@
+// Copyright (C) 2022 Xilinx, Inc
+// SPDX-License-Identifier: BSD-3-Clause
+
 #include "xtlm.h"
 #include "xtlm_ap_ctrl.h"
 #include "ipc2axis_socket.h"

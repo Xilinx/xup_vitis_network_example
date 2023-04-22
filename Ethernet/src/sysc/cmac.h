@@ -16,13 +16,20 @@ class cmac : public xsc::xtlm_ap_ctrl_none {
         ~cmac();
 
         //! Declare interfaces..
-        xtlm::xtlm_aximm_target_socket* s_axi_control_rd_socket;
-        xtlm::xtlm_aximm_target_socket* s_axi_control_wr_socket;
+        xtlm::xtlm_aximm_target_socket* S_AXILITE_rd_socket;
+        xtlm::xtlm_aximm_target_socket* S_AXILITE_wr_socket;
 
-        xtlm::xtlm_axis_target_socket *in_socket;
-        xtlm::xtlm_axis_target_socket_util *in_util;
-        xtlm::xtlm_axis_initiator_socket *out_socket;
-        xtlm::xtlm_axis_initiator_socket_util *out_util;
+        xtlm::xtlm_axis_target_socket *S_AXIS_socket;
+        xtlm::xtlm_axis_target_socket_util *S_AXIS_util;
+        xtlm::xtlm_axis_initiator_socket *M_AXIS_socket;
+        xtlm::xtlm_axis_initiator_socket_util *M_AXIS_util;
+
+        // Declare interface-independent dummy ports
+        sc_in<bool> clk_gt_freerun;
+        sc_in<sc_bv<4> > gt_rxp_in;
+        sc_in<sc_bv<4> > gt_rxn_in;
+        sc_out<sc_bv<4> > gt_txp_out;
+        sc_out<sc_bv<4> > gt_txn_out;
     private:
     	xsc::ipc2axis_socket *ipc2axis_socket;
     	xsc::axis2ipc_socket *axis2ipc_socket;
@@ -40,8 +47,8 @@ class cmac : public xsc::xtlm_ap_ctrl_none {
         unsigned char reg_mem[REG_MEM_SIZE];
         uint32_t*     kernel_args;
 
-        xtlm::xtlm_aximm_target_wr_socket_util*  s_axi_control_wr_util;
-        xtlm::xtlm_aximm_target_rd_socket_util*  s_axi_control_rd_util;
+        xtlm::xtlm_aximm_target_wr_socket_util*  S_AXILITE_wr_util;
+        xtlm::xtlm_aximm_target_rd_socket_util*  S_AXILITE_rd_util;
 
         void log(std::string msg);
 };

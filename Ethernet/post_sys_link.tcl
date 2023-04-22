@@ -30,6 +30,7 @@
 set board_name [get_property board_part [current_project]]
 set pfm_name [get_property PFM_NAME [get_files [current_bd_design].bd]]
 set __TCLID "(Post-linking ${board_name} QSFP GT pins and GT clock TCL hook): "
+set hw_emu 0
 
 # *************************************************************************
 puts "${__TCLID} the name of the board is: ${board_name}"
@@ -63,34 +64,48 @@ if {[llength [get_bd_intf_ports ${io_clk_gt0} -quiet]] eq 1} {
   set bd_gt_gtyquad_1        "io_gt_qsfp1_00"
 } else {
   puts "${__TCLID} WARNING no GT ports were found"
+  # At this point we might be in hw_emu. Scan for simulation component to make sure
+  set sim_clk_gens [get_bd_cells -filter "VLNV=~xilinx.com:ip:sim_clk_gen:*"]
+  if {[llength ${sim_clk_gens}] > 0} {
+    puts "${__TCLID} Hardware emulation detected."
+    set hw_emu 1
+    # Create a simulator differential clock to tie off refclk ports
+    # Frequency doesnt matter, we don't use this clock in the sim model
+    create_bd_cell -type ip -vlnv xilinx.com:ip:sim_clk_gen:1.0 gt_refclk_sim
+    set_property CONFIG.CLOCK_TYPE {Differential} [get_bd_cells gt_refclk_sim]
+  }
 }
 
-puts "${__TCLID} bd gt quad is ${bd_gt_gtyquad_0} and gt clock ref is ${bd_gt_ref_clk_0_name_a}"
-puts "${__TCLID} bd gt quad is ${bd_gt_gtyquad_1} and gt clock ref is ${bd_gt_ref_clk_1_name_a}"
+if {[expr $hw_emu == 0]} {
+  puts "${__TCLID} bd gt quad is ${bd_gt_gtyquad_0} and gt clock ref is ${bd_gt_ref_clk_0_name_a}"
+  puts "${__TCLID} bd gt quad is ${bd_gt_gtyquad_1} and gt clock ref is ${bd_gt_ref_clk_1_name_a}"
 
-# U280 -> frc0(50)
-# U250 -> frc1(100 MHz)
-# U50  -> frc2(100 MHz)
-# U55c -> frc2(100 MHz)
+  # U280 -> frc0(50)
+  # U250 -> frc1(100 MHz)
+  # U50  -> frc2(100 MHz)
+  # U55c -> frc2(100 MHz)
 
-set frc0 "clk_gt_freerun"
-set frc1 "ii_level1_wire/ulp_m_aclk_freerun_ref_00"
-set frc2 "ii_level0_wire/ulp_m_aclk_freerun_ref_00"
-set frc3 "blp_s_aclk_freerun_ref_00"
+  set frc0 "clk_gt_freerun"
+  set frc1 "ii_level1_wire/ulp_m_aclk_freerun_ref_00"
+  set frc2 "ii_level0_wire/ulp_m_aclk_freerun_ref_00"
+  set frc3 "blp_s_aclk_freerun_ref_00"
 
-if {[llength [get_bd_ports ${frc0}]] eq 1} {
-  set __bd_free_running_clk ${frc0}
-} elseif {[llength [get_bd_pins ${frc1}]] eq 1} {
-  set __bd_free_running_clk ${frc1}
-} elseif {[llength [get_bd_pins ${frc2}]] eq 1} {
-  set __bd_free_running_clk ${frc2}
-} elseif {[llength [get_bd_pins ${frc3}]] eq 1} {
-  set __bd_free_running_clk ${frc3}
-} else {
-  puts "${__TCLID} WARNING no free running clock was found"
+  if {[llength [get_bd_ports ${frc0}]] eq 1} {
+    set __bd_free_running_clk ${frc0}
+  } elseif {[llength [get_bd_pins ${frc1}]] eq 1} {
+    set __bd_free_running_clk ${frc1}
+  } elseif {[llength [get_bd_pins ${frc2}]] eq 1} {
+    set __bd_free_running_clk ${frc2}
+  } elseif {[llength [get_bd_pins ${frc3}]] eq 1} {
+    set __bd_free_running_clk ${frc3}
+  } else {
+    puts "${__TCLID} WARNING no free running clock was found"
+  }
+
+  puts "${__TCLID} free running clock is ${__bd_free_running_clk}"
+
 }
 
-puts "${__TCLID} free running clock is ${__bd_free_running_clk}"
 
 set __gt_k_list {}
 set __gt_intf_width 0
@@ -130,50 +145,69 @@ if {[dict exists ${config_info} kernels]} {
   if {[llength $__gt_k_list] > 0} {
     puts "${__TCLID} Iterating over kernels"
     if {[info exists bd_gt_gtyquad_0] eq 0} {
-      puts "${__TCLID} ERROR this platform (${pfm_name}) does not have GT support or the GT port names are unknown"
-      # The line below will always give an error and it is used to stop vpl process
-      connect_bd_intf_net error error
+      if {[expr $hw_emu == 0]} {
+        puts "${__TCLID} ERROR this platform (${pfm_name}) does not have GT support or the GT port names are unknown"
+        # The line below will always give an error and it is used to stop vpl process
+        connect_bd_intf_net error error
+      }
     }
 
     puts "${__TCLID} GT Kernel List ${__gt_k_list}"
     foreach __k_inst ${__gt_k_list} {
-      # Look for a gt capable interface
-      set __gt_intf [get_bd_intf_pins -quiet -of_objects [get_bd_cells ${__k_inst}] -filter {VLNV=~*gt_rtl*}]
-      puts "${__TCLID} found GT capable interface: ${__gt_intf}"
-      if {[string first "gt_serial_port0" ${__gt_intf}] != -1} {
-        puts "${__TCLID} connecting GT quad ${bd_gt_gtyquad_0} <-> ${__gt_intf}"
-        connect_bd_intf_net [get_bd_intf_ports ${bd_gt_gtyquad_0}] ${__gt_intf}
-      } 
-      if {[string first "gt_serial_port1" ${__gt_intf}] != -1} {
-        puts "${__TCLID} connecting GT quad ${bd_gt_gtyquad_1} <-> ${__gt_intf}"
-        connect_bd_intf_net [get_bd_intf_ports ${bd_gt_gtyquad_1}] ${__gt_intf}
+      
+      # Look for a gt capable interface (if not in hardware emulation)
+      if {[expr $hw_emu == 0]} {
+        set __gt_intf [get_bd_intf_pins -quiet -of_objects [get_bd_cells ${__k_inst}] -filter {VLNV=~*gt_rtl*}]
+        puts "${__TCLID} found GT capable interface: ${__gt_intf}"
+        if {[string first "gt_serial_port0" ${__gt_intf}] != -1} {
+          puts "${__TCLID} connecting GT quad ${bd_gt_gtyquad_0} <-> ${__gt_intf}"
+          connect_bd_intf_net [get_bd_intf_ports ${bd_gt_gtyquad_0}] ${__gt_intf}
+        } 
+        if {[string first "gt_serial_port1" ${__gt_intf}] != -1} {
+          puts "${__TCLID} connecting GT quad ${bd_gt_gtyquad_1} <-> ${__gt_intf}"
+          connect_bd_intf_net [get_bd_intf_ports ${bd_gt_gtyquad_1}] ${__gt_intf}
+        }
       }
-      # Look for a gt clock capable interface
+      
+      # Look for a gt clock capable interface (tie it off in hardware emulation)
       set __refclk0_intf [get_bd_intf_pins -of_objects [get_bd_cells ${__k_inst}] -filter {NAME =~ "gt_refclk0*"} -quiet]
       if {[llength ${__refclk0_intf}] > 0} {
-        puts "${__TCLID} connecting GT reference clock ${bd_gt_ref_clk_0_name_a} -> ${__k_inst}/gt_refclk0"
-        connect_bd_intf_net [get_bd_intf_ports ${bd_gt_ref_clk_0_name_a}] ${__refclk0_intf}
+        if {[expr $hw_emu == 1]} {
+          puts "${__TCLID} tie-off GT reference clock ${__k_inst}/gt_refclk0"
+          connect_bd_intf_net [get_bd_intf_pins gt_refclk_sim/diff_clk] ${__refclk0_intf}
+        } else {
+          puts "${__TCLID} connecting GT reference clock ${bd_gt_ref_clk_0_name_a} -> ${__k_inst}/gt_refclk0"
+          connect_bd_intf_net [get_bd_intf_ports ${bd_gt_ref_clk_0_name_a}] ${__refclk0_intf}
+        }
       }
       set __refclk1_intf [get_bd_intf_pins -of_objects [get_bd_cells ${__k_inst}] -filter {NAME =~ "gt_refclk1*"} -quiet]
       if {[llength ${__refclk1_intf}] > 0} {
-        puts "${__TCLID} connecting GT reference clock ${bd_gt_ref_clk_1_name_a} -> ${__k_inst}/gt_refclk1"
-        connect_bd_intf_net [get_bd_intf_ports ${bd_gt_ref_clk_1_name_a}] ${__refclk1_intf}
-      }
-      # Get Free running clock pin name and connection if any
-      set __kernel_freerunclk_pins [get_bd_pins -of_objects [get_bd_cells ${__k_inst}] -filter {NAME =~ "clk_gt_freerun"}]
-      set __freerunclk_connection [get_bd_nets -of_objects [get_bd_pins -of_objects [get_bd_cells ${__k_inst}] -filter {NAME =~ "clk_gt_freerun"}]]
-      puts "${__TCLID} kernel free running clock pin: ${__kernel_freerunclk_pins}"
-
-      if {[llength ${__kernel_freerunclk_pins}] ne 1} {
-        puts "${__TCLID} ERROR - No clk_gt_freerun pin found"
-      } else {
-        if {[llength ${__freerunclk_connection}] ne 0} {
-          puts "${__TCLID} ${__kernel_freerunclk_pins} was connected to ${__freerunclk_connection}. Connection was removed"
-          disconnect_bd_net ${__freerunclk_connection} [get_bd_pins ${__kernel_freerunclk_pins}]
+        if {[expr $hw_emu == 1]} {
+          puts "${__TCLID} tie-off GT reference clock ${__k_inst}/gt_refclk1"
+          connect_bd_intf_net [get_bd_intf_pins gt_refclk_sim/diff_clk] ${__refclk1_intf}
+        } else {
+          puts "${__TCLID} connecting GT reference clock ${bd_gt_ref_clk_1_name_a} -> ${__k_inst}/gt_refclk1"
+          connect_bd_intf_net [get_bd_intf_ports ${bd_gt_ref_clk_1_name_a}] ${__refclk1_intf}
         }
-        puts "${__TCLID} connecting free running clock ${__bd_free_running_clk} -> ${__kernel_freerunclk_pins}"
-        connect_bd_net [get_bd_pins ${__bd_free_running_clk}] [get_bd_pins ${__kernel_freerunclk_pins}]
-      }      
+      }
+      
+      # Get Free running clock pin name and connection if any (and if not in hardware emulation)
+      if {[expr $hw_emu == 0]} {
+        set __kernel_freerunclk_pins [get_bd_pins -of_objects [get_bd_cells ${__k_inst}] -filter {NAME =~ "clk_gt_freerun"}]
+        set __freerunclk_connection [get_bd_nets -of_objects [get_bd_pins -of_objects [get_bd_cells ${__k_inst}] -filter {NAME =~ "clk_gt_freerun"}]]
+        puts "${__TCLID} kernel free running clock pin: ${__kernel_freerunclk_pins}"
+
+        if {[llength ${__kernel_freerunclk_pins}] ne 1} {
+          puts "${__TCLID} ERROR - No clk_gt_freerun pin found"
+        } else {
+          if {[llength ${__freerunclk_connection}] ne 0} {
+            puts "${__TCLID} ${__kernel_freerunclk_pins} was connected to ${__freerunclk_connection}. Connection was removed"
+            disconnect_bd_net ${__freerunclk_connection} [get_bd_pins ${__kernel_freerunclk_pins}]
+          }
+          puts "${__TCLID} connecting free running clock ${__bd_free_running_clk} -> ${__kernel_freerunclk_pins}"
+          connect_bd_net [get_bd_pins ${__bd_free_running_clk}] [get_bd_pins ${__kernel_freerunclk_pins}]
+        }
+      }
     }
   }
 }

@@ -9,20 +9,20 @@ cmac::cmac(sc_module_name name, xsc::common_cpp::properties& _properties) : xsc:
 	unsigned int stream_width = _properties.getLongLong("AXIS_TDATA_WIDTH");
 	stream_width_bytes = stream_width / 8;
 
-    s_axi_control_rd_socket = new xtlm::xtlm_aximm_target_socket("rd_socket", 32);
-    s_axi_control_rd_util   = new xtlm::xtlm_aximm_target_rd_socket_util("rd_util", xtlm::aximm::TRANSACTION, 32);
-    s_axi_control_wr_socket = new xtlm::xtlm_aximm_target_socket("wr_socket", 32);
-    s_axi_control_wr_util   = new xtlm::xtlm_aximm_target_wr_socket_util("wr_util", xtlm::aximm::TRANSACTION, 32);
-    s_axi_control_rd_socket->bind(s_axi_control_rd_util->rd_socket);
-    s_axi_control_wr_socket->bind(s_axi_control_wr_util->wr_socket);
+    S_AXILITE_rd_socket = new xtlm::xtlm_aximm_target_socket("rd_socket", 32);
+    S_AXILITE_rd_util   = new xtlm::xtlm_aximm_target_rd_socket_util("rd_util", xtlm::aximm::TRANSACTION, 32);
+    S_AXILITE_wr_socket = new xtlm::xtlm_aximm_target_socket("wr_socket", 32);
+    S_AXILITE_wr_util   = new xtlm::xtlm_aximm_target_wr_socket_util("wr_util", xtlm::aximm::TRANSACTION, 32);
+    S_AXILITE_rd_socket->bind(S_AXILITE_rd_util->rd_socket);
+    S_AXILITE_wr_socket->bind(S_AXILITE_wr_util->wr_socket);
 
-	in_socket = new xtlm::xtlm_axis_target_socket("in", stream_width);
-	in_util = new xtlm::xtlm_axis_target_socket_util("in_util", xtlm::axis::TRANSACTION, stream_width);
-	in_socket->bind((in_util->stream_socket));
+	S_AXIS_socket = new xtlm::xtlm_axis_target_socket("in", stream_width);
+	S_AXIS_util = new xtlm::xtlm_axis_target_socket_util("S_AXIS_util", xtlm::axis::TRANSACTION, stream_width);
+	S_AXIS_socket->bind((S_AXIS_util->stream_socket));
 
-	out_socket = new xtlm::xtlm_axis_initiator_socket("out", stream_width);
-	out_util = new xtlm::xtlm_axis_initiator_socket_util("out_util", xtlm::axis::TRANSACTION, stream_width);
-	out_util->stream_socket.bind(*out_socket);
+	M_AXIS_socket = new xtlm::xtlm_axis_initiator_socket("out", stream_width);
+	M_AXIS_util = new xtlm::xtlm_axis_initiator_socket_util("M_AXIS_util", xtlm::axis::TRANSACTION, stream_width);
+	M_AXIS_util->stream_socket.bind(*M_AXIS_socket);
 
 	//! Instantiate IPC2AXIS Socket
 	ipc2axis_socket = new xsc::ipc2axis_socket("ipc2axis_socket", get_ipi_name(this->name())+"_ingress");
@@ -32,25 +32,25 @@ cmac::cmac(sc_module_name name, xsc::common_cpp::properties& _properties) : xsc:
     kernel_args = (uint32_t*)(&reg_mem);
 
     SC_METHOD(kernel_config_write);
-    sensitive << s_axi_control_wr_util->transaction_available;
+    sensitive << S_AXILITE_wr_util->transaction_available;
     dont_initialize();
 
     SC_METHOD(kernel_status_read);
-    sensitive << s_axi_control_rd_util->transaction_available;
+    sensitive << S_AXILITE_rd_util->transaction_available;
     dont_initialize();
 
     SC_METHOD(axis2ipc_send);
-    sensitive << in_util->transaction_available;
+    sensitive << S_AXIS_util->transaction_available;
     sensitive << axis2ipc_socket->event(); //! transfer complete
     sensitive << trigger_till_sock_connected; //!Re-trigger after given time
 	dont_initialize();
 
 	SC_METHOD(ipc2axis_receive);
 	sensitive << ipc2axis_socket->event();
-	sensitive << out_util->transfer_done;
+	sensitive << M_AXIS_util->transfer_done;
 
 	SC_METHOD(send_response);
-	sensitive << out_util->transfer_done;
+	sensitive << M_AXIS_util->transfer_done;
 	dont_initialize();
 
 }
@@ -62,7 +62,7 @@ void cmac::log(std::string msg){
 
 void cmac::ipc2axis_receive()
 {
-	if (!out_util->is_transfer_done())
+	if (!M_AXIS_util->is_transfer_done())
 	{
         log("transfer done to port OUT");
 		return;
@@ -75,7 +75,7 @@ void cmac::ipc2axis_receive()
         log("HAVE RX PAYLOAD of size "+std::to_string(nbytes));
         unsigned int nbeats = (nbytes + stream_width_bytes - 1) / stream_width_bytes;
 		payload->set_n_beats(nbeats);
-		out_util->transport(payload, SC_ZERO_TIME);
+		M_AXIS_util->transport(payload, SC_ZERO_TIME);
 	}
 }
 
@@ -95,14 +95,14 @@ void cmac::axis2ipc_send()
         log("Send: waiting for external proc to connect");
 		return;
 	}
-	if (!axis2ipc_socket->is_transfer_done() || (!in_util->is_transaction_available()))
+	if (!axis2ipc_socket->is_transfer_done() || (!S_AXIS_util->is_transaction_available()))
 	{
         log("Send: triggered for unknown reason");
 		return;
 	}
 
 	//Get the payload
-	xtlm::axis_payload* payload = in_util->sample_transaction();
+	xtlm::axis_payload* payload = S_AXIS_util->sample_transaction();
     log("HAVE TX PAYLOAD of size "+std::to_string(payload->get_tdata_length()));
 
     //do any relevant processing here such as padding
@@ -121,7 +121,7 @@ std::string cmac::get_ipi_name(std::string s){
 
 
 void cmac::kernel_config_write(){
-    xtlm::aximm_payload* trans = s_axi_control_wr_util->get_transaction();
+    xtlm::aximm_payload* trans = S_AXILITE_wr_util->get_transaction();
     unsigned long long addr = trans->get_address() & 0xffff;
     unsigned int data = *(unsigned int*)trans->get_data_ptr();
 
@@ -141,11 +141,11 @@ void cmac::kernel_config_write(){
 
     trans->set_response_status(xtlm::XTLM_OK_RESPONSE);
     sc_core::sc_time delay = SC_ZERO_TIME;
-    s_axi_control_wr_util->send_resp(*trans, delay);
+    S_AXILITE_wr_util->send_resp(*trans, delay);
 }
 
 void cmac::kernel_status_read(){
-    xtlm::aximm_payload* trans = s_axi_control_rd_util->get_transaction();
+    xtlm::aximm_payload* trans = S_AXILITE_rd_util->get_transaction();
     unsigned long long addr = trans->get_address() & 0xffff;
 
     if(addr >= REG_MEM_SIZE) {
@@ -163,18 +163,18 @@ void cmac::kernel_status_read(){
     memcpy(trans->get_data_ptr(), &reg_mem[addr], trans->get_data_length());
     trans->set_response_status(xtlm::XTLM_OK_RESPONSE);
     sc_core::sc_time delay = sc_core::SC_ZERO_TIME;
-    s_axi_control_rd_util->send_data(*trans, delay);
+    S_AXILITE_rd_util->send_data(*trans, delay);
 }
 
 cmac::~cmac(){
-	delete out_util;
-	delete out_socket;
+	delete M_AXIS_util;
+	delete M_AXIS_socket;
 	delete ipc2axis_socket;
-	delete in_util;
-	delete in_socket;
+	delete S_AXIS_util;
+	delete S_AXIS_socket;
 	delete axis2ipc_socket;
-    delete s_axi_control_rd_util;
-    delete s_axi_control_wr_util;
-    delete s_axi_control_rd_socket;
-    delete s_axi_control_wr_socket;
+    delete S_AXILITE_rd_util;
+    delete S_AXILITE_wr_util;
+    delete S_AXILITE_rd_socket;
+    delete S_AXILITE_wr_socket;
 }

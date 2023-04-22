@@ -201,8 +201,14 @@ set filegroup [ipx::add_file_group -type systemc:simulation {} [ipx::current_cor
 set_property model_name $krnl_name $filegroup
 set_property sim_type "tlm" $filegroup
 
-# Add SystemC include file
+# Add SystemC include files
 set inc [ipx::add_file sysc/cmac.h $filegroup]
+set_property type systemCSource $inc
+set_property is_include "true" $inc
+set inc [ipx::add_file sysc/cmac_0.h $filegroup]
+set_property type systemCSource $inc
+set_property is_include "true" $inc
+set inc [ipx::add_file sysc/cmac_1.h $filegroup]
 set_property type systemCSource $inc
 set_property is_include "true" $inc
 

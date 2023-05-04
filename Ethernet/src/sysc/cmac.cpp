@@ -5,8 +5,20 @@
 
 #define RETRIGGER_TIME 1000
 
+unsigned int get_uint_reg(unsigned char *buf, unsigned int addr){
+    const unsigned int* int_ptr = reinterpret_cast<const unsigned int*>(buf + addr);
+    return *int_ptr;
+}
+
+void set_uint_reg(unsigned char *buf, unsigned int addr, unsigned int val){
+    unsigned int* int_ptr = reinterpret_cast<unsigned int*>(buf + addr);
+    int_ptr[0] = val;
+}
+
 cmac::cmac(sc_module_name name, xsc::common_cpp::properties& _properties) : xsc::xtlm_ap_ctrl_none(name) {
-	unsigned int stream_width = _properties.getLongLong("AXIS_TDATA_WIDTH");
+	padding_mode = _properties.getLongLong("PADDING_MODE");
+    loopback = false;
+    unsigned int stream_width = _properties.getLongLong("AXIS_TDATA_WIDTH");
 	stream_width_bytes = stream_width / 8;
 
     S_AXILITE_rd_socket = new xtlm::xtlm_aximm_target_socket("rd_socket", 32);
@@ -29,7 +41,6 @@ cmac::cmac(sc_module_name name, xsc::common_cpp::properties& _properties) : xsc:
 	axis2ipc_socket = new xsc::axis2ipc_socket("axis2ipc_socket", get_ipi_name(this->name())+"_egress");
 
     memset(reg_mem, 0, REG_MEM_SIZE);
-    kernel_args = (uint32_t*)(&reg_mem);
 
     SC_METHOD(kernel_config_write);
     sensitive << S_AXILITE_wr_util->transaction_available;
@@ -62,6 +73,11 @@ void cmac::log(std::string msg){
 
 void cmac::ipc2axis_receive()
 {
+    if(loopback){
+        log("In loopback mode, ignoring IPC receive request");
+        return;
+    }
+
 	if (!M_AXIS_util->is_transfer_done())
 	{
         log("transfer done to port OUT");
@@ -81,36 +97,57 @@ void cmac::ipc2axis_receive()
 
 void cmac::send_response()
 {
-    log("Send response to IPC2AXIS socket");
-	ipc2axis_socket->send_response();
+    if(!loopback){
+        log("Send response to IPC2AXIS socket");
+        ipc2axis_socket->send_response();
+    }
 }
 
 void cmac::axis2ipc_send() 
 {
-	//When external process is not connected, re-trigger this method until
-	//external process is connected.
-	if (!axis2ipc_socket->is_external_proc_connected())
-	{
-		trigger_till_sock_connected.notify(RETRIGGER_TIME, sc_core::SC_NS);
-        log("Send: waiting for external proc to connect");
-		return;
-	}
-	if (!axis2ipc_socket->is_transfer_done() || (!S_AXIS_util->is_transaction_available()))
-	{
-        log("Send: triggered for unknown reason");
-		return;
-	}
+    if(!loopback){
+        //When external process is not connected, re-trigger this method until
+	    //external process is connected.
+        if (!axis2ipc_socket->is_external_proc_connected())
+        {
+            trigger_till_sock_connected.notify(RETRIGGER_TIME, sc_core::SC_NS);
+            log("Send: waiting for external proc to connect");
+            return;
+        }
+        if (!axis2ipc_socket->is_transfer_done())
+        {
+            log("Send: triggered for unknown reason, IPC transfer not done, returning");
+            return;
+        }
+    }
+    if(!S_AXIS_util->is_transaction_available()){
+        log("Send: triggered for unknown reason, no payload on S_AXIS, returning");
+        return;
+    }
 
 	//Get the payload
 	xtlm::axis_payload* payload = S_AXIS_util->sample_transaction();
     log("HAVE TX PAYLOAD of size "+std::to_string(payload->get_tdata_length()));
 
-    //do any relevant processing here such as padding
-    //e.g. payload->get_tdata_ptr()[0] += kernel_args[0];
+    //TODO process padding
+    if(padding_mode == PADDING_60B && payload->get_tdata_length() < 60){
+        log("Padding from "+std::to_string(payload->get_tdata_length())+"B to 60B");
+    } else if(padding_mode == PADDING_64B && payload->get_tdata_length() < 64){
+        log("Padding from "+std::to_string(payload->get_tdata_length())+"B to 64B");
+    }
 
-	//Send axi stream payload 
-	axis2ipc_socket->transport(payload);
-    log("Transported TX payload");
+    //do any relevant data forwarding here
+    if(loopback){
+        unsigned int nbytes = payload->get_tdata_length();
+        log("Loopback: HAVE RX PAYLOAD of size "+std::to_string(nbytes));
+        unsigned int nbeats = (nbytes + stream_width_bytes - 1) / stream_width_bytes;
+		payload->set_n_beats(nbeats);
+		M_AXIS_util->transport(payload, SC_ZERO_TIME);
+    } else {
+        //Send axi stream payload 
+        axis2ipc_socket->transport(payload);
+        log("Transported TX payload");
+    }
 }
 
 std::string cmac::get_ipi_name(std::string s){
@@ -142,6 +179,9 @@ void cmac::kernel_config_write(){
     trans->set_response_status(xtlm::XTLM_OK_RESPONSE);
     sc_core::sc_time delay = SC_ZERO_TIME;
     S_AXILITE_wr_util->send_resp(*trans, delay);
+
+    //check relevant registers for operational status changes
+    loopback = (get_uint_reg(reg_mem, cfgaddr_gt_loopback) == 1);
 }
 
 void cmac::kernel_status_read(){
@@ -159,6 +199,10 @@ void cmac::kernel_status_read(){
     m_ss << "Reading via axi-lite from addr 0x" << std::hex << std::setfill('0') << std::setw(8) << addr 
             << " data 0x" << std::setw(8) << *(unsigned int*)(&reg_mem[addr]);
     XSC_REPORT_INFO_VERB((*m_log), m_name, m_ss.str().c_str(), DEBUG);
+
+    //set important status registers before the read
+    set_uint_reg(reg_mem, cfgaddr_stat_rx_status, axis2ipc_socket->is_external_proc_connected() ? 3 : 2);
+    set_uint_reg(reg_mem, cfgaddr_stat_tx_status, 0);
 
     memcpy(trans->get_data_ptr(), &reg_mem[addr], trans->get_data_length());
     trans->set_response_status(xtlm::XTLM_OK_RESPONSE);

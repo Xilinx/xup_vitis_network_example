@@ -194,7 +194,10 @@ set_property abstraction_type_vlnv "xilinx.com:interface:axis_tlm:1.0" $s_axi_tl
 set_property physical_name S_AXIS_socket [ipx::add_port_map "AXIS_SOCKET" $s_axi_tlm]
 set_property interface_mode slave $s_axi_tlm
 
-# TODO width parameters
+# save padding mode as parameter for use in the SystemC model
+ipx::add_hdl_parameter PADDING_MODE [ipx::current_core]
+set_property value_format long [ipx::get_hdl_parameters PADDING_MODE -of_objects [ipx::current_core]]
+set_property value $padding_mode [ipx::get_hdl_parameters PADDING_MODE -of_objects [ipx::current_core]]
 
 # Add SystemC file group
 set filegroup [ipx::add_file_group -type systemc:simulation {} [ipx::current_core]]

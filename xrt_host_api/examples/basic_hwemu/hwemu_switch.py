@@ -33,21 +33,54 @@ import argparse
 import time
 import threading
 import queue
+import os
 
 from scapy.all import *
+
+cwd = os.getcwd()
+
+# monkeypatch ipc_axis_master/slave_util to allow 
+# them to connect to sockets in arbitrary folders
+class monkeypatched_ipc_axis_master_util(ipc_axis_master_util):
+    def __init__(self, name, sockdir):
+        self._sock_dir = sockdir
+        super().__init__(name)
+
+    def _set_sock_path_and_change_directory(self):
+        self._curr_dir = os.getcwd() # store current dir to revert
+        os.chdir(self._sock_dir)
+        self._socket_name = "unix_" + os.getenv("USER") + ":" +  self._name
+        print("Connecting to socket "+self._sock_dir+"/"+self._socket_name)
+
+class monkeypatched_ipc_axis_slave_util(ipc_axis_slave_util):
+    def __init__(self, name, sockdir):
+        self._sock_dir = sockdir
+        super().__init__(name)
+
+    def _set_sock_path_and_change_directory(self):
+        self._curr_dir = os.getcwd() # store current dir to revert
+        os.chdir(self._sock_dir)
+        self._socket_name = "unix_" + os.getenv("USER") + ":" +  self._name
+        print("Connecting to socket "+self._sock_dir+"/"+self._socket_name)
+
+
 
 # Inject payloads into CMAC ethernet RX socket
 def rx_forward(portidx):
     #Instantiating AXI Master Utilities 
-    master_util = ipc_axis_master_util(args.ipiname + "_ingress")
+    master_util = monkeypatched_ipc_axis_master_util(args.ipiname + "_ingress", cwd+"/build/fpga"+str(portidx)+"_sockets")
 
     while True:
         # check for stop
         if done.is_set():
             break
+        if ingress_q[portidx].empty():
+            time.sleep(0.1)
+            continue
         print ("Port " + str(portidx) +": Sending Rxn ")
         master_util.b_transport(ingress_q[portidx].get())
 
+    print("Exiting RX forward thread for FPGA "+str(portidx))
     #Wait sometime for kernel to process
     time.sleep(5)
     #If user want to end the simulation, user can use following API
@@ -57,7 +90,7 @@ def rx_forward(portidx):
 # correct input socket(s) by inspecting dst MAC
 def tx_forward(portidx):
     #Instantiate AXI Stream Slave util
-    slave_util = ipc_axis_slave_util(args.ipiname + "_egress")
+    slave_util = monkeypatched_ipc_axis_slave_util(args.ipiname + "_egress", cwd+"/build/fpga"+str(portidx)+"_sockets")
 
     while True:
         # check for stop
@@ -65,6 +98,8 @@ def tx_forward(portidx):
             break
         egress_q[portidx].put(slave_util.sample_transaction())
         print("Port " + str(portidx) +": Sent Txn ")
+
+    print("Exiting TX forward thread for FPGA "+str(portidx))
 
 def forward_packets():
     while True:
@@ -74,6 +109,7 @@ def forward_packets():
         for i in range(args.nports):
             # skip if target egress queue is empty
             if egress_q[i].empty():
+                time.sleep(0.1)
                 continue
             # TODO: pick up payloads from queues, convert their data to scapy packet objects
             payload = egress_q[i].get()
@@ -92,12 +128,13 @@ def forward_packets():
                 else:
                     # drop packet
                     print("Dropping packet on Port " + str(i))
+    print("Exiting packet switch thread")
 
 parser = argparse.ArgumentParser(description='Run simulated Ethernet switch for hardware emulation')
 parser.add_argument('-n', '--nports', type=int, default=1,
                     help='Number of ports on the switch')
 parser.add_argument('--macaddr', nargs='+', help='MAC addresses of each port')
-parser.add_argument('--ipiname', help='name of CMAC instance in Vivado IPI')
+parser.add_argument('--ipiname', default='cmac_0', help='name of CMAC instance in Vivado IPI')
 parser.add_argument('-d', '--debug', action='store_true', default=False,
                     help='Enable printing detailed packet info')
 args = parser.parse_args()
@@ -132,14 +169,13 @@ threads.append(threading.Thread(target=forward_packets))
 
 for t in threads:
     t.start()
+    time.sleep(2)
 
 while True:
     try:
         time.sleep(1)
     except KeyboardInterrupt:
         print("Exiting")
-        print(threads)
         done.set()
-        print(threads)
         for t in threads:
             t.join()

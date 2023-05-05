@@ -16,16 +16,19 @@ mkdir build
 cd build
 cmake ..
 cmake --build .
-# Running the program
-XCL_EMULATION_MODE=hw_emu ./basic_hwemu <XCLBIN>
+# Setting up socket directories
+mkdir -p fpga0_sockets fpga1_sockets
 ```
 
-Note that this program depends on
-[jsoncpp](https://github.com/open-source-parsers/jsoncpp), which can be
-installed using `sudo apt install libjsoncpp-dev` on Ubuntu.
+To run two emulated FPGAs, set up XRT (by sourcing its `setup.sh` script) then 
+run the following two commands *each in its own terminal window*:
+```
+XCL_EMULATION_MODE=hw_emu XTLM_IPC_SOCK_DIR=`pwd`/fpga0_sockets ./basic_hwemu <XCLBIN> 0
+XCL_EMULATION_MODE=hw_emu XTLM_IPC_SOCK_DIR=`pwd`/fpga1_sockets ./basic_hwemu <XCLBIN> 1
+```
 
 To enable packet routing in emulation, a software switch must be started:
 
 ```bash
-PYTHONPATH=$XILINX_VIVADO/data/emulation/python/xtlm_ipc python3 hwemu_switch.py
+PYTHONPATH=$XILINX_VIVADO/data/emulation/python/xtlm_ipc python hwemu_switch.py -d -n 2 --macaddr 00.00.00.00.00.01 00.00.00.00.00.02
 ```

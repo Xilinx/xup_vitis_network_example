@@ -29,7 +29,7 @@ BUILD_TARGET ?= hw
 XSA := $(strip $(patsubst %.xpfm, % , $(shell basename $(DEVICE))))
 TEMP_DIR := _x.$(XSA)
 VPP := $(XILINX_VITIS)/bin/v++
-CLFLAGS += -t $(BUILD_TARGET) --platform $(DEVICE) --save-temps
+CLFLAGS += -t $(BUILD_TARGET) -g --platform $(DEVICE) --save-temps
 
 BUILD_DIR := ./$(DESIGN).intf$(INTERFACE).$(XSA)
 BINARY_CONTAINERS = $(BUILD_DIR)/${XCLBIN_NAME}.xclbin

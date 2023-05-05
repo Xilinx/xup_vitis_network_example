@@ -28,7 +28,8 @@ int main(int argc, char *argv[]) {
   xrt::device device = xrt::device(0);
   std::cout << "Loading " << argv[1] << " onto FPGA on " << ip_index << std::endl;
   auto xclbin_uuid = device.load_xclbin(binaryFile);
-
+  std::cout << "Done loading xclbin" << std::endl;
+  
   auto cmac = vnx::CMAC(xrt::ip(device, xclbin_uuid, "cmac_0:{cmac_0}"));
   // Enable rsfec if necessary
   cmac.set_rs_fec(false);
@@ -37,7 +38,7 @@ int main(int argc, char *argv[]) {
   bool link_status;
 
   // Can take a few tries before link is ready.
-  for (std::size_t i = 0; i < 10; ++i) {
+  for (std::size_t i = 0; i < 30; ++i) {
     auto status = cmac.link_status();
     link_status = status["rx_status"];
     std::cout << "Link " << (link_status ? "up" : "down") << std::endl;
@@ -62,8 +63,10 @@ int main(int argc, char *argv[]) {
 
   std::cout << "Starting ARP discovery..." << std::endl;
   networklayer.arp_discovery();
+  std::this_thread::sleep_for(std::chrono::seconds(30));
   std::cout << "Finishing ARP discovery..." << std::endl;
   networklayer.arp_discovery();
+  std::this_thread::sleep_for(std::chrono::seconds(30));
   std::cout << "ARP discovery finished!" << std::endl;
 
   auto arp = networklayer.read_arp_table(1);

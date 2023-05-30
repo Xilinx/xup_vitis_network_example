@@ -90,6 +90,15 @@ unsigned long long _byte_ordering_endianess(unsigned long long num,
 }
 
 /*
+ * Invalidate the ARP table from the FPGA
+ */
+void Networklayer::invalidate_arp_table() {
+  for (int i = 0; i < (256/4); i++) {
+    networklayer.write_register(arp_valid_offset + i * 4, 0);
+  }
+}
+
+/*
  * Read the ARP table from the FPGA return a map
  */
 std::map<int, std::pair<std::string, std::string>>

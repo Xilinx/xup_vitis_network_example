@@ -69,6 +69,9 @@ public:
   std::map<int, std::pair<std::string, std::string>>
   read_arp_table(int num_entries);
 
+  /* Invalidate the ARP table from the FPGA */
+  void invalidate_arp_table();
+
   /* Configure the socket at the given index. Run populate_socket_table to write
    * the information to the FPGA. */
   void configure_socket(int index, std::string theirIP, uint16_t theirPort,

@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
   bool link_status;
 
   // Can take a few tries before link is ready.
-  for (std::size_t i = 0; i < 30; ++i) {
+  for (std::size_t i = 0; i < 50; ++i) {
     auto status = cmac.link_status();
     link_status = status["rx_status"];
     std::cout << "Link " << (link_status ? "up" : "down") << std::endl;
@@ -57,18 +57,16 @@ int main(int argc, char *argv[]) {
   std::this_thread::sleep_for(std::chrono::seconds(1));
 
   //ARP table update for a 2-node system
+  networklayer.invalidate_arp_table();
+
   std::size_t their_ip_index = (ip_index + 1) % 2;
   networklayer.configure_socket(0, ip_addresses.at(their_ip_index), 5000, 5000, true);
   networklayer.populate_socket_table();
 
   std::cout << "Starting ARP discovery..." << std::endl;
   networklayer.arp_discovery();
-  std::this_thread::sleep_for(std::chrono::seconds(30));
-  std::cout << "Finishing ARP discovery..." << std::endl;
-  networklayer.arp_discovery();
-  std::this_thread::sleep_for(std::chrono::seconds(30));
-  std::cout << "ARP discovery finished!" << std::endl;
-
+  std::this_thread::sleep_for(std::chrono::seconds(60));
+  std::cout << "Reading ARP table..." << std::endl;
   auto arp = networklayer.read_arp_table(1);
   std::cout << "ARP Table:" << std::endl;
   for (auto &elem : arp) {

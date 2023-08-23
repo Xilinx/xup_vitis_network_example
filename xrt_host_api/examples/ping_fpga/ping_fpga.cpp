@@ -55,12 +55,9 @@ ip_config_table_t  ip_lut[] = {
 ip_config_table_t * get_ip_config(std::string hostname, uint32_t board_id)
 {
     ip_config_table_t * default_ip_config = &ip_lut[0]; // will set default to the first matched hostname.
-    for (uint32_t  i = 0; i < ARRAY_SIZE(ip_lut); i++)
-    {
-        if(std::string(ip_lut[i].hostname) ==  hostname)
-        {
-            if(ip_lut[i].board_id == board_id)
-            {
+    for (uint32_t  i = 0; i < ARRAY_SIZE(ip_lut); i++){
+        if(std::string(ip_lut[i].hostname) ==  hostname){
+            if(ip_lut[i].board_id == board_id){
                 printf("Found the ip configure for host %s\n",  ip_lut[i].hostname);
                 return &ip_lut[i];
             }
@@ -215,18 +212,14 @@ int main(int argc, char *argv[]) {
     networklayer.update_ip_address(ip);
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
-    for(int j = 0;  j < 5 ; j++)
-    {
+    for(int j = 0;  j < 5; j++){
         networklayer.arp_discovery();
         std::this_thread::sleep_for(std::chrono::seconds(1));
-
     }
 
     auto table = networklayer.read_arp_table(255);
-    std::cout <<"Dump arp table" << std::endl;
-    for (const auto& [id, value] : table)
-    {
-      std::cout << '[' << id << "] = " << value.first << "  " <<value.second << "; "<< std::endl;
+    for (const auto& [id, value] : table){
+      std::cout << 'arp table: [' << id << "] = " << value.first << "  " <<value.second << "; "<< std::endl;
     }
 
 

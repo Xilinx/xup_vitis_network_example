@@ -5,9 +5,11 @@
 set words [split $device "_"]
 set board [lindex $words 1]
 
-if {[string first "u50" ${board}] != -1} {
+if {[string first "u55n" ${board}] != -1} {
+    set projPart "xcu55n-fsvh2892-2L-e"
+} elseif {[string first "u50" ${board}] != -1} {
     set projPart "xcu50-fsvh2104-2L-e"
-} elseif {[string first "u55" ${board}] != -1} {
+} elseif {[string first "u55c" ${board}] != -1} {
     set projPart "xcu55c-fsvh2892-2L-e"
 } elseif {[string first "u200" ${board}] != -1} {
     set projPart "xcu200-fsgd2104-2-e"

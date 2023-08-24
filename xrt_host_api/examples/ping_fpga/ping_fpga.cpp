@@ -19,31 +19,85 @@ namespace fs = std::filesystem;
 /***************
  *    CONFIG   *
  ***************/
-enum xclbin_types { u280_if3, u55c_if0, u55c_if1, u55c_if3 };
+
+typedef struct
+{
+  const char *  hostname;
+  uint32_t      board_id;
+  const char *  ip_address[2];
+} ip_config_table_t;
+
+#ifndef ARRAY_SIZE
+#define ARRAY_SIZE(arr) sizeof(arr)/sizeof((arr)[0])
+#endif
+
+
+
+ip_config_table_t  ip_lut[] = {
+  {
+    .hostname       = "hostname1",
+    .board_id       =  0,
+    .ip_address     = {"10.1.212.101","10.1.212.102"},
+  },
+  {
+    .hostname       = "hostname2",
+    .board_id       =  0,
+   .ip_address      = {"10.1.212.103","10.1.212.104"},
+  },
+  {
+    .hostname       = "hostname3",
+    .board_id       =  0,
+    .ip_address     = {"10.1.212.101","10.1.212.102"},
+  },
+};
+
+
+ip_config_table_t * get_ip_config(std::string hostname, uint32_t board_id)
+{
+    ip_config_table_t * default_ip_config = &ip_lut[0]; // will set default to the first matched hostname.
+    for (uint32_t  i = 0; i < ARRAY_SIZE(ip_lut); i++){
+        if(std::string(ip_lut[i].hostname) ==  hostname){
+            if(ip_lut[i].board_id == board_id){
+                printf("Found the ip configure for host %s\n",  ip_lut[i].hostname);
+                return &ip_lut[i];
+            }
+        }
+    }
+    printf("Host %s with board %d does not exist in configure\n",  hostname.c_str(), board_id);
+    printf("Use default config: %s, if0 ip: %s, if1 ip: %s\n",
+                              default_ip_config->hostname,
+                              default_ip_config->ip_address[0],
+                              default_ip_config->ip_address[1] );
+
+    return default_ip_config;
+}
+
+
+
+enum xclbin_types {  if0, if1, if3 };
 
 struct xclbin_path {
   std::string path;
   xclbin_types type;
 };
-
-const char *hostname1 = "hostname1";
-const char *hostname2 = "hostname2";
-const char *hostname3 = "hostname3";
-
-const std::map<std::string, const std::vector<std::string>> ip_addresses = {
-    {hostname1, {"10.1.212.101", "10.1.212.102"}},
-    {hostname2, {"10.1.212.103", "10.1.212.104"}},
-    {hostname3, {"10.1.212.105", "10.1.212.106"}}};
-
 // Map type of xclbin to contained kernels
 const std::map<xclbin_types,
                const std::vector<std::pair<const char *, const char *>>>
-    kernels = {{u280_if3,
-                {{"cmac_0", "networklayer_0"}, {"cmac_1", "networklayer_1"}}},
-               {u55c_if0, {{"cmac_0", "networklayer_0"}}},
-               {u55c_if1, {{"cmac_1", "networklayer_1"}}},
-               {u55c_if3,
-                {{"cmac_0", "networklayer_0"}, {"cmac_1", "networklayer_1"}}}};
+kernels = {
+            {if0, {
+                    {"cmac_0", "networklayer_0"}
+                  }
+            },
+            {if1, {
+                    {"cmac_1", "networklayer_1"}
+                  }
+            },
+            {if3, {
+                    {"cmac_0", "networklayer_0"},
+                    {"cmac_1", "networklayer_1"}
+                }
+            }
+         };
 /***************
  * END CONFIG  *
  ***************/
@@ -55,22 +109,17 @@ xclbin_path parse_xclbin(const std::string &platform, const char *arg) {
   std::string filename = fs::path(arg).filename();
 
   bool found = false;
-  if (platform == "xilinx_u280_xdma_201920_3") {
-    if (filename == "vnx_basic_if3.xclbin") {
-      xclbin.type = u280_if3;
-      found = true;
-    }
-  } else if (platform == "xilinx_u55c_gen3x16_xdma_base_3") {
-    if (filename == "vnx_basic_if0.xclbin") {
-      xclbin.type = u55c_if0;
-      found = true;
-    } else if (filename == "vnx_basic_if1.xclbin") {
-      xclbin.type = u55c_if1;
-      found = true;
-    } else if (filename == "vnx_basic_if3.xclbin") {
-      xclbin.type = u55c_if3;
-      found = true;
-    }
+
+
+  if (filename == "vnx_basic_if0.xclbin") {
+    xclbin.type = if0;
+    found = true;
+  } else if (filename == "vnx_basic_if1.xclbin") {
+    xclbin.type = if1;
+    found = true;
+  } else if (filename == "vnx_basic_if3.xclbin") {
+    xclbin.type = if3;
+    found = true;
   }
 
   if (!found) {
@@ -156,25 +205,31 @@ int main(int argc, char *argv[]) {
       continue;
     }
 
-    if (ip_addresses.count(hostname) < 1) {
-      throw std::runtime_error("Couldn't find ip address for host " +
-                                std::string(hostname));
-    }
-
-    std::string ip = ip_addresses.at(hostname)[ip_index];
-    ++ip_index;
+    std::string ip = get_ip_config(hostname, device_id)->ip_address[ip_index];
 
     std::cout << "setting up IP " << ip << " to interface " << cus.first
               << std::endl;
     networklayer.update_ip_address(ip);
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
+    for(int j = 0;  j < 5; j++){
+        networklayer.arp_discovery();
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+
+    auto table = networklayer.read_arp_table(255);
+    for (const auto& [id, value] : table){
+      std::cout << 'arp table: [' << id << "] = " << value.first << "  " <<value.second << "; "<< std::endl;
+    }
+
+
+
     // Create fork to run ping
     pid_t pid = fork();
 
     if (pid == 0) {
       const char *prog = "/bin/ping";
-      char *ip_c = &ip[0];
+      char *ip_c = (char *)ip.c_str();
       char *const argv[] = {"/bin/ping", "-c5", "-i0.8", ip_c, nullptr};
       char *const envp[] = {nullptr};
       execve(prog, argv, envp);
@@ -192,6 +247,7 @@ int main(int argc, char *argv[]) {
         std::cout << "Success!" << std::endl;
       }
     }
+    ++ip_index;
   }
 
   return 0;

@@ -40,7 +40,21 @@ open_bd_design ${design_name}
 # Default GT reference frequency
 set gt_ref_clk 156.25
 set freerunningclock 100
-if {${projPart} eq "xcu50-fsvh2104-2L-e"} {
+if {${projPart} eq "xcu55n-fsvh2892-2L-e"} {
+  set gt_ref_clk 161.1328125
+  switch ${interface} {
+    "1" {
+      set core_selection  CMACE4_X0Y4
+      set group_selection X0Y28~X0Y31
+      set interface_number 1
+    }
+    default {
+      set core_selection  CMACE4_X0Y3
+      set group_selection X0Y24~X0Y27
+      set interface_number 0
+    }
+  }
+} elseif {${projPart} eq "xcu50-fsvh2104-2L-e"} {
   # Possible core_selection CMACE4_X0Y3 and CMACE4_X0Y4
   set gt_ref_clk 161.1328125
   set core_selection  CMACE4_X0Y3

@@ -315,7 +315,7 @@ proc create_hier_cell_icmp { parentCell nameHier } {
   connect_bd_net -net bandwidth_eth_in_debug_slot [get_bd_pins user_rst_n] [get_bd_pins bandwidth_icmp_in/user_rst_n] [get_bd_pins bandwidth_icmp_out/user_rst_n]
   connect_bd_net -net bandwidth_icmp_in_debug_slot [get_bd_pins debug_slot_out] [get_bd_pins bandwidth_icmp_in/debug_slot]
   connect_bd_net -net bandwidth_icmp_out_debug_slot [get_bd_pins debug_slot_in] [get_bd_pins bandwidth_icmp_out/debug_slot]
-  connect_bd_net -net interface_settings_0_my_ip_address [get_bd_pins myIpAddress] [get_bd_pins icmp_server/myIpAddress]
+  connect_bd_net -net interface_settings_0_my_ip_address [get_bd_pins myIpAddress] [get_bd_pins icmp_server/myIpAddress*]
   connect_bd_net -net s_aclk_0_1 [get_bd_pins ap_clk] [get_bd_pins asr_icmp_in/aclk] [get_bd_pins asr_icmp_out/aclk] [get_bd_pins bandwidth_icmp_in/S_AXI_ACLK] [get_bd_pins bandwidth_icmp_out/S_AXI_ACLK] [get_bd_pins icmp_server/ap_clk]
   connect_bd_net -net s_aresetn_0_1 [get_bd_pins ap_rst_n] [get_bd_pins asr_icmp_in/aresetn] [get_bd_pins asr_icmp_out/aresetn] [get_bd_pins bandwidth_icmp_in/S_AXI_ARESETN] [get_bd_pins bandwidth_icmp_out/S_AXI_ARESETN] [get_bd_pins icmp_server/ap_rst_n]
 

@@ -212,16 +212,6 @@ int main(int argc, char *argv[]) {
     networklayer.update_ip_address(ip);
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
-    for(int j = 0;  j < 5; j++){
-        networklayer.arp_discovery();
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-    }
-
-    auto table = networklayer.read_arp_table(255);
-    for (const auto& [id, value] : table){
-      std::cout << 'arp table: [' << id << "] = " << value.first << "  " <<value.second << "; "<< std::endl;
-    }
-
 
 
     // Create fork to run ping
@@ -242,6 +232,18 @@ int main(int argc, char *argv[]) {
       status = WEXITSTATUS(status);
       if (status) {
         std::cout << "Interface " << cus.first << " is unreachable."
+                  << std::endl;
+        std::cout << "Start of debug information dump"
+                  << std::endl;
+        networklayer.arp_discovery();
+        std::this_thread::sleep_for(std::chrono::seconds(5));
+        auto table = networklayer.read_arp_table(255);
+        for (const auto& [id, value] : table){
+          std::cout << "arp table: [" << id << "] = " << value.first << "  " <<value.second << "; "<< std::endl;
+        }
+        networklayer.get_icmp_in_pkts();
+        networklayer.get_icmp_out_pkts();
+        std::cout << "End of debug information dump"
                   << std::endl;
       } else {
         std::cout << "Success!" << std::endl;

@@ -309,5 +309,17 @@ uint32_t Networklayer::get_udp_app_out_pkts() {
   std::cout << "udp app out bytes = " << l_bytes << std::endl;
   return l_res;
 }
+uint32_t Networklayer::get_icmp_in_pkts() {
+  uint32_t l_res = networklayer.read_register(icmp_in_packets);
+  uint32_t l_bytes = networklayer.read_register(icmp_in_bytes);
+  std::cout << "icmp in bytes = " << l_bytes << " packets " << l_res << std::endl;
+  return l_res;
+}
+uint32_t Networklayer::get_icmp_out_pkts() {
+  uint32_t l_res = networklayer.read_register(icmp_out_packets);
+  uint32_t l_bytes = networklayer.read_register(icmp_out_bytes);
+  std::cout << "icmp out bytes = " << l_bytes << " packets " << l_res << std::endl;
+  return l_res;
+}
 
 } // namespace vnx

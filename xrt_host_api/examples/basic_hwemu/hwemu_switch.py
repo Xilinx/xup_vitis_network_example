@@ -34,6 +34,8 @@ import time
 import threading
 import queue
 import os
+import signal
+import shutil
 
 from scapy.all import *
 
@@ -68,7 +70,7 @@ class monkeypatched_ipc_axis_slave_util(ipc_axis_slave_util):
 # Inject payloads into CMAC ethernet RX socket
 def rx_forward(portidx):
     #Instantiating AXI Master Utilities 
-    master_util = monkeypatched_ipc_axis_master_util(args.ipiname + "_ingress", cwd+"/build/fpga"+str(portidx)+"_sockets")
+    master_util = monkeypatched_ipc_axis_master_util(args.ipiname + "_ingress", xsim_socket_folders[portidx])
 
     while True:
         # check for stop
@@ -90,7 +92,7 @@ def rx_forward(portidx):
 # correct input socket(s) by inspecting dst MAC
 def tx_forward(portidx):
     #Instantiate AXI Stream Slave util
-    slave_util = monkeypatched_ipc_axis_slave_util(args.ipiname + "_egress", cwd+"/build/fpga"+str(portidx)+"_sockets")
+    slave_util = monkeypatched_ipc_axis_slave_util(args.ipiname + "_egress", xsim_socket_folders[portidx])
 
     while True:
         # check for stop
@@ -134,6 +136,7 @@ parser = argparse.ArgumentParser(description='Run simulated Ethernet switch for 
 parser.add_argument('-n', '--nports', type=int, default=1,
                     help='Number of ports on the switch')
 parser.add_argument('--macaddr', nargs='+', help='MAC addresses of each port')
+parser.add_argument('-x', '--xclbin', required=True, help='name of xclbin')
 parser.add_argument('--ipiname', default='cmac_0', help='name of CMAC instance in Vivado IPI')
 parser.add_argument('-d', '--debug', action='store_true', default=False,
                     help='Enable printing detailed packet info')
@@ -161,6 +164,17 @@ for i in range(len(args.macaddr)):
 print(args)
 print(port_map)
 
+xsim_processes = []
+xsim_socket_folders = []
+for idx in range(args.nports):
+    xsim_socket_folders.append(os.path.join(os.getcwd(), "fpga"+str(idx)+"_sockets"))
+    if os.path.exists(xsim_socket_folders[idx]):
+        shutil.rmtree(xsim_socket_folders[idx])
+    os.mkdir(xsim_socket_folders[idx])
+    cmd = "XCL_EMULATION_MODE=hw_emu XTLM_IPC_SOCK_DIR="+xsim_socket_folders[idx]+" ./basic_hwemu "+args.xclbin+" "+str(idx)
+    print("Starting command in subshell: "+cmd)
+    xsim_processes.append(subprocess.Popen(cmd, shell=True, preexec_fn=os.setsid))
+
 threads = []
 for idx in range(args.nports):
     threads.append(threading.Thread(target=rx_forward, args=(idx,)))
@@ -177,5 +191,9 @@ while True:
     except KeyboardInterrupt:
         print("Exiting")
         done.set()
+        for p in xsim_processes:
+            os.killpg(os.getpgid(p.pid), signal.SIGTERM)
+        for d in xsim_socket_folders:
+            shutil.rmtree(d)
         for t in threads:
             t.join()

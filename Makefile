@@ -24,6 +24,7 @@ DEVICE ?= xilinx_u280_xdma_201920_3
 INTERFACE ?= 0
 DESIGN ?= benchmark
 XCLBIN_NAME ?= vnx_$(DESIGN)_if$(INTERFACE)
+MAX_SOCKETS ?= 16
 
 
 XSA := $(strip $(patsubst %.xpfm, % , $(shell basename $(DEVICE))))
@@ -115,6 +116,8 @@ $(CMACDIR)$(TEMP_DIR)/%.xo:
 	make -C $(CMACDIR) all DEVICE=$(DEVICE) INTERFACE=$(INTERFACE)
 
 $(NETLAYERDIR)$(TEMP_DIR)/%.xo:
+	cd ./$(NETLAYERDIR)$(NETLAYERHLS) && git checkout -- .
+	sed -i 's/define NUMBER_SOCKETS 16/define NUMBER_SOCKETS $(MAX_SOCKETS)/' ./$(NETLAYERDIR)$(NETLAYERHLS)/hls/UDP/udp.hpp
 	make -C $(NETLAYERDIR) all DEVICE=$(DEVICE)
 
 

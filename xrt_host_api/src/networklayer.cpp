@@ -147,11 +147,28 @@ void Networklayer::configure_socket(int index, std::string theirIP,
                                     bool valid) {
   socket_t l_socket = {theirIP, encode_ip_address(theirIP), theirPort, myPort,
                        valid};
+  if(this->sockets.size() < (index+1)){
+    int num_sockets_hw = networklayer.read_register(udp_number_sockets);
+    if (num_sockets_hw < (index+1)) {
+      std::string errMsg = "Target socket index " + std::to_string(index) +
+                          " outside range available in hardware: 0 - " +
+                          std::to_string(num_sockets_hw-1);
+      throw std::runtime_error(errMsg);
+    }
+    this->sockets.resize(index+1);
+  }
   this->sockets[index] = l_socket;
 }
 
 socket_t Networklayer::get_host_socket(int index) {
-  return this->sockets[index];
+  if (index < this->sockets.size()) {
+    return this->sockets[index];
+  } else {
+    std::string errMsg = "Target socket index " + std::to_string(index) +
+                        " outside programmed range: 0 - " +
+                        std::to_string(this->sockets.size()-1);
+    throw std::runtime_error(errMsg);
+  }
 }
 
 std::map<int, socket_t> Networklayer::populate_socket_table() {
@@ -161,14 +178,6 @@ std::map<int, socket_t> Networklayer::populate_socket_table() {
   uint16_t valid_offset = udp_valid_offset;
 
   int num_sockets_hw = networklayer.read_register(udp_number_sockets);
-
-  if (static_cast<std::size_t>(num_sockets_hw) < max_sockets_size) {
-    std::string errMsg = "Socket list length " +
-                         std::to_string(max_sockets_size) +
-                         " is bigger than the number of sockets in hardware " +
-                         std::to_string(num_sockets_hw);
-    throw std::runtime_error(errMsg);
-  }
 
   for (int i = 0; i < num_sockets_hw; i++) {
     uint32_t ti_offset = theirIP_offset + i * 8;

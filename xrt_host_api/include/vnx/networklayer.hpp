@@ -11,7 +11,6 @@
 #include <vector>
 
 namespace vnx {
-constexpr std::size_t max_sockets_size = 16;
 
 // Register offsets
 constexpr std::size_t mac_address_offset = 0x0010;
@@ -126,7 +125,7 @@ public:
   uint32_t get_icmp_out_pkts();
 
 private:
-  socket_t sockets[max_sockets_size];
+  std::vector<socket_t> sockets;
   xrt::ip networklayer;
 };
 } // namespace vnx

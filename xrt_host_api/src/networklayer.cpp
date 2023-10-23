@@ -172,12 +172,11 @@ socket_t Networklayer::get_host_socket(int index) {
 }
 
 std::map<int, socket_t> Networklayer::populate_socket_table() {
-  uint32_t theirIP_offset = udp_theirIP_offset;
-  uint16_t theirPort_offset = udp_theirPort_offset;
-  uint16_t myPort_offset = udp_myPort_offset;
-  uint16_t valid_offset = udp_valid_offset;
-
   int num_sockets_hw = networklayer.read_register(udp_number_sockets);
+  uint32_t theirIP_offset = udp_theirIP_offset;
+  uint16_t theirPort_offset = theirIP_offset + 8*num_sockets_hw;
+  uint16_t myPort_offset = theirPort_offset + 8*num_sockets_hw;
+  uint16_t valid_offset = myPort_offset + 8*num_sockets_hw;
 
   for (int i = 0; i < num_sockets_hw; i++) {
     uint32_t ti_offset = theirIP_offset + i * 8;
@@ -226,10 +225,12 @@ std::map<int, socket_t> Networklayer::populate_socket_table() {
 }
 
 void Networklayer::print_socket_table(const unsigned int num_sockets) {
+  int num_sockets_hw = networklayer.read_register(udp_number_sockets);
   uint32_t theirIP_offset = udp_theirIP_offset;
-  uint16_t theirPort_offset = udp_theirPort_offset;
-  uint16_t myPort_offset = udp_myPort_offset;
-  uint16_t valid_offset = udp_valid_offset;
+  uint16_t theirPort_offset = theirIP_offset + 8*num_sockets_hw;
+  uint16_t myPort_offset = theirPort_offset + 8*num_sockets_hw;
+  uint16_t valid_offset = myPort_offset + 8*num_sockets_hw;
+
   for (unsigned int i = 0; i < num_sockets; ++i) {
     uint32_t ti_offset = theirIP_offset + i * 8;
     uint32_t tp_offset = theirPort_offset + i * 8;
@@ -260,12 +261,11 @@ void Networklayer::print_socket_table(const unsigned int num_sockets) {
 }
 
 void Networklayer::populate_socket_table(std::vector<socket_t> &socket_table) {
-  uint32_t theirIP_offset = udp_theirIP_offset;
-  uint16_t theirPort_offset = udp_theirPort_offset;
-  uint16_t myPort_offset = udp_myPort_offset;
-  uint16_t valid_offset = udp_valid_offset;
-
   int num_sockets_hw = networklayer.read_register(udp_number_sockets);
+  uint32_t theirIP_offset = udp_theirIP_offset;
+  uint16_t theirPort_offset = theirIP_offset + 8*num_sockets_hw;
+  uint16_t myPort_offset = theirPort_offset + 8*num_sockets_hw;
+  uint16_t valid_offset = myPort_offset + 8*num_sockets_hw;
 
   int l_socketTBsize = socket_table.size();
   if (num_sockets_hw < l_socketTBsize) {

@@ -323,7 +323,7 @@ class NetworkLayer(DefaultIP):
             ("theirIP", np.unicode_, 16),
             ("theirPort", np.uint16),
             ("myPort", np.uint16),
-            ("valid", np.bool),
+            ("valid", bool),
         ]
     )
 

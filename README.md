@@ -179,7 +179,15 @@ make all DEVICE=<full platform path> INTERFACE=<interface number> DESIGN=<design
 
 Open an issue with as much details as you can. Please, use the [issue template](https://github.com/Xilinx/xup_vitis_network_example/issues/new?assignees=&labels=&template=vnx-issue-template.md&title=) and fill in the appropriate fields.
 
-### Alveo card connected to a 100G capable switch/NIC is not getting link.
+### How do I get a UltraScale+ Integrated 100G Ethernet Subsystem license?
+
+You can generate a free of charge license following [these steps](https://github.com/Xilinx/open-nic-shell#cmac-license).
+
+### Where can I get more information?
+
+Each subdirectory contains more information. If you do not find the necessary information, please check the [closed](https://github.com/Xilinx/xup_vitis_network_example/issues?q=is%3Aissue+is%3Aclosed) and [open](https://github.com/Xilinx/xup_vitis_network_example/issues) issues. You can always [open a new issue](https://github.com/Xilinx/xup_vitis_network_example/issues/new/choose) to request information.
+
+### Why is my Alveo card connected to a 100G capable switch/NIC not getting link?
 
 This design does **NOT** support **FEC neither auto-negotiation** by default. Therefore, make sure that your network equipment has these capabilities disabled. Please, refer to your network equipment manual to accomplish this.
 
@@ -189,7 +197,7 @@ Partial steps to enable RS-FEC are provided [here](Ethernet/README.md#enabling-r
 
 Python host code in combination with the `pynq` package and JupyterLab as well as DASK provide the right environment to demonstrate the capabilities of this project. [ACCL](https://github.com/Xilinx/ACCL) developers contributed a C++ driver, please check the [xrt_host_api](xrt_host_api/README.md) folder. We welcome [contributions](CONTRIBUTING.md) to enhance this driver. Also, a minimalist C/C++ driver contributed from the community is available in the [host_xrt branch](https://github.com/Xilinx/xup_vitis_network_example/tree/host_xrt/host_xrt), this code and branch is not longer maintained.
 
-### How Can I contribute?
+### How can I contribute?
 
 Please, follow the [contributing guidelines](CONTRIBUTING.md)
 

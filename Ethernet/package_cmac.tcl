@@ -127,6 +127,104 @@ set_property physical_name ${refclkIntfName}_p [ipx::get_port_maps CLK_P -of_obj
 ipx::add_port_map CLK_N [ipx::get_bus_interfaces ${refclkIntfName} -of_objects [ipx::current_core]]
 set_property physical_name ${refclkIntfName}_n [ipx::get_port_maps CLK_N -of_objects [ipx::get_bus_interfaces ${refclkIntfName} -of_objects [ipx::current_core]]]
 
+# config for TLM sim
+# Adding tlm Read socket
+set rd_socket [ipx::add_tlm_port S_AXILITE_rd_socket [ipx::current_core]]
+set_property type_name "xtlm::xtlm_aximm_target_socket" $rd_socket
+set_property type_definitions [list "xtlm.h"] $rd_socket
+set_property min_connections 1 $rd_socket
+set_property max_connections 1 $rd_socket
+set_property service_initiative "provides" $rd_socket
+set_property service_type_name "tlm" $rd_socket
+set_property value "rd_socket" [ipx::add_service_parameter "name" $rd_socket]
+set_property value 32 [ipx::add_service_parameter "width" $rd_socket]
+
+# Adding tlm Write socket
+set wr_socket [ipx::add_tlm_port S_AXILITE_wr_socket [ipx::current_core]]
+set_property type_name "xtlm::xtlm_aximm_target_socket" $wr_socket
+set_property type_definitions [list "xtlm.h"] $wr_socket
+set_property min_connections 1 $wr_socket
+set_property max_connections 1 $wr_socket
+set_property service_initiative "provides" $wr_socket
+set_property service_type_name "tlm" $wr_socket
+set_property value "wr_socket" [ipx::add_service_parameter "name" $wr_socket]
+set_property value 32 [ipx::add_service_parameter "width" $wr_socket]
+
+# Add tlm interface...
+set s_axi_tlm [ipx::add_tlm_interface S_AXILITE_TLM [ipx::current_core]]
+set_property bus_type_vlnv "xilinx.com:interface:aximm:1.0" $s_axi_tlm
+set_property abstraction_type_vlnv "xilinx.com:interface:aximm_tlm:1.0" $s_axi_tlm
+set_property physical_name S_AXILITE_rd_socket [ipx::add_port_map "AXIMM_READ_SOCKET" $s_axi_tlm]
+set_property physical_name S_AXILITE_wr_socket [ipx::add_port_map "AXIMM_WRITE_SOCKET" $s_axi_tlm]
+set_property interface_mode slave $s_axi_tlm
+
+# Adding tlm master stream socket
+set socket [ipx::add_tlm_port M_AXIS_socket [ipx::current_core]]
+set_property type_name "xtlm::xtlm_axis_initiator_socket" $socket
+set_property type_definitions [list "xtlm.h"] $socket
+set_property min_connections 1 $socket
+set_property max_connections 1 $socket
+set_property service_initiative "requires" $socket
+set_property service_type_name "tlm" $socket
+set_property value "socket" [ipx::add_service_parameter "name" $socket]
+set_property value 512 [ipx::add_service_parameter "width" $socket]
+
+# Add tlm interface...
+set s_axi_tlm [ipx::add_tlm_interface M_AXIS_TLM [ipx::current_core]]
+set_property bus_type_vlnv "xilinx.com:interface:axis:1.0" $s_axi_tlm
+set_property abstraction_type_vlnv "xilinx.com:interface:axis_tlm:1.0" $s_axi_tlm
+set_property physical_name M_AXIS_socket [ipx::add_port_map "AXIS_SOCKET" $s_axi_tlm]
+set_property interface_mode master $s_axi_tlm
+
+# Adding tlm slave stream socket
+set socket [ipx::add_tlm_port S_AXIS_socket [ipx::current_core]]
+set_property type_name "xtlm::xtlm_axis_target_socket" $socket
+set_property type_definitions [list "xtlm.h"] $socket
+set_property min_connections 1 $socket
+set_property max_connections 1 $socket
+set_property service_initiative "provides" $socket
+set_property service_type_name "tlm" $socket
+set_property value "socket" [ipx::add_service_parameter "name" $socket]
+set_property value 512 [ipx::add_service_parameter "width" $socket]
+
+# Add tlm interface...
+set s_axi_tlm [ipx::add_tlm_interface S_AXIS_TLM [ipx::current_core]]
+set_property bus_type_vlnv "xilinx.com:interface:axis:1.0" $s_axi_tlm
+set_property abstraction_type_vlnv "xilinx.com:interface:axis_tlm:1.0" $s_axi_tlm
+set_property physical_name S_AXIS_socket [ipx::add_port_map "AXIS_SOCKET" $s_axi_tlm]
+set_property interface_mode slave $s_axi_tlm
+
+# save padding mode as parameter for use in the SystemC model
+ipx::add_hdl_parameter PADDING_MODE [ipx::current_core]
+set_property value_format long [ipx::get_hdl_parameters PADDING_MODE -of_objects [ipx::current_core]]
+set_property value $padding_mode [ipx::get_hdl_parameters PADDING_MODE -of_objects [ipx::current_core]]
+
+# Add SystemC file group
+set filegroup [ipx::add_file_group -type systemc:simulation {} [ipx::current_core]]
+set_property model_name $krnl_name $filegroup
+set_property sim_type "tlm" $filegroup
+
+# Add SystemC include files
+set inc [ipx::add_file sysc/cmac.h $filegroup]
+set_property type systemCSource $inc
+set_property is_include "true" $inc
+set inc [ipx::add_file sysc/cmac_0.h $filegroup]
+set_property type systemCSource $inc
+set_property is_include "true" $inc
+set inc [ipx::add_file sysc/cmac_1.h $filegroup]
+set_property type systemCSource $inc
+set_property is_include "true" $inc
+
+# Add SystemC source file
+set file [ipx::add_file sysc/cmac.cpp $filegroup]
+set_property type systemCSource $file
+
+# Add SystemC libraries
+set_property systemc_libraries { xtlm xtlm_ap_ctrl_v1_0 } [ipx::current_core]
+
+# Copy SystemC files into IP folder
+file copy -force ./src/sysc ./packaged_kernel_${suffix}
+
 
 set_property xpm_libraries {XPM_CDC XPM_MEMORY XPM_FIFO} [ipx::current_core]
 set_property supported_families { } [ipx::current_core]
@@ -141,3 +239,5 @@ if {[file exists "${xoname}"]} {
 }
 
 package_xo -xo_path ${xoname} -kernel_name ${krnl_name} -ip_directory ./packaged_kernel_${suffix} -kernel_xml ./kernel_${interface}.xml
+
+

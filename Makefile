@@ -24,7 +24,16 @@ DEVICE ?= xilinx_u280_xdma_201920_3
 INTERFACE ?= 0
 DESIGN ?= benchmark
 XCLBIN_NAME ?= vnx_$(DESIGN)_if$(INTERFACE)
+MAX_SOCKETS ?= 16
 
+
+ifeq ($(shell test $(MAX_SOCKETS) -gt 63; echo $$?),0)
+    $(error Error: maximum number of sockets is 63)
+endif
+UDP_THEIR_IP_OFFSET = 0x820
+UDP_THEIR_PORT_OFFSET = $(shell printf "0x%04X\n" $$(($(UDP_THEIR_IP_OFFSET) + 8*$(MAX_SOCKETS))))
+UDP_MY_PORT_OFFSET = $(shell printf "0x%04X\n" $$(($(UDP_THEIR_PORT_OFFSET) + 8*$(MAX_SOCKETS))))
+UDP_VALID_OFFSET = $(shell printf "0x%04X\n" $$(($(UDP_MY_PORT_OFFSET) + 8*$(MAX_SOCKETS))))
 
 XSA := $(strip $(patsubst %.xpfm, % , $(shell basename $(DEVICE))))
 TEMP_DIR := _x.$(XSA)
@@ -115,8 +124,13 @@ $(CMACDIR)$(TEMP_DIR)/%.xo:
 	make -C $(CMACDIR) all DEVICE=$(DEVICE) INTERFACE=$(INTERFACE)
 
 $(NETLAYERDIR)$(TEMP_DIR)/%.xo:
+	cd ./$(NETLAYERDIR)$(NETLAYERHLS) && git checkout -- .
+	sed -i 's/define NUMBER_SOCKETS 16/define NUMBER_SOCKETS $(MAX_SOCKETS)/' ./$(NETLAYERDIR)$(NETLAYERHLS)/hls/UDP/udp.hpp
+	sed -i 's/port=numberSockets/port=numberSockets offset=0x10/' ./$(NETLAYERDIR)$(NETLAYERHLS)/hls/UDP/udp.cpp
+	cat ./$(NETLAYERDIR)/template.xml | sed 's/UDP_TP_PLACEHOLDER/$(UDP_THEIR_PORT_OFFSET)/' \
+	                                  | sed 's/UDP_MP_PLACEHOLDER/$(UDP_MY_PORT_OFFSET)/' \
+	                                  | sed 's/UDP_VL_PLACEHOLDER/$(UDP_VALID_OFFSET)/' > ./$(NETLAYERDIR)/kernel.xml
 	make -C $(NETLAYERDIR) all DEVICE=$(DEVICE)
-
 
 check-devices:
 ifndef DEVICE

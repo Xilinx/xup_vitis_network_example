@@ -11,7 +11,6 @@
 #include <vector>
 
 namespace vnx {
-constexpr std::size_t max_sockets_size = 16;
 
 // Register offsets
 constexpr std::size_t mac_address_offset = 0x0010;
@@ -61,11 +60,8 @@ constexpr std::size_t  udp_app_in_bytes     =       0x0510;
 constexpr std::size_t  app_in_packets       =       0x0518;
 constexpr std::size_t  udp_app_in_packets   =       0x0518;
 constexpr std::size_t  debug_reset_counters =       0x05F0;
-constexpr std::size_t  udp_theirIP_offset   =       0x0810;
-constexpr std::size_t  udp_theirPort_offset =       0x0890;
-constexpr std::size_t  udp_myPort_offset    =       0x0910;
-constexpr std::size_t  udp_valid_offset     =       0x0990;
-constexpr std::size_t  udp_number_sockets   =       0x0A10;
+constexpr std::size_t  udp_number_sockets   =       0x0810;
+constexpr std::size_t  udp_theirIP_offset   =       0x0820;
 constexpr std::size_t  arp_discovery        =       0x1010;
 constexpr std::size_t  arp_valid_offset     =       0x1100;
 constexpr std::size_t  arp_ip_addr_offset   =       0x1400;
@@ -126,7 +122,7 @@ public:
   uint32_t get_icmp_out_pkts();
 
 private:
-  socket_t sockets[max_sockets_size];
+  std::vector<socket_t> sockets;
   xrt::ip networklayer;
 };
 } // namespace vnx

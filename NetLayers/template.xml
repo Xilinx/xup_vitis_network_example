@@ -53,11 +53,11 @@
       <arg name="app_in_packets"          addressQualifier="0" id="39" port="S_AXIL_nl" size="0x8" offset="0x0518" type="uint" hostOffset="0x00" hostSize="0x8"/>
       <arg name="debug_reset_counters"    addressQualifier="0" id="40" port="S_AXIL_nl" size="0x4" offset="0x05F0" type="uint" hostOffset="0x00" hostSize="0x4"/>
       <!-- UDP Table offset address -->
-      <arg name="udp_theirIP_offset"      addressQualifier="0" id="41" port="S_AXIL_nl" size="0x4" offset="0x0810" type="uint" hostOffset="0x00" hostSize="0x4"/>
-      <arg name="udp_theirPort_offset"    addressQualifier="0" id="42" port="S_AXIL_nl" size="0x4" offset="0x0890" type="uint" hostOffset="0x00" hostSize="0x4"/>
-      <arg name="udp_myPort_offset"       addressQualifier="0" id="43" port="S_AXIL_nl" size="0x4" offset="0x0910" type="uint" hostOffset="0x00" hostSize="0x4"/>
-      <arg name="udp_valid_offset"        addressQualifier="0" id="44" port="S_AXIL_nl" size="0x4" offset="0x0990" type="uint" hostOffset="0x00" hostSize="0x4"/>
-      <arg name="udp_number_sockets"      addressQualifier="0" id="45" port="S_AXIL_nl" size="0x4" offset="0x0A10" type="uint" hostOffset="0x00" hostSize="0x4"/>
+      <arg name="udp_number_sockets"      addressQualifier="0" id="41" port="S_AXIL_nl" size="0x4" offset="0x0810" type="uint" hostOffset="0x00" hostSize="0x4"/>
+      <arg name="udp_theirIP_offset"      addressQualifier="0" id="42" port="S_AXIL_nl" size="0x4" offset="0x0820" type="uint" hostOffset="0x00" hostSize="0x4"/>
+      <arg name="udp_theirPort_offset"    addressQualifier="0" id="43" port="S_AXIL_nl" size="0x4" offset="UDP_TP_PLACEHOLDER" type="uint" hostOffset="0x00" hostSize="0x4"/>
+      <arg name="udp_myPort_offset"       addressQualifier="0" id="44" port="S_AXIL_nl" size="0x4" offset="UDP_MP_PLACEHOLDER" type="uint" hostOffset="0x00" hostSize="0x4"/>
+      <arg name="udp_valid_offset"        addressQualifier="0" id="45" port="S_AXIL_nl" size="0x4" offset="UDP_VL_PLACEHOLDER" type="uint" hostOffset="0x00" hostSize="0x4"/>
       <!-- ARP Registers -->
       <arg name="arp_discovery"           addressQualifier="0" id="46" port="S_AXIL_nl" size="0x4" offset="0x1010" type="uint" hostOffset="0x00" hostSize="0x4"/>
       <arg name="arp_valid_offset"        addressQualifier="0" id="47" port="S_AXIL_nl" size="0x4" offset="0x1100" type="uint" hostOffset="0x00" hostSize="0x4"/>

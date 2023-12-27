@@ -147,28 +147,36 @@ void Networklayer::configure_socket(int index, std::string theirIP,
                                     bool valid) {
   socket_t l_socket = {theirIP, encode_ip_address(theirIP), theirPort, myPort,
                        valid};
+  if(this->sockets.size() < (index+1)){
+    int num_sockets_hw = networklayer.read_register(udp_number_sockets);
+    if (num_sockets_hw < (index+1)) {
+      std::string errMsg = "Target socket index " + std::to_string(index) +
+                          " outside range available in hardware: 0 - " +
+                          std::to_string(num_sockets_hw-1);
+      throw std::runtime_error(errMsg);
+    }
+    this->sockets.resize(index+1);
+  }
   this->sockets[index] = l_socket;
 }
 
 socket_t Networklayer::get_host_socket(int index) {
-  return this->sockets[index];
+  if (index < this->sockets.size()) {
+    return this->sockets[index];
+  } else {
+    std::string errMsg = "Target socket index " + std::to_string(index) +
+                        " outside programmed range: 0 - " +
+                        std::to_string(this->sockets.size()-1);
+    throw std::runtime_error(errMsg);
+  }
 }
 
 std::map<int, socket_t> Networklayer::populate_socket_table() {
-  uint32_t theirIP_offset = udp_theirIP_offset;
-  uint16_t theirPort_offset = udp_theirPort_offset;
-  uint16_t myPort_offset = udp_myPort_offset;
-  uint16_t valid_offset = udp_valid_offset;
-
   int num_sockets_hw = networklayer.read_register(udp_number_sockets);
-
-  if (static_cast<std::size_t>(num_sockets_hw) < max_sockets_size) {
-    std::string errMsg = "Socket list length " +
-                         std::to_string(max_sockets_size) +
-                         " is bigger than the number of sockets in hardware " +
-                         std::to_string(num_sockets_hw);
-    throw std::runtime_error(errMsg);
-  }
+  uint32_t theirIP_offset = udp_theirIP_offset;
+  uint16_t theirPort_offset = theirIP_offset + 8*num_sockets_hw;
+  uint16_t myPort_offset = theirPort_offset + 8*num_sockets_hw;
+  uint16_t valid_offset = myPort_offset + 8*num_sockets_hw;
 
   for (int i = 0; i < num_sockets_hw; i++) {
     uint32_t ti_offset = theirIP_offset + i * 8;
@@ -217,10 +225,12 @@ std::map<int, socket_t> Networklayer::populate_socket_table() {
 }
 
 void Networklayer::print_socket_table(const unsigned int num_sockets) {
+  int num_sockets_hw = networklayer.read_register(udp_number_sockets);
   uint32_t theirIP_offset = udp_theirIP_offset;
-  uint16_t theirPort_offset = udp_theirPort_offset;
-  uint16_t myPort_offset = udp_myPort_offset;
-  uint16_t valid_offset = udp_valid_offset;
+  uint16_t theirPort_offset = theirIP_offset + 8*num_sockets_hw;
+  uint16_t myPort_offset = theirPort_offset + 8*num_sockets_hw;
+  uint16_t valid_offset = myPort_offset + 8*num_sockets_hw;
+
   for (unsigned int i = 0; i < num_sockets; ++i) {
     uint32_t ti_offset = theirIP_offset + i * 8;
     uint32_t tp_offset = theirPort_offset + i * 8;
@@ -251,12 +261,11 @@ void Networklayer::print_socket_table(const unsigned int num_sockets) {
 }
 
 void Networklayer::populate_socket_table(std::vector<socket_t> &socket_table) {
-  uint32_t theirIP_offset = udp_theirIP_offset;
-  uint16_t theirPort_offset = udp_theirPort_offset;
-  uint16_t myPort_offset = udp_myPort_offset;
-  uint16_t valid_offset = udp_valid_offset;
-
   int num_sockets_hw = networklayer.read_register(udp_number_sockets);
+  uint32_t theirIP_offset = udp_theirIP_offset;
+  uint16_t theirPort_offset = theirIP_offset + 8*num_sockets_hw;
+  uint16_t myPort_offset = theirPort_offset + 8*num_sockets_hw;
+  uint16_t valid_offset = myPort_offset + 8*num_sockets_hw;
 
   int l_socketTBsize = socket_table.size();
   if (num_sockets_hw < l_socketTBsize) {

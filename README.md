@@ -133,11 +133,12 @@ You also need at least 32GB of RAM available for the implementation. Check Vivad
 To implement any of the examples run:
 
 ```sh
-make all DEVICE=<full platform path> INTERFACE=<interface number> DESIGN=<design name>
+make all DEVICE=<full platform path> INTERFACE=<interface number> DESIGN=<design name> [MAX_SOCKETS=<number of sockets>]
 ```
 
 * `DEVICE` Alveo development target platform, [see supported platforms](#alveo-cards)
 * `INTERFACE` defines which physical interface is going to be use. 0, 1 or 3 are supported. When `INTERFACE=3` the design will be replicated for each interface. Note that Alveo U50 only has one interface available (`INTERFACE=0`)
+* `MAX_SOCKETS` defines the size of the socket table in hardware. The default value is 16, and increasing the size of the hardware socket table may make it more difficult to meet timing.
 * `DESIGN` only support the following strings `basic` and `benchmark`. If you use something different, an error will be reported
 * The basic configuration file is pulled from [config_files](config_files) folder and complete with `userPostSysLinkOverlayTcl` parameter before calling `v++`.
 * [Ethernet/post_sys_link.tcl](Ethernet/post_sys_link.tcl) is automatically called from `v++` after system link. It is used to connect the GT capable pins to the cmac kernel(s)

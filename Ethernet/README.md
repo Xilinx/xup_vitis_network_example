@@ -39,7 +39,7 @@ For instance:
 # Read CONFIGURATION_AN_ABILITY register
 cmac.read(0xA8)
 # Set ctl_an_ability_1000base_kx in the CONFIGURATION_AN_ABILITY register
-cmac.read(0xA8, 0x1)
+cmac.write(0xA8, 0x1)
 ```
 
 You could also modify the [template.xml](template.xml) file to add more registers. Care must be taken when modifying this file, make sure id are properly changed. Once the [template.xml](template.xml) file is modified, you will have to rebuild the design for these changes to be included in the xclbin. Remove all \*.xo files in this folder after changing [template.xml](template.xml).

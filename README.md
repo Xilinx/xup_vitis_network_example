@@ -190,7 +190,7 @@ Each subdirectory contains more information. If you do not find the necessary in
 
 ### Why is my Alveo card connected to a 100G capable switch/NIC not getting link?
 
-This design does **NOT** support **FEC neither auto-negotiation** by default. Therefore, make sure that your network equipment has these capabilities disabled. Please, refer to your network equipment manual to accomplish this.
+This design does **NOT** support **auto-negotiation**, only link to 100 GbE network equipment will be establish. Make sure that your network equipment has these capabilities disabled. Please, refer to your network equipment manual to accomplish this.
 
 Partial steps to enable RS-FEC are provided [here](Ethernet/README.md#enabling-rs-fec).
 

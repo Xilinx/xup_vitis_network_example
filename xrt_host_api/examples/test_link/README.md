@@ -8,20 +8,18 @@ To compile and run this program run the following commands
 
 ```bash
 # Compiling the program
-mkdir build
-cd build
-cmake ..
-cmake --build .
+mkdir build && cd build
+/usr/bin/cmake ..
+/usr/bin/cmake --build .
 # Running the program
-./test_link <XCLBIN> <DEVICE ID (default 0)> <RS-FEC (default 0)>
+./test_link <XCLBIN> <RS-FEC (default 0)> <DEVICE ID (default 0)>
 ```
 
 The arguments are as follows:
 
 -  `XCLBIN`: path to the *.xclbin file
-- `DEVICE ID`: device ID, can be found with `xbutil examine`
 - `RS-FEC` (bool): `0` RS-FEC disabled (default); `1` RS-FEC enabled
-
+- `DEVICE ID`: device ID, can be found with `xbutil examine`
 
 Note that this program depends on
 [jsoncpp](https://github.com/open-source-parsers/jsoncpp), which can be

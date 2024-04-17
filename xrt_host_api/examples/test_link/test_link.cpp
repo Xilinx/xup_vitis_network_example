@@ -5,7 +5,6 @@
 #include <chrono>
 #include <experimental/xrt_ip.h>
 #include <filesystem>
-#include <json/json.h>
 #include <limits.h>
 #include <map>
 #include <string>
@@ -43,8 +42,8 @@ kernels = {
          };
 
 
-xclbin_path parse_xclbin(const std::string &platform, const char *arg) {
-    // Determine content of xclbin based on filename and platform.
+xclbin_path parse_xclbin(const char *arg) {
+    // Determine content of xclbin based on filename.
     xclbin_path xclbin;
     xclbin.path = arg;
     std::string filename = fs::path(arg).filename();
@@ -61,16 +60,9 @@ xclbin_path parse_xclbin(const std::string &platform, const char *arg) {
         found = false;
 
     if (!found)
-        throw std::runtime_error("Unexpected xclbin file " + filename + " with platform " + platform);
+        throw std::runtime_error("Unexpected xclbin file " + filename + ". It does not provide information about the interfaces.");
 
     return xclbin;
-}
-
-Json::Value parse_json(const std::string &string) {
-    Json::Reader reader;
-    Json::Value json;
-    reader.parse(string, json);
-    return json;
 }
 
 int main(int argc, char *argv[]) {
@@ -101,15 +93,11 @@ int main(int argc, char *argv[]) {
     xrt::device device = xrt::device(device_id);
     // Collect platform info from xclbin
     const std::string platform_json = device.get_info<xrt::info::device::platform>();
-    const Json::Value platform_dict = parse_json(platform_json);
-    const std::string platform = platform_dict["platforms"][0]["static_region"]["vbnv"].asString();
-    std::cout << "FPGA platform: " << platform << std::endl;
 
-    const xclbin_path xclbin = parse_xclbin(platform, args[0]);
+    const xclbin_path xclbin = parse_xclbin(args[0]);
     auto xclbin_uuid = device.load_xclbin(xclbin.path);
-    std::cout << "Loaded " << xclbin.path << " onto FPGA on " << platform << std::endl;
-    // Give time for xclbin to be loaded completely before attempting to read
-    // the link status.
+    std::cout << "Loaded " << xclbin.path << " onto FPGA" << std::endl;
+    // Give time for xclbin to be loaded completely before attempting to read the link status.
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
     // Loop over compute units in xclbin

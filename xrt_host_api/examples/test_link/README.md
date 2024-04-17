@@ -21,10 +21,5 @@ The arguments are as follows:
 - `RS-FEC` (bool): `0` RS-FEC disabled (default); `1` RS-FEC enabled
 - `DEVICE ID`: device ID, can be found with `xbutil examine`
 
-Note that this program depends on
-[jsoncpp](https://github.com/open-source-parsers/jsoncpp), which can be
-installed using `sudo apt install libjsoncpp-dev` on Ubuntu.
-
-
 ------------------------------------------------------
 <p align="center">Copyright&copy; 2024 Advanced Micro Devices, Inc.</p>

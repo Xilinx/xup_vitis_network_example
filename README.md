@@ -118,7 +118,7 @@ To install `pynq` and JupyterLab follow the steps [here](Notebooks/README.md#env
 | U55N  | xilinx_u55n_gen3x4_xdma_2_202110_1     | [Supported only until 2021.2](https://support.xilinx.com/s/article/33838?language=en_US) |
 | U200  | xilinx_u200_gen3x16_xdma_1_202110_1    |       |
 | U250  | xilinx_u250_gen3x16_xdma_3_1_202020_1  | [DFX two-stage platform](https://support.xilinx.com/s/article/75975?language=en_US) |
-| U250  | xilinx_u250_gen3x16_xdma_4_1_202210_1  | [DFX two-stage platform](https://support.xilinx.com/s/article/75975?language=en_US) |
+| U250  | xilinx_u250_gen3x16_xdma_4_1_202210_1  | [DFX two-stage platform](https://support.xilinx.com/s/article/75975?language=en_US). [Do not use Vitis 2022.2](https://github.com/Xilinx/xup_vitis_network_example/issues/124)|
 | U280  | xilinx_u280_xdma_201920_3              | [Supported only until 2021.2](https://support.xilinx.com/s/article/33838?language=en_US) |
 | U280  | xilinx_u280_gen3x16_xdma_1_202211_1    |       |
 

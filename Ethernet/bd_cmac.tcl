@@ -54,7 +54,7 @@ if {${projPart} eq "xcu55n-fsvh2892-2L-e"} {
       set interface_number 0
     }
   }
-} elseif {${projPart} eq "xcu50-fsvh2104-2L-e"} {
+} elseif {${projPart} eq "xcu50-fsvh2104-2-e"} {
   # Possible core_selection CMACE4_X0Y3 and CMACE4_X0Y4
   set gt_ref_clk 161.1328125
   set core_selection  CMACE4_X0Y3

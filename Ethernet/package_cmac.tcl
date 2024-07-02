@@ -53,7 +53,7 @@ set path_to_tmp_project "./tmp_${suffix}"
 #get projPart
 source platform.tcl
 
-if {${projPart} eq "xcu50-fsvh2104-2L-e"} {
+if {${projPart} eq "xcu50-fsvh2104-2-e"} {
     if {$interface != 0} {
         catch {common::send_gid_msg -ssname BD::TCL -id 2041 -severity "ERROR" "Alveo U50 only has one interface (0)"}
         return 1

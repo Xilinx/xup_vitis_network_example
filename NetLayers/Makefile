@@ -34,6 +34,8 @@ else ifeq (u2,$(findstring u2, $(DEVICE)))
 	SUBMODULETARGET = nohbm
 else ifeq (vck5000,$(findstring vck5000, $(DEVICE)))
 	SUBMODULETARGET = versalaicore
+else ifeq (v80,$(findstring v80, $(DEVICE)))
+	SUBMODULETARGET = versalhbm
 endif
 
 .PHONY: all clean cleanall

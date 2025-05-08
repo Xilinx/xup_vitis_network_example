@@ -19,10 +19,20 @@ help:
 DEVICE ?= xilinx_u280_xdma_201920_3
 KRNL_NAME := networklayer
 SUBMODULENAME = 100G-fpga-network-stack-core
+MAX_SOCKETS ?= 16
+
+ifeq ($(shell test $(MAX_SOCKETS) -gt 63; echo $$?),0)
+    $(error Error: maximum number of sockets is 63)
+endif
 
 XSA := $(strip $(patsubst %.xpfm, % , $(shell basename $(DEVICE))))
 TEMP_DIR := ./_x.$(XSA)
 VIVADO := $(XILINX_VIVADO)/bin/vivado
+
+UDP_THEIR_IP_OFFSET = 0x820
+UDP_THEIR_PORT_OFFSET = $(shell printf "0x%04X\n" $$(($(UDP_THEIR_IP_OFFSET) + 8*$(MAX_SOCKETS))))
+UDP_MY_PORT_OFFSET = $(shell printf "0x%04X\n" $$(($(UDP_THEIR_PORT_OFFSET) + 8*$(MAX_SOCKETS))))
+UDP_VALID_OFFSET = $(shell printf "0x%04X\n" $$(($(UDP_MY_PORT_OFFSET) + 8*$(MAX_SOCKETS))))
 
 NETLAYER_OBJS = $(TEMP_DIR)/${KRNL_NAME}.xo
 
@@ -54,6 +64,14 @@ distclean: clean
 
 distcleanall: distclean
 	make -C $(SUBMODULENAME) distclean
+
+
+kernel.xml:
+	sed -i 's/define NUMBER_SOCKETS 16/define NUMBER_SOCKETS $(MAX_SOCKETS)/' ./$(SUBMODULENAME)/hls/UDP/udp.hpp
+	sed -i 's/port=numberSockets/port=numberSockets offset=0x10/' ./$(SUBMODULENAME)/hls/UDP/udp.cpp
+	cat ./template.xml | sed 's/UDP_TP_PLACEHOLDER/$(UDP_THEIR_PORT_OFFSET)/' \
+	                   | sed 's/UDP_MP_PLACEHOLDER/$(UDP_MY_PORT_OFFSET)/' \
+	                   | sed 's/UDP_VL_PLACEHOLDER/$(UDP_VALID_OFFSET)/' > ./kernel.xml
 
 
 $(TEMP_DIR)/${KRNL_NAME}.xo: kernel.xml package_netlayer.tcl src/*.v src/*.vhd

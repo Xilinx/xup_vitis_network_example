@@ -1,9 +1,16 @@
-# Copyright (C) 2021 Xilinx, Inc
+# Copyright (C) 2021-2022 Xilinx, Inc
+# Copyright (C) 2023-2025 Advanced Micro Devices, Inc.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
-set words [split $device "_"]
-set board [lindex $words 1]
+set words [split ${device} "_"]
+set board [lindex ${words} 1]
+
+if {[string first "v80" ${words}] != -1} {
+    set board "v80"
+}
+
+puts "INFO: words-> ${words}\n      board-> ${board}"
 
 if {[string first "u55n" ${board}] != -1} {
     set proj_part "xcu55n-fsvh2892-2L-e"

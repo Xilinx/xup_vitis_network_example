@@ -35,6 +35,7 @@ UDP_MY_PORT_OFFSET = $(shell printf "0x%04X\n" $$(($(UDP_THEIR_PORT_OFFSET) + 8*
 UDP_VALID_OFFSET = $(shell printf "0x%04X\n" $$(($(UDP_MY_PORT_OFFSET) + 8*$(MAX_SOCKETS))))
 
 NETLAYER_OBJS = $(TEMP_DIR)/${KRNL_NAME}.xo
+CLOCK_FREQ = 322265624
 
 ifeq (u5,$(findstring u5, $(DEVICE)))
 	SUBMODULETARGET = hbm
@@ -46,6 +47,7 @@ else ifeq (vck5000,$(findstring vck5000, $(DEVICE)))
 	SUBMODULETARGET = versalaicore
 else ifeq (v80,$(findstring v80, $(DEVICE)))
 	SUBMODULETARGET = versalhbm
+	CLOCK_FREQ = 390998840
 endif
 
 .PHONY: all clean cleanall
@@ -54,7 +56,7 @@ all: check-devices check-vivado $(NETLAYER_OBJS)
 
 # Cleaning stuff
 clean:
-	rm -rf *v++* *.log *.jou
+	rm -rf *v++* *.log *.jou kernel.xml
 
 distclean: clean
 	rm -rf build_dir*
@@ -73,8 +75,10 @@ kernel.xml:
 	                   | sed 's/UDP_MP_PLACEHOLDER/$(UDP_MY_PORT_OFFSET)/' \
 	                   | sed 's/UDP_VL_PLACEHOLDER/$(UDP_VALID_OFFSET)/' > ./kernel.xml
 
+clock-freq:
+	sed -i 's/322265624/$(CLOCK_FREQ)/' ./src/performance_debug_reg.v;\
 
-$(TEMP_DIR)/${KRNL_NAME}.xo: kernel.xml package_netlayer.tcl src/*.v src/*.vhd
+$(TEMP_DIR)/${KRNL_NAME}.xo: clock-freq kernel.xml package_netlayer.tcl src/*.v src/*.vhd
 	mkdir -p $(TEMP_DIR)
 	make -C $(SUBMODULENAME) $(SUBMODULETARGET)
 	$(VIVADO) -mode batch -source package_netlayer.tcl -notrace -tclargs $@ ${KRNL_NAME} $(XSA)

@@ -18,7 +18,6 @@ DEVICE ?= xilinx_u280_xdma_201920_3
 KRNL_NAME_HDL := traffic_generator
 KRNL_SWITCH   := switch_wrapper
 KRNL_NAME_HLS := collector
-SUBMODULENAME = 100G-fpga-network-stack-core
 
 XSA := $(strip $(patsubst %.xpfm, % , $(shell basename $(DEVICE))))
 TEMP_DIR := _x.$(XSA)
@@ -28,9 +27,15 @@ CLFLAGS += -t hw --platform $(DEVICE) --save-temps
 
 BINARY_HLD_OBJS = $(TEMP_DIR)/${KRNL_NAME_HDL}.xo
 BINARY_HLD_OBJS += $(TEMP_DIR)/${KRNL_SWITCH}.xo
-BINARY_HLS_OBJS = $(TEMP_DIR)/${KRNL_NAME_HLS}.xo
 
-.PHONY: all clean cleanall 
+ifeq (v80,$(findstring v80, $(DEVICE)))
+	BINARY_HLS_OBJS += $(TEMP_DIR)/$(KRNL_NAME_HLS)/component.xml
+else
+	BINARY_HLS_OBJS += $(TEMP_DIR)/${KRNL_NAME_HLS}.xo
+endif
+
+
+.PHONY: all clean cleanall
 all: check-devices check-vivado check-vitis $(BINARY_HLD_OBJS) $(BINARY_HLS_OBJS)
 
 
@@ -56,6 +61,8 @@ $(TEMP_DIR)/${KRNL_SWITCH}.xo:
 $(TEMP_DIR)/$(KRNL_NAME_HLS).xo: src/$(KRNL_NAME_HLS).cpp
 	$(VPP) $(CLFLAGS) -k $(subst $(TEMP_DIR)/,,$(subst .xo,,$@)) -c -o $@ $^
 
+$(TEMP_DIR)/$(KRNL_NAME_HLS)/component.xml: src/$(KRNL_NAME_HLS).cpp
+	vitis_hls -f vitis_hls.tcl -tclargs $(shell readlink -f .) $^ $(DEVICE)
 
 check-devices:
 ifndef DEVICE

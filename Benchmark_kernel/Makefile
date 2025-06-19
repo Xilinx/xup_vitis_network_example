@@ -62,7 +62,7 @@ $(TEMP_DIR)/$(KRNL_NAME_HLS).xo: src/$(KRNL_NAME_HLS).cpp
 	$(VPP) $(CLFLAGS) -k $(subst $(TEMP_DIR)/,,$(subst .xo,,$@)) -c -o $@ $^
 
 $(TEMP_DIR)/$(KRNL_NAME_HLS)/component.xml: src/$(KRNL_NAME_HLS).cpp
-	vitis_hls -f vitis_hls.tcl -tclargs $(shell readlink -f .) $^ $(DEVICE)
+	vitis_hls -f vitis_hls.tcl -tclargs $(shell readlink -f .) $(subst src/,,$(subst .cpp,,$^)) $(DEVICE)
 
 check-devices:
 ifndef DEVICE

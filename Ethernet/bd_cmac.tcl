@@ -40,7 +40,7 @@ open_bd_design ${design_name}
 # Default GT reference frequency
 set gt_ref_clk 156.25
 set freerunningclock 100
-if {${projPart} eq "xcu55n-fsvh2892-2L-e"} {
+if {${proj_part} eq "xcu55n-fsvh2892-2L-e"} {
   set gt_ref_clk 161.1328125
   switch ${interface} {
     "1" {
@@ -54,13 +54,13 @@ if {${projPart} eq "xcu55n-fsvh2892-2L-e"} {
       set interface_number 0
     }
   }
-} elseif {${projPart} eq "xcu50-fsvh2104-2-e"} {
+} elseif {${proj_part} eq "xcu50-fsvh2104-2-e"} {
   # Possible core_selection CMACE4_X0Y3 and CMACE4_X0Y4
   set gt_ref_clk 161.1328125
   set core_selection  CMACE4_X0Y3
   set group_selection X0Y28~X0Y31
   set interface_number 0
-} elseif {${projPart} eq "xcu55c-fsvh2892-2L-e"} {
+} elseif {${proj_part} eq "xcu55c-fsvh2892-2L-e"} {
   set gt_ref_clk 161.1328125
   switch ${interface} {
     "1" {
@@ -76,7 +76,7 @@ if {${projPart} eq "xcu55n-fsvh2892-2L-e"} {
       set interface_number 0
     }
   }
-} elseif {${projPart} eq "xcu200-fsgd2104-2-e"} {
+} elseif {${proj_part} eq "xcu200-fsgd2104-2-e"} {
   switch ${interface} {
     "1" {
       # Possible core_selection CMACE4_X0Y6 and CMACE4_X0Y7
@@ -91,7 +91,7 @@ if {${projPart} eq "xcu55n-fsvh2892-2L-e"} {
       set interface_number 0
     }
   }
-} elseif {${projPart} eq "xcu250-figd2104-2L-e"} {
+} elseif {${proj_part} eq "xcu250-figd2104-2L-e"} {
   switch ${interface} {
     "1" {
       # Possible core_selection CMACE4_X0Y6; CMACE4_X0Y7 and CMACE4_X0Y8
@@ -106,7 +106,7 @@ if {${projPart} eq "xcu55n-fsvh2892-2L-e"} {
       set interface_number 0
     }
   }
-} elseif {${projPart} eq "xcu280-fsvh2892-2L-e"} {
+} elseif {${proj_part} eq "xcu280-fsvh2892-2L-e"} {
   set freerunningclock 50
   switch ${interface} {
     "1" {

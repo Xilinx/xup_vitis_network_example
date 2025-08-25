@@ -50,10 +50,10 @@ set path_to_hdl "./src"
 set path_to_packaged "./packaged_kernel_${suffix}"
 set path_to_tmp_project "./tmp_${suffix}"
 
-#get projPart
+#get proj_part
 source platform.tcl
 
-if {${projPart} eq "xcu50-fsvh2104-2-e"} {
+if {${proj_part} eq "xcu50-fsvh2104-2-e"} {
     if {$interface != 0} {
         catch {common::send_gid_msg -ssname BD::TCL -id 2041 -severity "ERROR" "Alveo U50 only has one interface (0)"}
         return 1
@@ -61,7 +61,7 @@ if {${projPart} eq "xcu50-fsvh2104-2-e"} {
 }
 
 ## Create Vivado project and add IP cores
-create_project -force $projName $path_to_tmp_project -part $projPart
+create_project -force $projName $path_to_tmp_project -part $proj_part
 add_files -norecurse [glob ${root_dir}/src/cmac_top_${interface}.v]
 add_files -norecurse [glob ${root_dir}/src/cmac_0_axi4_lite_user_if.v]
 add_files -norecurse [glob ${root_dir}/src/cmac_sync.v]

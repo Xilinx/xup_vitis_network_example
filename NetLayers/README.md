@@ -18,7 +18,7 @@ It provides ping capability. It is useful to check if the design is *up* when us
 
 ### UDP
 
-It provides UDP transport layer functionality. It has a 16-element socket table, which must be filled from the host side in order to receive and send data. 
+It provides UDP transport layer functionality. It has a 16-element socket table, which must be filled from the host side in order to receive and send data.
 
 ```C
 struct socket_table {
@@ -35,8 +35,7 @@ In the transmitting side, the application sends the payload identifying the sock
 
 In the receiving side UDP packets are parsed and the socket information is compared against the socket table. If the socket information is valid, the UDP will populate the payload to the application setting `dest` accordingly, the `user` signal will also contains metadata pertaining to source and destination IP address as well as source and destination port.
 
-Currently, to simplify the receiver side logic, valid incoming connections must be fully specified in the socket table. 
-
+Currently, to simplify the receiver side logic, valid incoming connections must be fully specified in the socket table.
 
 The structure for these two interfaces are specified below.
 

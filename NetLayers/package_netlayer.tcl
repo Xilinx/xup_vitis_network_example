@@ -1,4 +1,5 @@
-# Copyright (c) 2020, Xilinx, Inc.
+# Copyright (c) 2020-2022, Xilinx, Inc.
+# Copyright (C) 2023-2025 Advanced Micro Devices, Inc.
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without modification, 
@@ -39,7 +40,7 @@ set suffix "${krnl_name}_${device}"
 
 puts "INFO: xoname-> ${xoname}\n      krnl_name-> ${krnl_name}\n      device-> ${device}\n"
 
-set projName kernel_pack
+set proj_name kernel_pack
 set bd_name network_layer_bd
 set root_dir "[file normalize "."]"
 set path_to_hdl "${root_dir}/src"
@@ -47,19 +48,21 @@ set path_to_ip "${root_dir}/100G-fpga-network-stack-core"
 set path_to_packaged "./packaged_kernel_${suffix}"
 set path_to_tmp_project "./tmp_${suffix}"
 
-#get projPart
+#get proj_part
 source platform.tcl
 
-if {[string first "fsvh" ${projPart}] != -1} {
+if {[string first "fsvh" ${proj_part}] != -1} {
     set path_to_ip ${path_to_ip}/synthesis_results_HBM
-} elseif {[string first "vsva" ${projPart}] != -1} {
+} elseif {[string first "vsva" ${proj_part}] != -1} {
     set path_to_ip ${path_to_ip}/synthesis_results_versalaicore
+} elseif {[string first "xcv80" ${proj_part}] != -1} {
+    set path_to_ip ${path_to_ip}/synthesis_results_versalHBM
 } else {
     set path_to_ip ${path_to_ip}/synthesis_results_noHBM
 }
 
 ## Create Vivado project and add IP cores
-create_project -force $projName $path_to_tmp_project -part $projPart
+create_project -force $proj_name ${path_to_tmp_project} -part ${proj_part}
 
 add_files -norecurse ${path_to_hdl}
 
@@ -71,9 +74,9 @@ source ${root_dir}/bd_network_layer.tcl -notrace
 update_compile_order -fileset sources_1
 
 
-generate_target all [get_files  ${path_to_tmp_project}/${projName}.srcs/sources_1/bd/${bd_name}/${bd_name}.bd]
-export_ip_user_files -of_objects [get_files ${path_to_tmp_project}/${projName}.srcs/sources_1/bd/${bd_name}/${bd_name}.bd] -no_script -sync -force -quiet
-create_ip_run [get_files -of_objects [get_fileset sources_1] ${path_to_tmp_project}/${projName}.srcs/sources_1/bd/${bd_name}/${bd_name}.bd]
+generate_target all [get_files  ${path_to_tmp_project}/${proj_name}.srcs/sources_1/bd/${bd_name}/${bd_name}.bd]
+export_ip_user_files -of_objects [get_files ${path_to_tmp_project}/${proj_name}.srcs/sources_1/bd/${bd_name}/${bd_name}.bd] -no_script -sync -force -quiet
+create_ip_run [get_files -of_objects [get_fileset sources_1] ${path_to_tmp_project}/${proj_name}.srcs/sources_1/bd/${bd_name}/${bd_name}.bd]
 update_compile_order -fileset sources_1
 set_property top networklayer [current_fileset]
 

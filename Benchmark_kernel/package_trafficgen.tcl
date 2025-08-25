@@ -41,18 +41,18 @@ set suffix "${krnl_name}_${device}"
 
 puts "INFO: xoname-> ${xoname}\n      krnl_name-> ${krnl_name}\n      device-> ${device}\n"
 
-set projName kernel_pack
+set proj_name kernel_pack
 set root_dir "[file normalize "."]"
 set path_to_hdl "${root_dir}/src"
 set path_to_hdl_debug "${root_dir}/../NetLayers/src"
 set path_to_packaged "./packaged_kernel_${suffix}"
 set path_to_tmp_project "./tmp_${suffix}"
 
-#get projPart
+#get proj_part
 source platform.tcl
 
 ## Create Vivado project and add IP cores
-create_project -force $projName $path_to_tmp_project -part $projPart
+create_project -force ${proj_name} ${path_to_tmp_project} -part ${proj_part}
 
 add_files -norecurse ${path_to_hdl}
 add_files -norecurse ${path_to_hdl_debug}/bandwidth_reg.v
